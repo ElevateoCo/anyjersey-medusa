@@ -174,6 +174,16 @@ function requireBefore(description, earlier, later, source) {
 
 requireMatch('provisioner is root-only', /EUID[^\n]+-ne\s+0/, provisioner)
 requireMatch(
+  'public-key validation is a sourceable function',
+  /read_validated_ed25519_key\(\)\s*\{/,
+  provisioner
+)
+requireMatch(
+  'live provisioning is guarded when the script is sourced',
+  /\[\[\s*['"]?\$\{BASH_SOURCE\[0\]\}['"]?\s*==\s*['"]?\$0['"]?\s*\]\][\s\S]*main(?:\s|$)/,
+  provisioner
+)
+requireMatch(
   'provisioner requires exactly one non-empty input line',
   /non_empty_lines[\s\S]*\$\{#non_empty_lines\[@\]\}[\s\S]*(?:-ne|!=)\s+1/,
   provisioner
@@ -202,7 +212,23 @@ requireMatch('provisioner installs the tracked sshd snippet', /60-emil-anyjersey
 requireMatch('provisioner validates sshd before reload', /sshd\s+-t/, provisioner)
 requireMatch('provisioner reloads the SSH service', /systemctl\s+reload\s+ssh/, provisioner)
 requireBefore('sshd validation precedes SSH reload', 'sshd -t', 'systemctl reload ssh', provisioner)
+requireBefore(
+  'sshd validation precedes authorised-key replacement',
+  'if ! sshd -t',
+  'install -o root -g root -m 0600 "$key_temp" "$key_file"',
+  provisioner
+)
 requireMatch('failed sshd validation restores or removes the prior snippet', /if\s+!\s+sshd\s+-t[\s\S]*(?:cp|install)[\s\S]*previous|if\s+!\s+sshd\s+-t[\s\S]*rm\s+-f/, provisioner)
+requireMatch(
+  'failed SSH reload starts transactional rollback',
+  /if\s+!\s+systemctl\s+reload\s+ssh[\s\S]*restore_prior_file[\s\S]*key_file[\s\S]*restore_prior_file[\s\S]*sshd_target/,
+  provisioner
+)
+requireMatch(
+  'reload rollback validates and reloads the restored SSH configuration',
+  /if\s+!\s+systemctl\s+reload\s+ssh[\s\S]*restore_prior_file[\s\S]*sshd\s+-t[\s\S]*systemctl\s+reload\s+ssh/,
+  provisioner
+)
 
 const requiredSshdDirectives = [
   /^Match User emil-anyjersey$/m,
@@ -225,6 +251,56 @@ for (const pattern of requiredSshdDirectives) {
 
 console.log('PASS: Emil access is restricted to key-only chrooted SFTP')
 NODE
+
+access_test_dir=$(mktemp -d)
+cleanup_access_test() {
+  rm -rf -- "$access_test_dir"
+}
+trap cleanup_access_test EXIT
+
+ssh-keygen -q -t ed25519 -N '' -f "$access_test_dir/ed25519"
+ssh-keygen -q -t rsa -b 2048 -N '' -f "$access_test_dir/rsa"
+printf 'not-a-public-key\n' >"$access_test_dir/malformed"
+{
+  sed -n '1p' "$access_test_dir/ed25519.pub"
+  sed -n '1p' "$access_test_dir/ed25519.pub"
+} >"$access_test_dir/multiple"
+
+run_key_validation() {
+  bash -c 'source "$1"; read_validated_ed25519_key' _ "$access_provisioner"
+}
+
+if ! run_key_validation <"$access_test_dir/ed25519.pub" \
+  >"$access_test_dir/stdout" 2>"$access_test_dir/stderr"; then
+  echo 'FAIL: valid Ed25519 public key was rejected' >&2
+  exit 1
+fi
+if [[ -s "$access_test_dir/stdout" || -s "$access_test_dir/stderr" ]]; then
+  echo 'FAIL: valid Ed25519 validation was not silent' >&2
+  exit 1
+fi
+
+for rejected_input in rsa.pub malformed multiple; do
+  if run_key_validation <"$access_test_dir/$rejected_input" \
+    >"$access_test_dir/stdout" 2>"$access_test_dir/stderr"; then
+    echo "FAIL: invalid public-key input was accepted: $rejected_input" >&2
+    exit 1
+  fi
+done
+if run_key_validation </dev/null >"$access_test_dir/stdout" 2>"$access_test_dir/stderr"; then
+  echo 'FAIL: empty public-key input was accepted' >&2
+  exit 1
+fi
+
+if grep -F -f "$access_test_dir/ed25519.pub" \
+  "$access_test_dir/stdout" "$access_test_dir/stderr" >/dev/null; then
+  echo 'FAIL: submitted public key appeared in validation output' >&2
+  exit 1
+fi
+
+trap - EXIT
+cleanup_access_test
+echo 'PASS: Ed25519 key validation accepts only one valid line without key output'
 
 for required_file in "$compose_file" "$infra_env" "$infra_readme"; do
   if [[ ! -f "$required_file" ]]; then
