@@ -136,6 +136,7 @@ compose_file="$repo_root/infra/compose.yml"
 infra_env="$repo_root/infra/.env.example"
 infra_readme="$repo_root/infra/README.md"
 storefront_env="$repo_root/spike/storefront/.env.template"
+storefront_dockerfile="$repo_root/spike/storefront/Dockerfile"
 
 for required_file in "$compose_file" "$infra_env" "$infra_readme"; do
   if [[ ! -f "$required_file" ]]; then
@@ -144,19 +145,20 @@ for required_file in "$compose_file" "$infra_env" "$infra_readme"; do
   fi
 done
 
-node - "$compose_file" "$infra_env" "$infra_readme" "$backend_env" "$storefront_env" <<'NODE'
+node - "$compose_file" "$infra_env" "$infra_readme" "$backend_env" "$storefront_env" "$storefront_dockerfile" <<'NODE'
 const fs = require('node:fs')
 const os = require('node:os')
 const path = require('node:path')
 const { spawnSync } = require('node:child_process')
 
-const [composePath, envExamplePath, readmePath, backendEnvPath, storefrontEnvPath] =
+const [composePath, envExamplePath, readmePath, backendEnvPath, storefrontEnvPath, storefrontDockerfilePath] =
   process.argv.slice(2)
 const composeSource = fs.readFileSync(composePath, 'utf8')
 const envExample = fs.readFileSync(envExamplePath, 'utf8')
 const readme = fs.readFileSync(readmePath, 'utf8')
 const backendTemplate = fs.readFileSync(backendEnvPath, 'utf8')
 const storefrontTemplate = fs.readFileSync(storefrontEnvPath, 'utf8')
+const storefrontDockerfile = fs.readFileSync(storefrontDockerfilePath, 'utf8')
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'anyjersey-compose-'))
 
 function fail(message) {
@@ -318,6 +320,20 @@ function assertTopology(config, projectName) {
   const privateNames = [...storefrontNames].filter((name) => !name.startsWith('NEXT_PUBLIC_'))
   requireKeys(config.services.storefront.build?.args, publicNames, 'storefront public build args')
   requireKeys(config.services.storefront.environment, privateNames, 'storefront runtime environment')
+
+  for (const name of publicNames) {
+    const argPattern = new RegExp(`^ARG\\s+${name}(?:=|\\s*$)`, 'm')
+    const envPattern = new RegExp(
+      `^\\s*(?:ENV\\s+)?${name}=\\$\\{?${name}\\}?(?:\\s*\\\\|\\s*$)`,
+      'm'
+    )
+    if (!argPattern.test(storefrontDockerfile)) {
+      fail(`storefront Dockerfile does not declare ARG ${name}`)
+    }
+    if (!envPattern.test(storefrontDockerfile)) {
+      fail(`storefront Dockerfile does not export ${name} through ENV`)
+    }
+  }
 }
 
 try {
