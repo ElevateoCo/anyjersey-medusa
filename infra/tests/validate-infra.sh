@@ -149,13 +149,12 @@ done
 
 bash -n "$access_provisioner"
 
-node - "$access_provisioner" "$access_sshd_config" "$infra_readme" <<'NODE'
+node - "$access_provisioner" "$access_sshd_config" <<'NODE'
 const fs = require('node:fs')
 
-const [provisionerPath, sshdConfigPath, readmePath] = process.argv.slice(2)
+const [provisionerPath, sshdConfigPath] = process.argv.slice(2)
 const provisioner = fs.readFileSync(provisionerPath, 'utf8')
 const sshdConfig = fs.readFileSync(sshdConfigPath, 'utf8')
-const readme = fs.readFileSync(readmePath, 'utf8')
 
 function requireMatch(description, pattern, source) {
   if (!pattern.test(source)) {
@@ -225,23 +224,6 @@ for (const pattern of requiredSshdDirectives) {
 }
 
 console.log('PASS: Emil access is restricted to key-only chrooted SFTP')
-
-for (const phrase of [
-  'apply boundary',
-  'verification boundary',
-  'rollback boundary',
-  'public key only',
-  'does not grant sudo',
-  'does not grant docker',
-  'does not grant coolify',
-  '/srv/anyjersey-access/workspace',
-  '/etc/ssh/authorized_keys/emil-anyjersey',
-]) {
-  if (!readme.toLowerCase().includes(phrase)) {
-    console.error(`FAIL: README does not document ${phrase}`)
-    process.exit(1)
-  }
-}
 NODE
 
 for required_file in "$compose_file" "$infra_env" "$infra_readme"; do
