@@ -132,11 +132,117 @@ assertMatch(
 console.log('PASS: Medusa worker mode behaviour, mapping, validation, and templates')
 NODE
 
+access_provisioner="$repo_root/infra/access/provision-emil-sftp.sh"
+access_sshd_config="$repo_root/infra/access/60-emil-anyjersey.conf"
 compose_file="$repo_root/infra/compose.yml"
 infra_env="$repo_root/infra/.env.example"
 infra_readme="$repo_root/infra/README.md"
 storefront_env="$repo_root/spike/storefront/.env.template"
 storefront_dockerfile="$repo_root/spike/storefront/Dockerfile"
+
+for required_file in "$access_provisioner" "$access_sshd_config"; do
+  if [[ ! -f "$required_file" ]]; then
+    echo "FAIL: required access-control file is missing: $required_file" >&2
+    exit 1
+  fi
+done
+
+bash -n "$access_provisioner"
+
+node - "$access_provisioner" "$access_sshd_config" "$infra_readme" <<'NODE'
+const fs = require('node:fs')
+
+const [provisionerPath, sshdConfigPath, readmePath] = process.argv.slice(2)
+const provisioner = fs.readFileSync(provisionerPath, 'utf8')
+const sshdConfig = fs.readFileSync(sshdConfigPath, 'utf8')
+const readme = fs.readFileSync(readmePath, 'utf8')
+
+function requireMatch(description, pattern, source) {
+  if (!pattern.test(source)) {
+    console.error(`FAIL: ${description}`)
+    process.exit(1)
+  }
+}
+
+function requireBefore(description, earlier, later, source) {
+  const earlierIndex = source.indexOf(earlier)
+  const laterIndex = source.indexOf(later)
+  if (earlierIndex === -1 || laterIndex === -1 || earlierIndex >= laterIndex) {
+    console.error(`FAIL: ${description}`)
+    process.exit(1)
+  }
+}
+
+requireMatch('provisioner is root-only', /EUID[^\n]+-ne\s+0/, provisioner)
+requireMatch(
+  'provisioner requires exactly one non-empty input line',
+  /non_empty_lines[\s\S]*\$\{#non_empty_lines\[@\]\}[\s\S]*(?:-ne|!=)\s+1/,
+  provisioner
+)
+requireMatch('provisioner accepts only Ed25519 public keys', /ssh-ed25519/, provisioner)
+requireMatch('provisioner validates the public key with ssh-keygen', /ssh-keygen\s+-l\s+-f/, provisioner)
+requireMatch('provisioner creates the anyjersey group idempotently', /getent\s+group[\s\S]*groupadd[\s\S]*anyjersey/, provisioner)
+requireMatch('provisioner manages the emil-anyjersey account', /user(?:add|mod)[\s\S]*emil-anyjersey/, provisioner)
+requireMatch('provisioner locks the account password', /passwd\s+(?:--lock|-l)/, provisioner)
+requireMatch('provisioner assigns the /workspace home', /(?:--home|-d)\s+\/workspace/, provisioner)
+requireMatch('provisioner assigns the anyjersey primary group', /(?:--gid|-g)\s+anyjersey/, provisioner)
+requireMatch('provisioner selects the nologin shell', /\/usr\/sbin\/nologin/, provisioner)
+requireMatch('provisioner explicitly excludes sudo and docker groups', /for\s+denied_group\s+in\s+sudo\s+docker/, provisioner)
+requireMatch('provisioner owns the chroot as root', /chown\s+root:root\s+[^\n]*\/srv\/anyjersey-access/, provisioner)
+requireMatch('provisioner sets the chroot to mode 0755', /chmod\s+0755\s+[^\n]*\/srv\/anyjersey-access/, provisioner)
+requireMatch('provisioner makes only the workspace user-writable', /chown\s+emil-anyjersey:anyjersey\s+[^\n]*\/workspace/, provisioner)
+requireMatch('provisioner sets the workspace setgid mode', /chmod\s+2770\s+[^\n]*\/workspace/, provisioner)
+requireMatch('authorised key is stored outside the chroot', /\/etc\/ssh\/authorized_keys\/emil-anyjersey/, provisioner)
+requireMatch('authorised key is installed root-owned at mode 0600', /install\s+[^\n]*-o\s+root\s+-g\s+root\s+-m\s+0600/, provisioner)
+requireMatch('authorised key is prefixed restrict', /printf\s+['"]restrict %s\\n['"]/, provisioner)
+if (/(?:^|\n)\s*echo\s+.*(?:public_key|key_line)/m.test(provisioner)) {
+  console.error('FAIL: provisioner must never echo the submitted public key')
+  process.exit(1)
+}
+requireMatch('provisioner installs the tracked sshd snippet', /60-emil-anyjersey\.conf/, provisioner)
+requireMatch('provisioner validates sshd before reload', /sshd\s+-t/, provisioner)
+requireMatch('provisioner reloads the SSH service', /systemctl\s+reload\s+ssh/, provisioner)
+requireBefore('sshd validation precedes SSH reload', 'sshd -t', 'systemctl reload ssh', provisioner)
+requireMatch('failed sshd validation restores or removes the prior snippet', /if\s+!\s+sshd\s+-t[\s\S]*(?:cp|install)[\s\S]*previous|if\s+!\s+sshd\s+-t[\s\S]*rm\s+-f/, provisioner)
+
+const requiredSshdDirectives = [
+  /^Match User emil-anyjersey$/m,
+  /^\s+ChrootDirectory \/srv\/anyjersey-access$/m,
+  /^\s+ForceCommand internal-sftp -d \/workspace$/m,
+  /^\s+AuthorizedKeysFile \/etc\/ssh\/authorized_keys\/emil-anyjersey$/m,
+  /^\s+AuthenticationMethods publickey$/m,
+  /^\s+PubkeyAuthentication yes$/m,
+  /^\s+PasswordAuthentication no$/m,
+  /^\s+KbdInteractiveAuthentication no$/m,
+  /^\s+PermitTTY no$/m,
+  /^\s+AllowAgentForwarding no$/m,
+  /^\s+AllowTcpForwarding no$/m,
+  /^\s+X11Forwarding no$/m,
+  /^\s+PermitTunnel no$/m,
+]
+for (const pattern of requiredSshdDirectives) {
+  requireMatch(`sshd snippet is missing ${pattern}`, pattern, sshdConfig)
+}
+
+console.log('PASS: Emil access is restricted to key-only chrooted SFTP')
+
+for (const phrase of [
+  'apply boundary',
+  'verification boundary',
+  'rollback boundary',
+  'public key only',
+  'does not grant sudo',
+  'does not grant docker',
+  'does not grant coolify',
+  '/srv/anyjersey-access/workspace',
+  '/etc/ssh/authorized_keys/emil-anyjersey',
+]) {
+  if (!readme.toLowerCase().includes(phrase)) {
+    console.error(`FAIL: README does not document ${phrase}`)
+    process.exit(1)
+  }
+}
+NODE
 
 for required_file in "$compose_file" "$infra_env" "$infra_readme"; do
   if [[ ! -f "$required_file" ]]; then
