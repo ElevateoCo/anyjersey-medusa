@@ -14,7 +14,7 @@ const isProduction = (process.env.NODE_ENV || 'development') === 'production'
 type WorkerMode = 'shared' | 'server' | 'worker'
 
 const workerMode: WorkerMode = (() => {
-  const value = process.env.MEDUSA_WORKER_MODE || 'shared'
+  const value = process.env.MEDUSA_WORKER_MODE ?? 'shared'
 
   if (value !== 'shared' && value !== 'server' && value !== 'worker') {
     throw new Error(
