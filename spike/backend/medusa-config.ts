@@ -10,6 +10,21 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 // broke the integration suite, which runs as NODE_ENV=test. A guard that blocks CI is a
 // guard somebody deletes.
 const isProduction = (process.env.NODE_ENV || 'development') === 'production'
+
+type WorkerMode = 'shared' | 'server' | 'worker'
+
+const workerMode: WorkerMode = (() => {
+  const value = process.env.MEDUSA_WORKER_MODE || 'shared'
+
+  if (value !== 'shared' && value !== 'server' && value !== 'worker') {
+    throw new Error(
+      `MEDUSA_WORKER_MODE must be shared, server, or worker; received "${value}".`
+    )
+  }
+
+  return value
+})()
+
 if (isProduction && !process.env.STRIPE_WEBHOOK_SECRET) {
   throw new Error(
     'STRIPE_WEBHOOK_SECRET is required outside development: without it the Stripe ' +
@@ -116,6 +131,7 @@ module.exports = defineConfig({
     rbac: rbacEnabled,
   },
   projectConfig: {
+    workerMode,
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: process.env.REDIS_URL,
     http: {
