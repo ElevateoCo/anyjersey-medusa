@@ -174,6 +174,9 @@ for (const [description, text] of [
   ['the database restriction', 'no database'],
   ['the Infisical restriction', 'no Infisical'],
   ['the root-owned install location', 'root-owned `/opt/elevateo/anyjersey-infra/access`'],
+  ['the root-owned install-directory command', 'install -d -o root -g root -m 0755 /opt/elevateo/anyjersey-infra/access'],
+  ['the root-owned provisioner install mode', '-o root -g root -m 0755 infra/access/provision-emil-sftp.sh'],
+  ['the root-owned SSH-snippet install mode', '-o root -g root -m 0644 infra/access/60-emil-anyjersey.conf'],
   ['the tracked provisioner name', 'provision-emil-sftp.sh'],
   ['the tracked sshd snippet name', '60-emil-anyjersey.conf'],
   ['stdin key handling', 'secure public-key file through stdin'],
@@ -188,12 +191,19 @@ for (const [description, text] of [
   ['the primary-group verification', 'id -gn emil-anyjersey'],
   ['the supplementary-group verification', 'id -nG emil-anyjersey'],
   ['the filesystem-mode verification', "stat -c '%U:%G %a %n'"],
+  ['the provisioner install-mode verification', '/opt/elevateo/anyjersey-infra/access/provision-emil-sftp.sh'],
+  ['the SSH-snippet install-mode verification', '/opt/elevateo/anyjersey-infra/access/60-emil-anyjersey.conf'],
   ['fingerprint-only key verification', 'sudo ssh-keygen -lf /etc/ssh/authorized_keys/emil-anyjersey'],
   ['sshd syntax verification', 'sudo sshd -t'],
   ['effective Match verification', 'sudo sshd -T -C user=emil-anyjersey,host=localhost,addr=127.0.0.1'],
   ['SSH reload after authorised revocation', 'sudo systemctl reload ssh'],
 ]) {
   requireText(description, text)
+}
+
+if (!/sudo sh -c 'exec bash \/opt\/elevateo\/anyjersey-infra\/access\/provision-emil-sftp\.sh < \/root\/secure\/emil-anyjersey\.pub'/.test(section)) {
+  console.error('FAIL: README apply command must perform protected-key redirection inside a privileged shell')
+  process.exit(1)
 }
 
 if (/\b(?:cat|head|tail|sed|awk)\b[^\n]*\/etc\/ssh\/authorized_keys\/emil-anyjersey/i.test(section)) {

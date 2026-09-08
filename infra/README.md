@@ -105,13 +105,22 @@ Keep the two tracked definitions in the root-owned
 - `provision-emil-sftp.sh`
 - `60-emil-anyjersey.conf`
 
+From the repository root, install them with explicit root ownership and modes:
+
+```sh
+sudo install -d -o root -g root -m 0755 /opt/elevateo/anyjersey-infra/access
+sudo install -o root -g root -m 0755 infra/access/provision-emil-sftp.sh \
+  /opt/elevateo/anyjersey-infra/access/provision-emil-sftp.sh
+sudo install -o root -g root -m 0644 infra/access/60-emil-anyjersey.conf \
+  /opt/elevateo/anyjersey-infra/access/60-emil-anyjersey.conf
+```
+
 ### Apply boundary
 
 Run the provisioner only with a secure public-key file through stdin:
 
 ```sh
-sudo bash /opt/elevateo/anyjersey-infra/access/provision-emil-sftp.sh \
-  < /root/secure/emil-anyjersey.pub
+sudo sh -c 'exec bash /opt/elevateo/anyjersey-infra/access/provision-emil-sftp.sh < /root/secure/emil-anyjersey.pub'
 ```
 
 The input must contain exactly one valid Ed25519 public-key line. The key is
@@ -132,6 +141,8 @@ sudo passwd -S emil-anyjersey
 id -gn emil-anyjersey
 id -nG emil-anyjersey
 sudo stat -c '%U:%G %a %n' \
+  /opt/elevateo/anyjersey-infra/access/provision-emil-sftp.sh \
+  /opt/elevateo/anyjersey-infra/access/60-emil-anyjersey.conf \
   /srv/anyjersey-access \
   /srv/anyjersey-access/workspace \
   /etc/ssh/authorized_keys/emil-anyjersey \
@@ -144,9 +155,9 @@ sudo sshd -T -C user=emil-anyjersey,host=localhost,addr=127.0.0.1 \
 
 The password state must be locked, the primary group must be `anyjersey`, and
 the supplementary groups must not include `sudo` or `docker`. Expected modes
-are `root:root 755` for the chroot, `emil-anyjersey:anyjersey 2770` for the
-workspace, `root:root 600` for the authorised-key file, and `root:root 644` for
-the SSH snippet.
+are `root:root 755` for the installed provisioner and chroot, `root:root 644`
+for the tracked and active SSH snippets, `emil-anyjersey:anyjersey 2770` for
+the workspace, and `root:root 600` for the authorised-key file.
 
 ### Revocation and rollback boundary
 
