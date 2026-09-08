@@ -132,11 +132,82 @@ assertMatch(
 console.log('PASS: Medusa worker mode behaviour, mapping, validation, and templates')
 NODE
 
+infra_readme="$repo_root/infra/README.md"
+node - "$infra_readme" <<'NODE'
+const fs = require('node:fs')
+
+const readme = fs.readFileSync(process.argv[2], 'utf8')
+const heading = '## Scoped Emil SFTP access'
+const headingStart = readme.indexOf(heading)
+const sectionStart = headingStart === -1 ? -1 : headingStart + heading.length
+const nextHeading = sectionStart === -1 ? -1 : readme.indexOf('\n## ', sectionStart)
+const section = sectionStart === -1
+  ? undefined
+  : readme.slice(sectionStart, nextHeading === -1 ? undefined : nextHeading)
+
+function requireText(description, text) {
+  const normalisedSection = section?.toLowerCase().replace(/\s+/g, ' ')
+  const normalisedText = text.toLowerCase().replace(/\s+/g, ' ')
+  if (!normalisedSection?.includes(normalisedText)) {
+    console.error(`FAIL: scoped Emil SFTP documentation is missing ${description}`)
+    process.exit(1)
+  }
+}
+
+if (!section) {
+  console.error('FAIL: README is missing the Scoped Emil SFTP access section')
+  process.exit(1)
+}
+
+for (const [description, text] of [
+  ['the internal-SFTP-only boundary', 'internal-SFTP only'],
+  ['the chroot path', '/srv/anyjersey-access'],
+  ['the writable in-chroot workspace', 'writable /workspace'],
+  ['the shell restriction', 'no shell'],
+  ['the sudo restriction', 'no sudo'],
+  ['the Docker restriction', 'no Docker'],
+  ['the port-forwarding restriction', 'port forwarding'],
+  ['the tunnel restriction', 'tunnels'],
+  ['the agent-forwarding restriction', 'agent forwarding'],
+  ['the X11 restriction', 'X11 forwarding'],
+  ['the Coolify restriction', 'no Coolify'],
+  ['the database restriction', 'no database'],
+  ['the Infisical restriction', 'no Infisical'],
+  ['the root-owned install location', 'root-owned `/opt/elevateo/anyjersey-infra/access`'],
+  ['the tracked provisioner name', 'provision-emil-sftp.sh'],
+  ['the tracked sshd snippet name', '60-emil-anyjersey.conf'],
+  ['stdin key handling', 'secure public-key file through stdin'],
+  ['the no-print key rule', 'never printed'],
+  ['the no-commit key rule', 'never committed'],
+  ['idempotence', 'idempotent'],
+  ['transactional rollback', 'transactional'],
+  ['the prior-state rollback', 'prior key and snippet'],
+  ['the separate revocation authority', 'separately authorised root action'],
+  ['the absence of a revoke mode', 'no revocation mode'],
+  ['the password-state verification', 'sudo passwd -S emil-anyjersey'],
+  ['the primary-group verification', 'id -gn emil-anyjersey'],
+  ['the supplementary-group verification', 'id -nG emil-anyjersey'],
+  ['the filesystem-mode verification', "stat -c '%U:%G %a %n'"],
+  ['fingerprint-only key verification', 'sudo ssh-keygen -lf /etc/ssh/authorized_keys/emil-anyjersey'],
+  ['sshd syntax verification', 'sudo sshd -t'],
+  ['effective Match verification', 'sudo sshd -T -C user=emil-anyjersey,host=localhost,addr=127.0.0.1'],
+  ['SSH reload after authorised revocation', 'sudo systemctl reload ssh'],
+]) {
+  requireText(description, text)
+}
+
+if (/\b(?:cat|head|tail|sed|awk)\b[^\n]*\/etc\/ssh\/authorized_keys\/emil-anyjersey/i.test(section)) {
+  console.error('FAIL: README verification must not display the raw authorised key')
+  process.exit(1)
+}
+
+console.log('PASS: scoped Emil SFTP apply, verification, and revocation boundaries are documented')
+NODE
+
 access_provisioner="$repo_root/infra/access/provision-emil-sftp.sh"
 access_sshd_config="$repo_root/infra/access/60-emil-anyjersey.conf"
 compose_file="$repo_root/infra/compose.yml"
 infra_env="$repo_root/infra/.env.example"
-infra_readme="$repo_root/infra/README.md"
 storefront_env="$repo_root/spike/storefront/.env.template"
 storefront_dockerfile="$repo_root/spike/storefront/Dockerfile"
 

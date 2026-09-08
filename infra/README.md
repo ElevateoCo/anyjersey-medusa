@@ -89,6 +89,73 @@ row counts, admin login, a storefront read, and representative media objects.
 Record the backup identifier, Git SHA, timestamps and verification results.
 Repeat the restore drill after material schema or backup-system changes.
 
+## Scoped Emil SFTP access
+
+### Access boundary
+
+This account is internal-SFTP only. It is chrooted at
+`/srv/anyjersey-access`, with only the in-chroot `writable /workspace`
+directory owned by `emil-anyjersey:anyjersey`. It has no shell, no sudo, no
+Docker membership, and no port forwarding, tunnels, agent forwarding or X11
+forwarding. It grants no Coolify, no database and no Infisical privilege.
+
+Keep the two tracked definitions in the root-owned
+`/opt/elevateo/anyjersey-infra/access` directory:
+
+- `provision-emil-sftp.sh`
+- `60-emil-anyjersey.conf`
+
+### Apply boundary
+
+Run the provisioner only with a secure public-key file through stdin:
+
+```sh
+sudo bash /opt/elevateo/anyjersey-infra/access/provision-emil-sftp.sh \
+  < /root/secure/emil-anyjersey.pub
+```
+
+The input must contain exactly one valid Ed25519 public-key line. The key is
+never printed by the script and the input file is never committed. The script
+is idempotent. Its key and SSH-snippet update is transactional: it validates
+the new snippet before replacing the key, preserves the exact prior key and
+snippet, and restores both if SSH reload fails. It then validates the restored
+configuration and attempts to reload it before returning an error.
+
+### Read-only verification
+
+These commands inspect account state, group membership, ownership and modes,
+the key fingerprint, SSH syntax and the effective `Match` block. They do not
+display the raw public key.
+
+```sh
+sudo passwd -S emil-anyjersey
+id -gn emil-anyjersey
+id -nG emil-anyjersey
+sudo stat -c '%U:%G %a %n' \
+  /srv/anyjersey-access \
+  /srv/anyjersey-access/workspace \
+  /etc/ssh/authorized_keys/emil-anyjersey \
+  /etc/ssh/sshd_config.d/60-emil-anyjersey.conf
+sudo ssh-keygen -lf /etc/ssh/authorized_keys/emil-anyjersey
+sudo sshd -t
+sudo sshd -T -C user=emil-anyjersey,host=localhost,addr=127.0.0.1 \
+  | grep -E '^(chrootdirectory|forcecommand|authorizedkeysfile|authenticationmethods|pubkeyauthentication|passwordauthentication|kbdinteractiveauthentication|permittty|permittunnel|allowagentforwarding|allowtcpforwarding|x11forwarding) '
+```
+
+The password state must be locked, the primary group must be `anyjersey`, and
+the supplementary groups must not include `sudo` or `docker`. Expected modes
+are `root:root 755` for the chroot, `emil-anyjersey:anyjersey 2770` for the
+workspace, `root:root 600` for the authorised-key file, and `root:root 644` for
+the SSH snippet.
+
+### Revocation and rollback boundary
+
+The provisioner has no revocation mode. Removing the account, authorised key
+or SSH snippet is a separately authorised root action, never an automatic
+script mode. Preserve the workspace first when required, change only the
+explicitly approved targets, then run `sudo sshd -t` before
+`sudo systemctl reload ssh`.
+
 ## Render-only validation
 
 The repository validator renders both staging and production with dummy values
