@@ -1,0 +1,135 @@
+# Root .gitignore for the AnyJersey project.
+#
+# Pattern scoping matters here, because the repo holds a Python toolchain and two Node
+# apps side by side. A pattern with no slash — or only a trailing one — matches at every
+# depth, so `node_modules/` covers the root, the backend and the storefront alike. A
+# pattern with an interior slash is anchored to this file's directory, which is why the
+# path-specific rules below spell out their full path from the repo root.
+#
+# This is the only .gitignore in the project, and deliberately so. The Medusa backend and
+# the Next storefront each shipped one of their own, plus spike/ and tools/publish/; four
+# files covering one tree meant a rule could be tightened in one and missed in the others
+# — spike/backend/.gitignore ignored .env and .env.local but not .env.test, which is the
+# exact shape of that bug. Every pattern those four held is reproduced below.
+#
+# The cost of consolidating is that patterns are no longer relative to the app they
+# concern, so anything app-specific has to name its path from the repo root. Those are
+# grouped and commented where they appear.
+
+# ---------------------------------------------------------------------------
+# Secrets and environment
+# ---------------------------------------------------------------------------
+# Deny every .env by default, then re-admit only the files that are documentation rather
+# than configuration. A newly added variable therefore cannot reach the repo unless
+# somebody puts it in a template on purpose.
+.env
+.env.*
+!.env.template
+!.env.*.template
+!.env.example
+# Local-only values (localhost ports, JWT_SECRET=test) plus the comments recording why
+# the integration runner reads DB_* and not just DATABASE_URL. Committed so a fresh clone
+# can run the integration suite. Real credentials must never go in it.
+!.env.test
+
+# Keys and certificates, whatever they are called.
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.keystore
+id_rsa*
+id_ed25519*
+
+# ---------------------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------------------
+# ~1.2 GB across the three package roots.
+node_modules/
+.pnp
+.pnp.*
+# The project standardises on npm: root CI, all three backend Dockerfile stages and the
+# storefront build all run `npm ci`. Yarn's lockfile, .yarnrc.yml and pinned 4.12 release
+# were deleted rather than left to drift, so any .yarn/ that reappears is accidental.
+.yarn/
+# The npm lockfiles are deliberately absent from this file: `npm ci` fails without them.
+
+# ---------------------------------------------------------------------------
+# Build output and tool caches
+# ---------------------------------------------------------------------------
+dist/
+build/
+.next/
+.medusa/
+.turbo/
+.vercel
+*.tsbuildinfo
+# Rewritten by next dev/next build on every run.
+next-env.d.ts
+coverage/
+.nyc_output/
+
+# Medusa's local upload target: store content, not source.
+spike/backend/static/
+# Next's static-export target. Named in full to keep it distinct from tools/out.
+spike/storefront/out/
+
+# ---------------------------------------------------------------------------
+# Generated data and intermediates
+# ---------------------------------------------------------------------------
+# extract.py output — 42 MB of CSVs plus a 15 MB live-products.json, all rebuildable
+# from the backup archive. tools/README.md says to ignore it.
+tools/out/
+# md2html.py intermediates; build.py turns these into leaving-shopify.html.
+tools/publish/body.html
+tools/publish/toc.html
+# Built by tools/build_import_json.py from the 2026-08-18 backup archive, which lives
+# outside the repo (~/Downloads). A clone therefore cannot rebuild these and cannot seed
+# until the archive is present — the import path is documented in tools/README.md.
+spike/backend/src/scripts/catalog.json
+spike/backend/src/scripts/catalog-sync.json
+
+# Scratch state written by the spike runner.
+spike/spike-state.json
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# ---------------------------------------------------------------------------
+# Logs and runtime noise
+# ---------------------------------------------------------------------------
+*.log
+*.pid
+
+# ---------------------------------------------------------------------------
+# Editors and OS
+# ---------------------------------------------------------------------------
+# Shared editor settings are worth having in the repo; the rest of .vscode is personal.
+**/.vscode/*
+!**/.vscode/settings.json
+!**/.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# Per-machine Claude Code overrides. .claude/settings.json stays shared.
+.claude/settings.local.json

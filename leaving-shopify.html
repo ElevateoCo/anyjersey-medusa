@@ -1,0 +1,1164 @@
+<title>Leaving Shopify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#EDEFF1; --card:#FBFCFD; --card-2:#F4F6F8;
+  --ink:#141E29; --ink-2:#546374; --ink-3:#7C8B99;
+  --rule:#D3DAE1; --rule-2:#E2E7EC;
+  --accent:#A8761A; --accent-ink:#835C11; --accent-wash:#F3E9D3; --accent-line:#C9A15A;
+  --good:#3D6A56; --good-wash:#E2EDE7;
+  --risk:#9C4433; --risk-wash:#F6E4E0;
+  --shadow:0 1px 2px rgba(20,30,41,.05), 0 8px 24px -16px rgba(20,30,41,.18);
+  --serif:'Spectral',Georgia,'Times New Roman',serif;
+  --sans:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E151D; --card:#151E27; --card-2:#1A242E;
+    --ink:#E2E8EE; --ink-2:#94A3B1; --ink-3:#71818F;
+    --rule:#26323D; --rule-2:#1F2A34;
+    --accent:#D8A343; --accent-ink:#E3B968; --accent-wash:#2A2317; --accent-line:#7A6029;
+    --good:#6FA98C; --good-wash:#17251F;
+    --risk:#D2705E; --risk-wash:#2A1B18;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E151D; --card:#151E27; --card-2:#1A242E;
+  --ink:#E2E8EE; --ink-2:#94A3B1; --ink-3:#71818F;
+  --rule:#26323D; --rule-2:#1F2A34;
+  --accent:#D8A343; --accent-ink:#E3B968; --accent-wash:#2A2317; --accent-line:#7A6029;
+  --good:#6FA98C; --good-wash:#17251F;
+  --risk:#D2705E; --risk-wash:#2A1B18;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{animation:none!important;transition:none!important}}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--ink); text-decoration:none; border-bottom:1px solid var(--accent-line)}
+a:hover{color:var(--accent); border-bottom-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:2px}
+
+/* ---------- masthead ---------- */
+.masthead{
+  border-bottom:1px solid var(--rule); background:var(--card);
+  padding:clamp(2.2rem,5vw,3.6rem) clamp(1.2rem,4vw,3rem) 0;
+}
+.mast-inner{max-width:1240px; margin:0 auto}
+.stamp{
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent-ink); display:flex; flex-wrap:wrap; gap:.9rem; align-items:center;
+}
+.stamp .dot{width:4px;height:4px;background:var(--accent-line);border-radius:50%}
+h1{
+  font-family:var(--serif); font-weight:600; letter-spacing:-.015em;
+  font-size:clamp(2.4rem,6.5vw,4.1rem); line-height:1.02; text-wrap:balance;
+  margin:.7rem 0 .5rem;
+}
+.dek{
+  font-size:clamp(1.02rem,2.1vw,1.2rem); color:var(--ink-2); max-width:62ch;
+  margin:0 0 1.6rem; text-wrap:pretty;
+}
+.meta{
+  font-family:var(--mono); font-size:.75rem; color:var(--ink-3);
+  display:flex; flex-wrap:wrap; gap:.4rem 1.4rem; padding-bottom:1.8rem;
+  border-bottom:1px solid var(--rule-2);
+}
+.meta b{color:var(--ink-2); font-weight:500}
+
+/* verdict tiles */
+.verdict{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1px; background:var(--rule); border:1px solid var(--rule);
+  margin:1.8rem 0 0; border-bottom:none;
+}
+.tile{background:var(--card); padding:1.15rem 1.25rem 1.35rem}
+.tile .k{
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-3); display:block; margin-bottom:.55rem;
+}
+.tile .v{
+  font-family:var(--serif); font-weight:600; font-size:1.72rem; line-height:1.1;
+  font-variant-numeric:tabular-nums; letter-spacing:-.01em;
+}
+.tile .n{display:block; font-size:.8rem; color:var(--ink-2); margin-top:.4rem; line-height:1.45}
+.tile.hero{background:var(--accent-wash)}
+.tile.hero .v{color:var(--accent-ink); font-size:1.34rem}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1240px; margin:0 auto; padding:0 clamp(1.2rem,4vw,3rem)}
+.cols{display:grid; grid-template-columns:224px minmax(0,1fr); gap:clamp(2rem,4vw,3.5rem); align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- toc ---------- */
+.toc{position:sticky; top:0; padding:2.6rem 0 3rem; max-height:100vh; overflow-y:auto}
+.toc h2{
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); margin:0 0 .9rem; font-weight:500;
+}
+.toc ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column}
+.toc a{
+  display:grid; grid-template-columns:1.9rem 1fr; gap:.35rem; align-items:baseline;
+  padding:.34rem 0; border:0; font-size:.84rem; line-height:1.35; color:var(--ink-2);
+}
+.toc a:hover{color:var(--ink)}
+.toc .tnum{font-family:var(--mono); font-size:.7rem; color:var(--ink-3)}
+.toc .tdash{color:var(--rule)}
+.toc a.on{color:var(--ink); font-weight:600}
+.toc a.on .tnum{color:var(--accent)}
+@media (max-width:900px){
+  .toc{position:static; max-height:none; padding:1.8rem 0 0; border-bottom:1px solid var(--rule)}
+  .toc ol{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0 1.4rem}
+}
+
+/* ---------- document ---------- */
+main{padding:2.6rem 0 5rem; min-width:0}
+section{padding-bottom:2.8rem; margin-bottom:2.8rem; border-bottom:1px solid var(--rule-2)}
+section:last-of-type{border-bottom:0}
+section > *{max-width:68ch}
+h2{
+  font-family:var(--serif); font-weight:600; font-size:clamp(1.6rem,3.4vw,2.1rem);
+  line-height:1.15; letter-spacing:-.012em; text-wrap:balance;
+  margin:0 0 1.4rem; padding-bottom:.7rem; border-bottom:2px solid var(--accent-line);
+  display:flex; gap:.85rem; align-items:baseline; max-width:none;
+}
+.secnum{
+  font-family:var(--mono); font-size:.78rem; font-weight:500; color:var(--accent);
+  letter-spacing:.06em; flex:none; padding-top:.42em;
+}
+h3{
+  font-family:var(--sans); font-weight:600; font-size:1.06rem; letter-spacing:.005em;
+  margin:2.4rem 0 .8rem; color:var(--ink); text-wrap:balance;
+}
+h3::before{
+  content:''; display:block; width:22px; height:2px; background:var(--rule);
+  margin-bottom:.7rem;
+}
+p{margin:0 0 1.05rem; text-wrap:pretty}
+p.lede{
+  font-family:var(--serif); font-size:1.14rem; line-height:1.55; color:var(--ink);
+  border-left:2px solid var(--accent-line); padding-left:1.1rem; margin-bottom:1.4rem;
+}
+p.lede strong{font-weight:600}
+strong{font-weight:600}
+ul,ol{margin:0 0 1.15rem; padding-left:1.35rem}
+li{margin-bottom:.5rem; text-wrap:pretty}
+li > p{margin-bottom:.6rem}
+li ul{margin-top:.5rem; margin-bottom:.6rem}
+ol{counter-reset:none}
+ol > li::marker{font-family:var(--mono); font-size:.85em; color:var(--accent)}
+ul > li::marker{color:var(--ink-3)}
+
+/* checklist */
+ul.checklist{
+  list-style:none; padding:0; margin:0 0 1.3rem; max-width:none;
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:.1rem 1.6rem;
+}
+ul.checklist li{
+  position:relative; padding:.32rem 0 .32rem 1.6rem; margin:0;
+  font-size:.9rem; color:var(--ink-2); border-bottom:1px solid var(--rule-2);
+}
+ul.checklist li::before{
+  content:''; position:absolute; left:0; top:.72em; width:9px; height:9px;
+  border:1px solid var(--accent-line); border-radius:1px;
+}
+
+/* ---------- tables ---------- */
+.table-wrap{
+  overflow-x:auto; margin:0 0 1.6rem; max-width:none;
+  border:1px solid var(--rule); background:var(--card);
+  box-shadow:var(--shadow);
+}
+table{border-collapse:collapse; width:100%; font-size:.845rem; line-height:1.5}
+thead th{
+  position:sticky; top:0; background:var(--card-2); text-align:left; font-weight:600;
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-2); padding:.7rem .85rem; border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+tbody td{padding:.62rem .85rem; border-bottom:1px solid var(--rule-2); vertical-align:top; color:var(--ink-2)}
+tbody tr:last-child td{border-bottom:0}
+tbody td:first-child{color:var(--ink); font-weight:500}
+tbody td.num{
+  font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right;
+  white-space:nowrap; color:var(--ink);
+}
+tbody tr:hover td{background:var(--card-2)}
+tr.grouprow td{
+  background:var(--accent-wash); color:var(--accent-ink); font-family:var(--mono);
+  font-size:.7rem; letter-spacing:.09em; text-transform:uppercase; font-weight:500;
+  padding:.5rem .85rem;
+}
+tr.grouprow td strong{font-weight:500}
+tbody td strong{color:var(--ink)}
+
+/* chips */
+.pick{
+  display:inline-block; font-family:var(--mono); font-size:.6rem; letter-spacing:.1em;
+  text-transform:uppercase; padding:.16rem .42rem; border-radius:2px;
+  background:var(--accent); color:var(--card); font-weight:500; vertical-align:.08em;
+}
+.sev{
+  display:inline-block; font-family:var(--mono); font-size:.68rem; letter-spacing:.05em;
+  padding:.14rem .45rem; border-radius:2px; white-space:nowrap;
+}
+.sev-hi{background:var(--risk-wash); color:var(--risk)}
+.sev-md{background:var(--accent-wash); color:var(--accent-ink)}
+.sev-lo{background:var(--good-wash); color:var(--good)}
+
+/* ---------- code ---------- */
+code{
+  font-family:var(--mono); font-size:.855em; background:var(--card-2);
+  padding:.1em .32em; border-radius:2px; color:var(--ink);
+  border:1px solid var(--rule-2);
+}
+.codewrap{
+  overflow-x:auto; margin:0 0 1.5rem; max-width:none;
+  background:var(--card); border:1px solid var(--rule); border-left:2px solid var(--accent-line);
+}
+.codewrap pre{margin:0; padding:1.1rem 1.2rem}
+.codewrap code{
+  background:none; border:0; padding:0; font-size:.79rem; line-height:1.62;
+  color:var(--ink-2); white-space:pre;
+}
+
+/* callout: a finding that overturns an earlier recommendation */
+blockquote{
+  margin:0 0 1.5rem; padding:1.05rem 1.25rem; max-width:none;
+  background:var(--accent-wash); border-left:3px solid var(--accent);
+  color:var(--ink);
+}
+blockquote p{margin:0 0 .7rem; font-size:.95rem; line-height:1.6}
+blockquote p:last-child{margin-bottom:0}
+blockquote strong{color:var(--accent-ink)}
+blockquote code{background:var(--card); border-color:var(--accent-line)}
+
+footer{
+  border-top:1px solid var(--rule); background:var(--card);
+  padding:2rem clamp(1.2rem,4vw,3rem);
+}
+footer .fi{
+  max-width:1240px; margin:0 auto; font-family:var(--mono); font-size:.72rem;
+  color:var(--ink-3); display:flex; flex-wrap:wrap; gap:.5rem 1.6rem;
+}
+</style>
+
+<header class="masthead">
+  <div class="mast-inner">
+    <div class="stamp"><span>Research memo</span><span class="dot"></span><span>Roseyco &middot; new store</span><span class="dot"></span><span>21 Aug 2026</span></div>
+    <h1>Leaving Shopify</h1>
+    <p class="dek">What it actually takes to build and run an ecommerce store from the ground up &mdash; no Shopify, no hosted platform, Stripe as the processor &mdash; and why, at US card rates, the numbers do not justify it on cost alone.</p>
+    <div class="meta">
+      <span><b>Scope</b> US entity, selling to EU and UK</span>
+      <span><b>Unit</b> $64.99 jersey + $4.99 shipping</span>
+      <span><b>Figures verified</b> August 2026</span>
+    </div>
+    <div class="verdict">
+      <div class="tile"><span class="k">Build cost</span><span class="v">$60&ndash;110k</span><span class="n">15&ndash;27 engineer-weeks</span></div>
+      <div class="tile"><span class="k">Run cost at 10,000 orders/mo</span><span class="v">+$4,725</span><span class="n">per month <em>more</em> than Shopify, not less</span></div>
+      <div class="tile"><span class="k">Personalisation break-even</span><span class="v">$0.47</span><span class="n">margin per order clears the gap; a $15 upcharge beats it 6&times;</span></div>
+      <div class="tile hero"><span class="k">Verdict</span><span class="v">A revenue case, not a saving</span><span class="n">Build it for personalisation Shopify can't produce. There is no cost saving to fund it.</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="cols">
+    <nav class="toc" aria-label="Contents">
+      <h2>Contents</h2>
+      <ol>
+<li><a href="#sscope-and-assumptions"><span class="tnum tdash">—</span><span>Scope and assumptions</span></a></li>
+<li><a href="#sexecutive-summary"><span class="tnum">01</span><span>Executive summary</span></a></li>
+<li><a href="#swhat-shopify-actually-gives-you"><span class="tnum">02</span><span>What Shopify actually gives you</span></a></li>
+<li><a href="#sarchitecture-options"><span class="tnum">03</span><span>Architecture options</span></a></li>
+<li><a href="#srecommended-stack"><span class="tnum">04</span><span>Recommended stack</span></a></li>
+<li><a href="#spayments-deep-dive"><span class="tnum">05</span><span>Payments deep dive</span></a></li>
+<li><a href="#sdata-model"><span class="tnum">06</span><span>Data model</span></a></li>
+<li><a href="#stax-legal-and-compliance-floor"><span class="tnum">07</span><span>Tax, legal and compliance floor</span></a></li>
+<li><a href="#soperations-you-inherit"><span class="tnum">08</span><span>Operations you inherit</span></a></li>
+<li><a href="#scost-model"><span class="tnum">09</span><span>Cost model</span></a></li>
+<li><a href="#sphased-roadmap"><span class="tnum">10</span><span>Phased roadmap</span></a></li>
+<li><a href="#srisk-register"><span class="tnum">11</span><span>Risk register</span></a></li>
+<li><a href="#sstorefront-reference-the-glowfare-model"><span class="tnum">12</span><span>Storefront reference: the Glowfare model</span></a></li>
+<li><a href="#scatalog-data-readiness"><span class="tnum">13</span><span>Catalog data readiness</span></a></li>
+<li><a href="#sshipping-economics-and-the-rate-model"><span class="tnum">14</span><span>Shipping economics and the rate model</span></a></li>
+<li><a href="#sadmin-parity-with-shopify"><span class="tnum">15</span><span>Admin parity with Shopify</span></a></li>
+<li><a href="#ssources"><span class="tnum">16</span><span>Sources</span></a></li>
+<li><a href="#scaveats"><span class="tnum tdash">—</span><span>Caveats</span></a></li>
+      </ol>
+    </nav>
+    <main>
+<section id="sscope-and-assumptions">
+<h2><span>Scope and assumptions</span></h2>
+<p>This document answers one question: what does it actually take to build and run an ecommerce store from the ground up, without Shopify or any comparable hosted platform, with Stripe as the primary payment processor?</p>
+<p>Assumptions baked in, stated up front so you can adjust:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Assumption</th><th>Value</th><th>Why it matters</th></tr></thead>
+<tbody>
+<tr><td>Merchant establishment</td><td><strong>United States</strong></td><td>Sets card rates, tax regime, consumer law, and — because the seller sits outside the EU — the import VAT and product-safety rules that apply to EU orders</td></tr>
+<tr><td>Primary market</td><td>US, USD</td><td>Stripe US card pricing applies; state sales tax rather than VAT</td></tr>
+<tr><td>Secondary markets</td><td><strong>EU and UK</strong>, shipped from the US</td><td>Import VAT (IOSS / UK £135), customs duty, GDPR, GPSR, EAA all apply to those orders</td></tr>
+<tr><td>Goods</td><td>Physical apparel, shipped B2C</td><td>Distance-selling rules, withdrawal rights, product-safety traceability</td></tr>
+<tr><td>Product price</td><td><strong>$64.99</strong></td><td>A jersey. Single price point across the catalog</td></tr>
+<tr><td>Shipping charged</td><td><strong>$4.99</strong></td><td>Charged to the customer, and <strong>processed by Stripe</strong>, so it carries card fees</td></tr>
+<tr><td>Discounts</td><td>Applied</td><td>Deepen the effective card rate, and trigger reference-pricing rules (§7.10)</td></tr>
+<tr><td>Average processed amount</td><td><strong>~$67</strong></td><td>$69.98 gross, less blended discounting. Drives the cost model (§9)</td></tr>
+<tr><td>Team</td><td>1–2 engineers, no dedicated ops or SRE</td><td>Determines what "run it yourself" realistically costs</td></tr>
+</tbody></table></div>
+<p>This is a US-established merchant selling internationally. That is the most demanding configuration for compliance: you carry the US regime in full <strong>and</strong> the EU/UK regime for every cross-border order, without the EU-establishment shortcuts (OSS, no Article 27 representative, no GPSR Responsible Person) that a Danish entity would have. §7 is sized accordingly, and it is the largest section in this document for that reason.</p>
+<p>Where the answer differs materially for a US or UK merchant, it is noted inline.</p>
+<p>Every price, fee, threshold and legal deadline in this document is sourced in §16. Figures were verified in August 2026; payment and SaaS pricing changes often, so re-check before committing budget.</p>
+</section>
+<section id="sexecutive-summary">
+<h2><span class="secnum">01</span><span>Executive summary</span></h2>
+<p><strong>Building it yourself is technically achievable and, on cost alone, a losing trade.</strong> The software is roughly 21 engineer-weeks using Stripe Checkout and an open-source commerce core. But at US card rates the platform saving that would fund it does not exist.</p>
+<p>The reason is simple arithmetic. On a $64.99 jersey plus $4.99 shipping — $69.98 processed — Stripe's standard US rate of <strong>2.9% + $0.30</strong> costs <strong>$2.33</strong>. Shopify Advanced, at <strong>2.4% + $0.30</strong>, costs <strong>$1.98</strong>. <strong>You pay roughly $0.30–0.35 more per order for the privilege of leaving.</strong> Shopify Payments charges 2.9% on Basic, 2.7% on Grow and 2.4% on Advanced, so the platform fee buys a lower card rate; international orders make it worse, with Stripe adding +1.5% for a non-US card and +1% for conversion (5.4% + $0.30 on a European card paid in euros).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Orders / month</th><th>Shopify + apps</th><th>Own stack, managed</th><th>Own stack, optimised</th><th>Difference</th></tr></thead>
+<tbody>
+<tr><td class="num">100</td><td class="num">~$463</td><td class="num">~$435</td><td class="num">~$356</td><td><strong>$107 cheaper</strong></td></tr>
+<tr><td class="num">1,000</td><td class="num">~$2,714</td><td class="num">~$3,166</td><td class="num">~$2,691</td><td><strong>$23 cheaper</strong></td></tr>
+<tr><td class="num">10,000</td><td class="num">~$20,980</td><td class="num">~$29,725</td><td class="num">~$25,705</td><td><strong>$4,725 more expensive</strong></td></tr>
+</tbody></table></div>
+<p>Read that table as a shape, not three numbers: at low and mid volume it is a wash — $107 and $23 a month are noise — and at scale it goes decisively negative, <strong>before</strong> counting the ~$60,000–110,000 build or the 10–20 hours/month of maintenance. There is no payback period to calculate, because there is no saving to pay anything back.</p>
+<p><strong>That does not kill the project — it relocates the justification entirely onto personalisation.</strong> Name-and-number printing is confirmed as core to v1, and the arithmetic is favourable: at 10,000 orders/month the own stack costs about <strong>$4,725/month more</strong>, which personalisation clears if it adds just <strong>$0.47 of margin per order</strong>. A $15 name-and-number upcharge at a 20% attach rate produces roughly $30,000/month of revenue — more than six times the bar. So the business case is real; it is simply a <em>revenue</em> case, not a cost-saving one, and it should be written down that way before anyone commits budget.</p>
+<p><strong>Shipping is not solved</strong> (§14). $4.99 is roughly break-even domestically at 8 oz and loses money at 1 lb, and internationally a parcel costs <strong>$25–37</strong> — 38–57% of the product price. A $64.99 jersey lands at about <strong>$112 in the EU</strong> once VAT and the post-July-2026 €3 duty are added. International needs a zone rate card, not a flat rate.</p>
+<p><strong>One pricing caution up front.</strong> Discounts cost more than their headline percentage: the fixed $0.30 does not shrink with the discount, so a 20% off code lifts your effective card rate from 3.33% to 3.43% on top of the $13.00 of revenue it gives away. Prefer free-shipping thresholds, multi-buy and free personalisation upgrades over straight percentage-off (§9.1, §12.4) — and whatever compare-at price you display has to be a price you genuinely charged (§7.10).</p>
+<p><strong>One lever worth pulling first.</strong> Stripe offers custom interchange-plus pricing above meaningful volume. Negotiating that rate <em>before</em> committing to the build is the single cheapest thing on this list, because it is the only thing that closes the gap on processing.</p>
+<p><strong>Compliance is the real cost of selling internationally from the US</strong> (§7). Three items are hard gates rather than best practices, and each one blocks EU revenue until it exists: an <strong>IOSS registration with an EU intermediary</strong>, a <strong>GDPR Article 27 EU representative</strong>, and a <strong>GPSR EU Responsible Person</strong> — without the last of these you cannot lawfully place apparel on the EU market at all. Add US economic nexus across 45 states, 20 state privacy laws, Global Privacy Control handling in 12 of them, WCAG 2.1 AA, and the FTC's reviews rule at $51,744 per violation.</p>
+<p><strong>Storefront direction</strong> (§12): benchmarked against <a href="https://glowfare.com">glowfare.com</a> — which is itself a Shopify store whose entire advantage sits in its offer construction and app stack, not its platform. Take its architecture, and note carefully which of its conversion tactics are unlawful in the EU <em>and</em> now actionable in the US.</p>
+<p><strong>The recommended route if you proceed</strong> (§3, §4): do not write commerce primitives from scratch. Take <strong>Medusa v2</strong> as the commerce core, <strong>Next.js</strong> as the storefront, <strong>Stripe Checkout Sessions</strong> as the payment step, and self-host on a managed platform. This gets you ~70% of Shopify's commerce surface for free while leaving every part of it modifiable — which is the only reason to leave Shopify in the first place.</p>
+</section>
+<section id="swhat-shopify-actually-gives-you">
+<h2><span class="secnum">02</span><span>What Shopify actually gives you</span></h2>
+<p>The single largest cause of failed platform migrations is discovering the scope late. Shopify's monthly fee buys a large amount of unglamorous machinery. Every line below has to be replaced, bought, or consciously dropped.</p>
+<h3>Storefront and content</h3>
+<ul class="checklist"><li>Product listing pages, filtering, sorting, pagination</li><li>Product detail pages with variant selection and per-variant media</li><li>Collections — manual, and automated by rule</li><li>Search with typo tolerance, synonyms, faceting</li><li>CMS for pages (about, FAQ, shipping policy) and a blog</li><li>Navigation and menu management without a deploy</li><li>Image transformation, responsive srcsets, CDN delivery, WebP/AVIF</li><li>SEO: canonical URLs, sitemaps, structured data, meta management, redirect table</li><li>Multi-language and multi-currency presentment</li></ul>
+<h3>Commerce core</h3>
+<ul class="checklist"><li>Product / variant / option model with per-variant SKU, price, weight, barcode</li><li>Inventory tracking across locations, with reservation so you don't oversell</li><li>Cart persistence across devices and sessions</li><li>Checkout: addresses, validation, shipping rate selection, tax, totals</li><li>Discount codes, automatic discounts, quantity breaks, free shipping thresholds</li><li>Gift cards (and the liability accounting behind them)</li><li>Customer accounts, order history, saved addresses, passwordless login</li><li>Draft orders and manual/phone orders</li></ul>
+<h3>Payments and money</h3>
+<ul class="checklist"><li>Payment processing with SCA/3DS</li><li>Local payment methods per market (Apple/Google Pay, PayPal, BNPL, iDEAL, MobilePay)</li><li>Fraud screening and rules</li><li>Chargeback and dispute handling workflow</li><li>Refunds, partial refunds, store credit</li><li>Tax calculation per destination, with correct VAT treatment</li><li>Invoices and receipts that satisfy EU invoicing rules</li><li>Payout reconciliation into bookkeeping</li></ul>
+<h3>Fulfilment and post-purchase</h3>
+<ul class="checklist"><li>Live shipping rates, or a rate table you maintain</li><li>Label generation and carrier handover</li><li>Pickup point selection (mandatory in DK — GLS/PostNord parcel shops)</li><li>Tracking numbers pushed back to the customer</li><li>Shipping confirmation and delivery notification emails</li><li>Returns portal, RMA numbers, return labels, restocking</li><li>Abandoned cart recovery</li><li>Transactional email deliverability (SPF, DKIM, DMARC, warm IPs)</li><li>Marketing email and segmentation</li></ul>
+<h3>Operations</h3>
+<ul class="checklist"><li>Admin UI that a non-technical colleague can run the business from</li><li>Roles and permissions</li><li>Analytics: revenue, AOV, conversion funnel, product performance</li><li>Hosting, CDN, TLS, DDoS protection, autoscaling</li><li>Backups, tested restores, point-in-time recovery</li><li>Uptime monitoring, error tracking, on-call</li><li>Staging environment and safe deploys</li><li>PCI DSS attestation</li><li>GDPR data map, DPAs, deletion and export flows</li><li>Accessibility conformance (WCAG 2.1 AA)</li><li>An app ecosystem for everything you didn't think of</li></ul>
+<p>That is roughly 60 line items. Shopify Advanced costs $399/month. Read that list again with that number in mind — the platform fee is not the expensive part of ecommerce.</p>
+</section>
+<section id="sarchitecture-options">
+<h2><span class="secnum">03</span><span>Architecture options</span></h2>
+<p>Four honest routes, from most to least work.</p>
+<h3>Option A — Fully bespoke</h3>
+<p>Next.js + Postgres + Stripe, every commerce primitive written by you.</p>
+<ul><li><strong>Build:</strong> 30–40+ engineer-weeks to Shopify parity. 8–12 weeks to a thin MVP that will hurt later.</li><li><strong>You own:</strong> cart maths, inventory reservation, order state machine, tax rounding, discount stacking, admin UI. All of it is well-understood and all of it is fiddly. Tax rounding and inventory reservation in particular are where homegrown systems quietly lose money.</li><li><strong>Worth it when:</strong> your commerce model is genuinely unlike a normal store, so a commerce framework's assumptions fight you more than they help.</li><li><strong>Verdict:</strong> Not recommended. You will spend most of your budget rebuilding solved problems.</li></ul>
+<h3>Option B — Open-source commerce core + custom storefront <span class="pick" aria-label="recommended">pick</span></h3>
+<p>A self-hostable commerce backend supplies catalog, cart, orders, payments, fulfilment, promotions and an admin dashboard. You build the storefront and your differentiating logic on top.</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th><strong>Medusa v2</strong></th><th><strong>Vendure</strong></th><th><strong>Saleor</strong></th></tr></thead>
+<tbody>
+<tr><td>Stack</td><td>Node.js / TypeScript</td><td>NestJS / TypeScript</td><td>Python / Django</td></tr>
+<tr><td>API</td><td>REST + JS SDK</td><td>GraphQL</td><td>GraphQL-first</td></tr>
+<tr><td>Extension model</td><td>Modules (TS classes, clear contract)</td><td>Plugins (typed lifecycle hooks)</td><td>Webhook "apps" as separate services</td></tr>
+<tr><td>Admin included</td><td>Yes</td><td>Yes</td><td>Yes (dashboard)</td></tr>
+<tr><td>Payments</td><td>Official Stripe module, swappable</td><td>Plugin-based providers</td><td>Stripe/Adyen/Braintree apps</td></tr>
+<tr><td>Strength</td><td>Fast to customise, JS-native, largest momentum</td><td>Strong B2B, multi-channel, type safety</td><td>Enterprise readiness, multi-warehouse</td></tr>
+<tr><td>Watch out for</td><td>v1→v2 was a near-rewrite; some enterprise features still maturing</td><td>Smaller ecosystem</td><td>Python stack alongside a JS frontend; app-based payments add moving parts</td></tr>
+</tbody></table></div>
+<ul><li><strong>Build:</strong> 14–18 engineer-weeks to launch.</li><li><strong>Verdict:</strong> <strong>This is the recommendation.</strong> Medusa v2 if the team is TypeScript-first (it is); Vendure as the second choice if you need heavier B2B or prefer GraphQL end to end.</li></ul>
+<h3>Option C — Headless SaaS backend + own frontend</h3>
+<p>Keep a hosted commerce backend (Shopify's Storefront API, BigCommerce, Swell, commercetools) and build only the frontend. Excluded by the brief, but name it explicitly: it delivers most of the front-end freedom people actually want from "leaving Shopify" at a fraction of the cost, while keeping PCI, tax, fraud and uptime as someone else's problem. If the real motivation turns out to be "the theme constrains us," this is the cheaper answer and it deserves a deliberate rejection rather than a silent one.</p>
+<h3>Option D — Own storefront + Stripe Checkout only</h3>
+<p>Your app owns catalog and cart; the payment step redirects to Stripe-hosted Checkout, which supplies tax, discounts, shipping selection, addresses and receipts. You still build orders, fulfilment and admin.</p>
+<ul><li><strong>Build:</strong> 8–10 engineer-weeks.</li><li><strong>Verdict:</strong> The right <em>first phase</em>, not the destination. Ship this, then grow into Option B's admin and fulfilment surface. Also the best way to de-risk the payment path early.</li></ul>
+<h3>Recommendation</h3>
+<p><strong>Option B, sequenced through Option D.</strong> Stand up Medusa v2, put Stripe Checkout Sessions in front of the payment step from day one, and treat the custom storefront as the thing you actually invest design effort in.</p>
+</section>
+<section id="srecommended-stack">
+<h2><span class="secnum">04</span><span>Recommended stack</span></h2>
+<p>One pick per layer, with a named alternative. Nothing here is exotic; boring choices are correct choices when you are already taking on this much scope.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Layer</th><th>Pick</th><th>Alternative</th><th>Reasoning</th></tr></thead>
+<tbody>
+<tr><td>Commerce core</td><td>Medusa v2</td><td>Vendure</td><td>TypeScript, modular, admin dashboard included, official Stripe module</td></tr>
+<tr><td>Storefront</td><td>Next.js (App Router, React Server Components)</td><td>Remix / Nuxt</td><td>ISR for product pages gives Shopify-grade TTFB; large ecosystem</td></tr>
+<tr><td>Database</td><td>Postgres (managed: Neon or Supabase)</td><td>Self-hosted Postgres on Hetzner</td><td>Transactional integrity is non-negotiable for money and inventory</td></tr>
+<tr><td>Data access</td><td>Medusa's own layer; Drizzle for custom tables</td><td>Prisma</td><td>Drizzle's SQL-first model suits money maths and reporting queries</td></tr>
+<tr><td>Cache / queue</td><td>Redis (Upstash or self-hosted) + BullMQ</td><td>Postgres-backed queue</td><td>Needed for webhooks, emails, label generation, index sync</td></tr>
+<tr><td>Hosting — storefront</td><td>Vercel</td><td>Coolify on Hetzner</td><td>Vercel until bandwidth bills bite (§9); Hetzner is 10–20× cheaper with more ops</td></tr>
+<tr><td>Hosting — backend</td><td>Railway or Medusa Cloud</td><td>Hetzner + Docker</td><td>Keep the money-handling service somewhere you can see and restart</td></tr>
+<tr><td>Payments</td><td>Stripe (Checkout Sessions)</td><td>Mollie</td><td>See §5</td></tr>
+<tr><td>Tax</td><td>Stripe Tax (0.5% of volume)</td><td>Own engine + adviser</td><td>Buy it initially. At 10,000 orders/mo it is $3,250/mo, but US 45-state nexus plus EU/UK import VAT makes building it a real project (§7.1, §9.2)</td></tr>
+<tr><td>Search</td><td>Typesense or Meilisearch (self-hosted)</td><td>Algolia</td><td>5–10× cheaper than Algolia at store scale; both self-hostable free</td></tr>
+<tr><td>Media / CDN</td><td>Cloudflare R2 + Images</td><td>Cloudinary</td><td>Zero egress fees on R2 matters for an image-heavy jersey catalog</td></tr>
+<tr><td>Transactional email</td><td>Postmark</td><td>Resend</td><td>Deliverability specialist; order confirmations must not land in spam</td></tr>
+<tr><td>Marketing email</td><td>Omnisend or Brevo</td><td>Klaviyo</td><td>Klaviyo is best-in-class and priced accordingly (~$1,380/mo at 100k profiles)</td></tr>
+<tr><td>Content / CMS</td><td>Payload or Sanity</td><td>Markdown in the repo</td><td>Non-engineers need to edit pages without a deploy</td></tr>
+<tr><td>Auth</td><td>Better Auth or Medusa's customer auth</td><td>Clerk</td><td>Customer accounts are simple; don't outsource a core object</td></tr>
+<tr><td>Shipping</td><td>Shippo or EasyPost</td><td>ShipStation</td><td>One API covers USPS, UPS, FedEx, DHL domestic plus international; rate shopping, labels, customs docs. Shipmondo only helps if you later ship from an EU hub</td></tr>
+<tr><td>Observability</td><td>Sentry + Better Stack (uptime + logs)</td><td>Grafana Cloud</td><td>You are now the on-call rotation; you need to know before customers tell you</td></tr>
+<tr><td>Analytics</td><td>Plausible or PostHog</td><td>GA4</td><td>Cookie-consent friendly; PostHog if you want funnels and session replay</td></tr>
+<tr><td>Accessibility</td><td>axe-core in CI + manual audit</td><td>Overlay widget</td><td>Overlays do not achieve conformance and attract enforcement attention. Required by the EAA and prudent against ADA suits (§7.9)</td></tr>
+<tr><td>Compliance vendors</td><td>IOSS intermediary, Art 27 rep, GPSR Responsible Person</td><td>—</td><td>Not optional and not engineering — see §7.2, §7.6, §7.8 and the run cost in §9.4</td></tr>
+</tbody></table></div>
+</section>
+<section id="spayments-deep-dive">
+<h2><span class="secnum">05</span><span>Payments deep dive</span></h2>
+<h3>5.1 Choosing a Stripe integration path</h3>
+<p>Stripe's own current guidance is unambiguous and worth following: <strong>use the Checkout Sessions API, not raw PaymentIntents.</strong></p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th><strong>Checkout Sessions</strong> <span class="pick" aria-label="recommended">pick</span></th><th><strong>Payment Intents</strong></th></tr></thead>
+<tbody>
+<tr><td>Tax calculation</td><td>Built in — <code>automatic_tax.enabled = true</code></td><td>Separate Tax API integration, wired by hand</td></tr>
+<tr><td>Discounts / coupons</td><td>Built in</td><td>You calculate them</td></tr>
+<tr><td>Shipping cost</td><td>Built in</td><td>You calculate it</td></tr>
+<tr><td>Address collection</td><td>Built in (billing + shipping)</td><td>You build it</td></tr>
+<tr><td>Receipts / order summary</td><td>Built in</td><td>You build it</td></tr>
+<tr><td>Session expiry</td><td>Automatic after 24h</td><td>None — you build cleanup</td></tr>
+<tr><td>Webhook events</td><td>Full checkout lifecycle</td><td>Payment status only</td></tr>
+<tr><td>Adaptive Pricing</td><td>Available</td><td>Significant effort to replicate</td></tr>
+<tr><td>UI options</td><td>Full-page hosted, embedded form, or Elements</td><td>Elements only</td></tr>
+</tbody></table></div>
+<p>PaymentIntents is the right choice only if you intend to own every part of checkout state and rebuild discount, tax, subscription and currency-conversion logic yourself. For a store of this size that is a poor trade.</p>
+<blockquote><p><strong>⚠ Spike finding — this recommendation does not survive contact with Medusa.</strong> Medusa 2.18's Stripe provider is <strong>PaymentIntents + Elements</strong>, not Checkout Sessions: it creates a PaymentIntent, hands the storefront a <code>client_secret</code>, and the storefront confirms it with Stripe's <code>PaymentElement</code>. Verified in the Phase 0 spike (<code>spike/</code>).</p><p>The functional case for Checkout Sessions was that it supplies tax, discounts, shipping, addresses and receipts so you do not rebuild them. <strong>With Medusa you are not rebuilding them — Medusa owns them.</strong> So most of the argument evaporates, and what remains is a PCI question: Elements puts the card iframe on your domain, moving you from <strong>SAQ A to SAQ A-EP</strong> (§7.5) and making requirements 6.4.3 and 11.6.1 materially heavier.</p><p><strong>Recommendation: accept Elements and budget the script-control work</strong> — a strict CSP, SRI on third-party scripts, a script inventory in version control, and tamper monitoring. A custom provider redirecting to Stripe Checkout would keep SAQ A, but it means maintaining a payment provider against the ecosystem's grain for a compliance gain that disciplined script control also achieves.</p></blockquote>
+<p class="lede"><strong>Three UI shapes, in order of preference:</strong></p>
+<ol><li><strong>Hosted full-page Checkout</strong> — redirect to Stripe. Least code, best conversion optimisation maintained by Stripe, cleanest PCI position (SAQ A). Start here.</li><li><strong>Embedded Checkout form</strong> — Stripe's prebuilt form inside your page, customer stays on your domain. Slightly more PCI scope.</li><li><strong>Elements / Payment Element</strong> — you design the page, Stripe renders the card fields in an iframe. Maximum design control, most work, and pushes you toward SAQ A-EP (§7.5).</li></ol>
+<p>Enable <strong>dynamic payment methods</strong> so Stripe orders and shows the right methods per customer locale rather than you hardcoding a list, and consider <strong>Link</strong> for returning-customer speed.</p>
+<h3>5.2 The payment lifecycle, end to end</h3>
+<div class="codewrap"><pre><code> customer clicks "Pay"
+        │
+        ▼
+ [your server]  create Checkout Session (idempotency key = cart id + revision)
+        │        ├─ line items priced from YOUR database, never from the client
+        │        ├─ inventory reserved with a TTL
+        │        └─ automatic_tax enabled, shipping options attached
+        ▼
+ [Stripe]  hosted checkout → SCA / 3DS challenge → authorisation
+        │
+        ├──▶ browser redirected to /checkout/success?session_id=…
+        │       ⚠ display only. NEVER create the order here.
+        │
+        └──▶ webhook: checkout.session.completed
+                     │
+                     ▼
+             [your server]  verify signature → dedupe on event.id → in ONE transaction:
+                     create order (price snapshot), commit inventory reservation,
+                     release cart → enqueue: confirmation email, label, index update
+                     │
+                     ▼
+             payment_intent.succeeded / .payment_failed
+             charge.refunded  → refund record
+             charge.dispute.created → freeze fulfilment, alert</code></pre></div>
+<p class="lede"><strong>The five rules that prevent almost every payment bug:</strong></p>
+<ol><li><strong>Price on the server.</strong> Accept a variant ID and quantity from the browser. Nothing else. Never accept an amount.</li><li><strong>The order is created by the webhook, not the browser.</strong> The success redirect can be closed, blocked, or never reached. The webhook is the only reliable signal.</li><li><strong>Verify the signature, then dedupe on <code>event.id</code>.</strong> Stripe retries; you will receive duplicates. A unique index on the event ID is the whole defence.</li><li><strong>Assume out-of-order delivery.</strong> <code>payment_intent.succeeded</code> can arrive before <code>checkout.session.completed</code>. Handlers must be commutative — check current state, don't assume a sequence.</li><li><strong>Use idempotency keys on every write to Stripe,</strong> derived from your own IDs, so a retried request never double-charges.</li></ol>
+<p>A correct handler is roughly this shape:</p>
+<div class="codewrap"><pre class="lang-ts"><code>// app/api/webhooks/stripe/route.ts  — raw body, no body parser
+export async function POST(req: Request) {
+  const sig = req.headers.get('stripe-signature')!
+  const raw = await req.text()
+
+  let event: Stripe.Event
+  try {
+    event = stripe.webhooks.constructEvent(raw, sig, process.env.STRIPE_WEBHOOK_SECRET!)
+  } catch {
+    return new Response('bad signature', { status: 400 })   // 400 = do not retry
+  }
+
+  // Dedupe + durable record BEFORE doing any work.
+  const inserted = await db.insert(webhookEvents)
+    .values({ id: event.id, type: event.type, payload: event })
+    .onConflictDoNothing()
+    .returning()
+
+  if (inserted.length === 0) return new Response('ok')       // already seen
+
+  await queue.add('stripe-event', { id: event.id })          // process async
+  return new Response('ok')                                  // ack fast, &lt; 5s
+}</code></pre></div>
+<p>Ack fast, process in a worker. Doing the work inline is how you end up with Stripe retry storms and duplicate orders.</p>
+<h3>5.3 Provider comparison</h3>
+<p>Rates for a <strong>US-established</strong> merchant, verified August 2026.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Provider</th><th>Domestic cards</th><th>International card</th><th>Currency conversion</th><th>Fixed cost</th><th>Fit</th></tr></thead>
+<tbody>
+<tr><td><strong>Stripe</strong></td><td><strong>2.9% + $0.30</strong></td><td><strong>+1.5%</strong></td><td><strong>+1%</strong></td><td>None</td><td>Best docs and SDKs, Tax/Radar/Billing in one place. Custom interchange-plus available at volume — ask.</td></tr>
+<tr><td><strong>PayPal / Braintree</strong></td><td>2.9% + $0.49 (PayPal checkout)</td><td class="num">+1.5%</td><td class="num">+3–4%</td><td>None</td><td>Add as a <em>method</em>, not as your processor. Materially worse FX.</td></tr>
+<tr><td><strong>Adyen</strong></td><td>Interchange++ plus per-transaction fee</td><td>Passed through</td><td>Competitive</td><td>Enterprise contract, minimums</td><td>Genuinely cheaper above roughly $1M/yr processed. Worth a quote at that point, not before.</td></tr>
+<tr><td><strong>Shopify Payments</strong> (for reference)</td><td>2.9% / 2.7% / <strong>2.4%</strong> by plan</td><td>Cross-border fee applies</td><td>Conversion fee applies</td><td>Plan fee</td><td>The benchmark you have to beat, and on Advanced you do not</td></tr>
+<tr><td><strong>Mollie</strong></td><td>—</td><td>—</td><td>—</td><td>None</td><td>EU-established merchants only; not available to a US entity</td></tr>
+</tbody></table></div>
+<p>Note the asymmetry that drives §9: Shopify's <em>plan</em> buys you a lower card rate, so leaving the platform means paying more per transaction unless you negotiate. Both columns carry international surcharges — Shopify Payments also levies cross-border and conversion fees — so the international penalty is not unique to Stripe. The structural point stands: <strong>2.4% beats 2.9%.</strong></p>
+<p><strong>Recommendation: Stripe, with a custom rate negotiated before launch.</strong> The developer experience, webhook reliability and bundled Tax and Radar are worth real money, and interchange-plus pricing is the lever that makes the economics defensible. Revisit Adyen above ~$1M/yr processed.</p>
+<h3>5.4 Payment methods by market</h3>
+<p>Method coverage is a conversion issue, and it differs sharply by destination.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Market</th><th>Enable</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td><strong>US</strong></td><td>Cards, <strong>Apple Pay / Google Pay</strong>, PayPal, <strong>Affirm / Afterpay / Klarna</strong>, Cash App Pay, Link</td><td>Wallets carry mobile conversion; BNPL lifts AOV on apparel</td></tr>
+<tr><td><strong>EU</strong></td><td>Cards, Apple/Google Pay, <strong>Klarna</strong>, iDEAL (NL), Bancontact (BE), <strong>MobilePay</strong> (DK/FI), SEPA</td><td>Klarna is the highest-impact single addition; iDEAL is near-universal in the Netherlands</td></tr>
+<tr><td><strong>UK</strong></td><td>Cards, Apple/Google Pay, Klarna, PayPal</td><td>—</td></tr>
+</tbody></table></div>
+<p>Use <strong>dynamic payment methods</strong> so Stripe orders and displays the right set per customer locale rather than you hardcoding lists per country. Prices should be presented in the customer's currency (Stripe Adaptive Pricing does this from Checkout Sessions), but note that presenting in a currency you do not settle in is what triggers the +1% conversion fee — that is a margin line, not a rounding error, and it needs to be in your pricing.</p>
+<h3>5.5 Other money mechanics you now own</h3>
+<ul><li><strong>Disputes:</strong> $15 per dispute in the US. Radar's Smart Disputes takes 30% of the disputed amount with no fee if it loses.</li><li><strong>Radar:</strong> $0.05 per screened transaction on pay-as-you-go, or $0.07 with the advanced rule set. Turn it on before launch, not after the first attack.</li><li><strong>Payouts:</strong> standard payouts are free; instant payouts cost 1%. Use standard.</li><li><strong>FX:</strong> +1% whenever the presented currency differs from your settlement currency, on top of the +1.5% international-card fee. An EU customer paying in euros on a European card costs you <strong>5.4% + $0.30</strong>. Model international orders separately from domestic ones or you will misprice them.</li><li><strong>Reconciliation:</strong> Stripe payouts are net of fees, refunds and disputes. Someone reconciles payouts to orders to bookkeeping every month — across multiple currencies. Shopify partially did this for you. Budget for it.</li></ul>
+</section>
+<section id="sdata-model">
+<h2><span class="secnum">06</span><span>Data model</span></h2>
+<p>The traps below are the ones that cost real money in homegrown stores.</p>
+<h3>6.1 Core tables</h3>
+<div class="codewrap"><pre><code>products ──┬── product_variants ──┬── variant_option_values ── option_values ── product_options
+           ├── product_media      ├── inventory_items ── inventory_levels (per location)
+           └── collection_products └── inventory_reservations (TTL)
+                    │
+              collections
+
+customers ──┬── addresses
+            ├── carts ── cart_lines ──▶ product_variants
+            └── orders ──┬── order_lines        (PRICE SNAPSHOT — no FK price lookup)
+                         ├── order_addresses    (COPIED, not referenced)
+                         ├── payments ── refunds
+                         ├── shipments ── shipment_lines
+                         ├── tax_lines
+                         └── discount_redemptions ──▶ discounts
+
+webhook_events   (id = provider event id, unique — the idempotency backbone)
+audit_log        (who changed what, when — you will need this within a month)</code></pre></div>
+<p>Roughly 22 tables. That is the honest floor for a store with variants, multi-location inventory, discounts and returns.</p>
+<h3>6.2 The seven traps</h3>
+<ol><li><strong>Money as integers in minor units.</strong> Store <code>amount_minor BIGINT</code> plus <code>currency CHAR(3)</code>. Never floats. Never a single <code>DECIMAL</code> without currency. <code>19.99</code> in float arithmetic will produce an invoice that does not add up, and EU invoicing rules do not forgive that.</li><li><strong>Orders snapshot everything.</strong> <code>order_lines</code> must carry the title, SKU, unit price, tax rate and discount <em>as they were at purchase</em>. If you join an order to <code>product_variants</code> to display its price, every historical order silently changes the next time you run a sale. This is the single most common homegrown-store defect.</li><li><strong>Addresses are copied into the order, not referenced.</strong> The customer will edit their address. The shipped order must not change.</li><li><strong>Inventory needs three concepts, not one.</strong> <code>on_hand</code>, <code>reserved</code>, and <code>available = on_hand - reserved</code>. Reserve at checkout-session creation with a TTL matching Stripe's 24h session expiry; commit on <code>checkout.session.completed</code>; release on expiry via a scheduled job. Decrementing stock only on payment guarantees overselling during traffic spikes; decrementing at add-to-cart guarantees phantom stockouts.</li><li><p><strong>Order status is a state machine, not a string column.</strong> Enforce legal transitions in code:</p><div class="codewrap"><pre><code>pending ─▶ awaiting_payment ─┬─▶ paid ─▶ fulfilling ─▶ shipped ─▶ delivered
+                            └─▶ payment_failed ─▶ (retry) ─▶ awaiting_payment
+any ─▶ cancelled            (only while unfulfilled)
+paid+ ─▶ partially_refunded ─▶ refunded
+any ─▶ on_hold              (fraud review, dispute opened)</code></pre></div><p>Also track <code>payment_status</code> and <code>fulfillment_status</code> separately. A part-shipped, part-refunded order is normal, and a single status column cannot express it.</p></li><li><strong>Refunds are records, never mutations.</strong> Never reduce an order total. Insert a refund row that references the payment and the lines. Your accountant needs the original invoice to remain intact.</li><li><strong>Tax is per line, computed at the destination, rounded once.</strong> Store the rate, the taxable base and the tax amount per line. Round at the line level consistently and document the rule — EU invoices must reconcile to the cent.</li></ol>
+</section>
+<section id="stax-legal-and-compliance-floor">
+<h2><span class="secnum">07</span><span>Tax, legal and compliance floor</span></h2>
+<p>Selling from the US into the EU and UK means carrying two regulatory systems at once, without the shortcuts an EU-established seller gets. Three items below are <strong>hard gates</strong>: until each exists you cannot lawfully take EU orders at all. Walk this section past a tax adviser and, for §7.8 and §7.10, counsel.</p>
+<h3>7.1 US sales tax and economic nexus</h3>
+<ul><li>All <strong>45 sales-tax states</strong> enforce economic nexus — you must register and collect once you cross a state's threshold, with no physical presence required.</li><li><strong>41 states use $100,000.</strong> California, Texas and New York sit at <strong>$500,000</strong>; Alabama and Mississippi at <strong>$250,000</strong>.</li><li><strong>18 jurisdictions still apply a 200-transaction test</strong>, and this is the trap for you specifically: at a $65 AOV, 200 transactions is <strong>about $13,000</strong> of sales in that state. You will trip transaction-count nexus long before revenue nexus in every one of them. Model nexus on order count, not revenue.</li><li>Recent movement: Illinois removed its 200-transaction test effective 1 January 2026; Alaska repealed its own in 2025. The rules drift every year — this needs an owner, not a one-time setup.</li><li>Consequence: registration, collection at the correct local rate, filing, and remittance in a growing list of states. This is the single strongest argument for buying tax automation rather than building a rate table.</li></ul>
+<h3>7.2 Selling into the EU — import VAT, IOSS, and the July 2026 change</h3>
+<p>As a non-EU seller shipping goods to EU consumers, you are outside OSS. The relevant scheme is <strong>IOSS</strong>, for consignments valued at <strong>€150 or less</strong>:</p>
+<ul><li>IOSS lets you <strong>collect destination-country VAT at checkout</strong> and remit it through a single monthly return, so parcels clear customs without the customer being billed on delivery. Without it, your customers get surprise VAT and handling charges at the door — which produces refusals, returns and chargebacks.</li><li><strong>A non-EU seller cannot register for IOSS directly.</strong> You must appoint an <strong>EU-established intermediary or fiscal representative</strong> who registers and files on your behalf. <strong>Hard gate.</strong></li><li><strong>The €150 customs-duty exemption ended on 1 July 2026.</strong> All low-value parcels are now dutiable: a <strong>flat €3 customs duty per HS code</strong> in the parcel applies on top of import VAT, regardless of value. An additional <strong>EU customs handling fee</strong> is expected from late 2026.</li><li>Above €150, IOSS does not apply: full import VAT and duty are due, and you choose <strong>DDP</strong> (you pay, cleaner experience, more admin) or <strong>DAP</strong> (customer pays on delivery, worse experience).</li><li>Practical effect on a $65 jersey: the €3 duty is roughly a <strong>4–5% margin hit</strong> on every EU order, before shipping. EU pricing has to absorb it deliberately.</li></ul>
+<h3>7.3 Selling into the UK</h3>
+<ul><li>The UK sits outside the EU regime. For consignments of <strong>£135 or less</strong> shipped directly to UK consumers, an overseas seller must <strong>register for UK VAT</strong>, charge it at checkout, and remit to HMRC. There is no de minimis registration threshold for this.</li><li>Above £135, import VAT and duty apply at the border.</li><li>The customs-free £135 threshold was confirmed for removal at the November 2025 Budget, phased in later this decade, and an EU customs admin charge is scheduled for November 2026. Both change your landed cost — track them rather than hardcoding.</li></ul>
+<h3>7.4 Invoicing and records</h3>
+<p>EU B2C invoices need seller identity and VAT identifier, invoice number and date, description, quantity, unit price, taxable amount, VAT rate and amount per rate, and total — with retention obligations. Stripe receipts are <em>receipts</em>, not compliant invoices. Generate and archive your own, per destination regime.</p>
+<h3>7.5 PCI DSS — what remains yours with Stripe</h3>
+<p>Using Stripe does <strong>not</strong> remove your PCI obligations; it shrinks them.</p>
+<ul><li><strong>Stripe hosted Checkout (redirect):</strong> the card form is entered on Stripe's domain → <strong>SAQ A</strong>, the lightest questionnaire.</li><li><strong>Stripe Elements (iframe on your domain):</strong> under PCI DSS 4.0.1 this typically puts you in <strong>SAQ A-EP</strong>, because you control what else loads on the page.</li><li><p><strong>Either way, two requirements are unambiguously yours</strong>, mandatory since March 2025:</p><ul><li><strong>6.4.3</strong> — every script on your payment page must be authorised, integrity-assured against tampering, and listed in a written inventory with a justification per script.</li><li><strong>11.6.1</strong> — you must detect unauthorised change to your payment page's headers and content.</li></ul></li><li><strong>This is the path we are on.</strong> The Phase 0 spike established that Medusa's Stripe provider is Elements-based (§5.1), so <strong>SAQ A-EP is the working assumption</strong>, not SAQ A. That makes the following non-optional rather than advisable: a Content Security Policy that fails loudly, Subresource Integrity on every third-party script, a script inventory in version control with a justification per entry, and automated tamper monitoring on the checkout page.</li><li>If a marketing colleague later pastes a pixel onto the checkout page, both requirements are breached. Put the checkout page's script list behind code review — the process matters as much as the configuration.</li></ul>
+<h3>7.6 Privacy — GDPR applies to you, from the US</h3>
+<p>GDPR reaches you extraterritorially under <strong>Article 3(2)</strong>: offering goods to people in the EU is enough. There is no small-business exemption and no EU office required for it to bite.</p>
+<ul><li><strong>You must appoint an Article 27 EU representative</strong> — a named person or firm in the EU acting as the contact point for supervisory authorities and data subjects. Choose a member state where a meaningful share of your customers are. EU and UK authorities are actively checking for this. <strong>Hard gate.</strong></li><li><strong>Data transfers to the US need a mechanism.</strong> The EU-US <strong>Data Privacy Framework</strong> remains valid — the 2023 adequacy decision was upheld by the EU General Court in September 2025 — but a CJEU appeal is pending, and on 31 July 2026 the EDPB asked the Commission to reassess it. Both predecessor frameworks were struck down. <strong>Certify under the DPF if you qualify, and maintain SCCs plus a Transfer Impact Assessment in parallel as a fallback.</strong> Treat DPF invalidation as a live risk (§11), not a hypothetical.</li><li>Also required: lawful basis per purpose, a <strong>DPA with every processor</strong> (Stripe, hosting, email, search, analytics, carriers), a processing map, working export and deletion flows — with anonymisation rather than deletion where tax retention applies — 72-hour breach notification, and <strong>consent before any non-essential script fires</strong> for EU visitors.</li><li>A <strong>UK GDPR representative</strong> is a separate requirement if you target UK customers.</li></ul>
+<h3>7.7 Privacy — US state laws and Global Privacy Control</h3>
+<ul><li><strong>20 states have comprehensive privacy laws in effect in 2026</strong> (California, Colorado, Connecticut, Delaware, Indiana, Iowa, Kentucky, Maryland, Minnesota, Montana, Nebraska, New Hampshire, New Jersey, Oregon, Rhode Island, Tennessee, Texas, Utah, Virginia, Washington). Most use an opt-out model rather than GDPR-style consent.</li><li><strong>As of 1 January 2026, 12 states require you to honour Global Privacy Control</strong> — California, Colorado, Connecticut, Delaware, Maryland, Minnesota, Montana, Nebraska, New Hampshire, New Jersey, Oregon, Texas. The signal must be honoured <strong>automatically</strong>, without asking the user to confirm.</li><li>Engineering consequence: your tag layer must read the GPC header and suppress sale/share tags before they fire. A consent banner that fires analytics first and asks later is non-compliance, not a UX preference — and it collides with the PCI script duty in §7.5. Fewer third-party scripts helps both problems.</li><li>Also in scope: <strong>CAN-SPAM</strong> for email and <strong>TCPA</strong> for SMS, which requires express written consent before a single marketing text.</li></ul>
+<h3>7.8 GPSR — the EU Responsible Person gate</h3>
+<p>The General Product Safety Regulation has applied since December 2024 and reaches apparel.</p>
+<ul><li>A non-EU seller shipping direct to EU consumers is treated as an <strong>importer</strong> and <strong>must designate an EU-established Responsible Person</strong> — the named contact for market surveillance authorities, responsible for traceability and technical documentation.</li><li><strong>Without one you cannot lawfully place products on the EU market.</strong> Enforcement extends to existing listings through 2026, with audits, listing deactivation and account suspension as the observed consequences on marketplaces. <strong>Hard gate.</strong></li><li>Also required: manufacturer and safety information on the listing, traceability, and textile fibre composition labelling.</li></ul>
+<h3>7.9 Accessibility — EAA and ADA</h3>
+<ul><li>The <strong>European Accessibility Act</strong> has applied to ecommerce services since <strong>28 June 2025</strong>. The standard is <strong>EN 301 549</strong>, incorporating <strong>WCAG 2.1 Level AA</strong>, across the entire journey: homepage, discovery, product pages, cart, checkout, confirmation, customer service. It applies to any business selling online to EU consumers <strong>regardless of where it is established</strong> — so it applies to you. Only microenterprises (under 10 employees <em>and</em> under €2M turnover) have limited exemption. Fines run roughly €5,000–500,000 by member state, and authorities can suspend sales.</li><li>In the US there is no equivalent statute, but <strong>ADA Title III</strong> litigation over inaccessible storefronts is common and serial. The practical exposure is comparable; the mechanism is private suits rather than regulators.</li><li><strong>Build to WCAG 2.1 AA once and both are satisfied.</strong> This is a launch requirement, not a backlog item: retrofitting costs several times more, and accessibility-overlay widgets do not achieve conformance. Note what you lose — Shopify's themes ship a reasonable baseline; a bespoke storefront starts at zero.</li></ul>
+<h3>7.10 Consumer law and advertising claims — both regimes</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Obligation</th><th>EU / UK</th><th>US</th></tr></thead>
+<tbody>
+<tr><td>Right to cancel</td><td><strong>14-day withdrawal</strong> from delivery, compliant form and instructions, refund of standard outbound shipping</td><td>No federal equivalent; your stated policy binds you under FTC Act §5</td></tr>
+<tr><td>Pre-purchase disclosure</td><td>Total price incl. VAT, shipping, delivery time, trader identity, complaint route, before the order button</td><td>FTC "Click-to-Cancel"/ROSCA disclosure for any recurring charge</td></tr>
+<tr><td>Price-reduction claims</td><td><strong>Omnibus Directive</strong>: a "was" price must be the <strong>lowest price charged in the previous 30 days</strong></td><td>FTC deceptive-pricing guidance; state UDAP statutes</td></tr>
+<tr><td>Reviews</td><td>Omnibus: disclose whether and how you verify reviews are from genuine purchasers</td><td><strong>FTC Consumer Reviews and Testimonials Rule</strong>, effective 21 Oct 2024 — bans fake and AI-generated reviews, insider reviews, review suppression and incentivised sentiment. <strong>$51,744 per violation.</strong> First enforcement wave: warning letters to 10 companies, 22 Dec 2025</td></tr>
+<tr><td>Fake urgency</td><td>UCPD Annex I blacklists falsely claiming limited availability — prohibited per se</td><td>FTC dark-pattern enforcement under §5</td></tr>
+<tr><td>Subscriptions</td><td>Clear cancellation, no dark patterns</td><td><strong>ROSCA</strong> — simple cancellation mechanism required</td></tr>
+</tbody></table></div>
+<p>The overlap is large enough that one honest standard satisfies both: truthful deadlines, reference prices you can prove from your own order data, verified reviews only, and cancellation that is as easy as signup. §12.7 works through what this means for the storefront tactics you were shown.</p>
+</section>
+<section id="soperations-you-inherit">
+<h2><span class="secnum">08</span><span>Operations you inherit</span></h2>
+<p>This is usually the section that decides the question. Shopify's fee is substantially a payment for someone else carrying the items below.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Responsibility</th><th>What it means once it's yours</th></tr></thead>
+<tbody>
+<tr><td><strong>Uptime</strong></td><td>You are the on-call rotation. Checkout down at 21:00 on a Sunday is revenue lost and there is no support line to call. Define a target, then staff it honestly.</td></tr>
+<tr><td><strong>Peak load</strong></td><td>Black Friday is 10–50× normal traffic. Load-test the checkout path <em>before</em> November, and know which component fails first (it is usually the database connection pool).</td></tr>
+<tr><td><strong>Backups</strong></td><td>Not "backups exist" — <strong>tested restores</strong>. Run a restore drill quarterly and time it. An untested backup is a belief, not a control.</td></tr>
+<tr><td><strong>Fraud and chargebacks</strong></td><td>Radar handles screening; you handle the review queue, the evidence submission, and the 200 kr per dispute. Card-testing attacks against a new store's checkout are routine.</td></tr>
+<tr><td><strong>Failed payments</strong></td><td>Retry logic, dunning, and a recovery email flow. Silent failures are pure lost revenue.</td></tr>
+<tr><td><strong>Abandoned carts</strong></td><td>Shopify recovers a meaningful share automatically. You now build the capture, the timing logic and the emails.</td></tr>
+<tr><td><strong>Deliverability</strong></td><td>SPF, DKIM, DMARC, warm-up, bounce and complaint handling. If order confirmations go to spam, support volume explodes.</td></tr>
+<tr><td><strong>Inventory truth</strong></td><td>Whatever else touches stock — a warehouse system, a marketplace, a physical till — must reconcile. Drift becomes oversells and cancellations.</td></tr>
+<tr><td><strong>Deploy safety</strong></td><td>A bad deploy can take the store offline or, worse, corrupt prices. Staging, migrations that are reversible, feature flags, and a rollback you have actually practised.</td></tr>
+<tr><td><strong>Secrets</strong></td><td>Stripe live keys, webhook secrets, carrier credentials. Rotation policy, no secrets in the repo, least privilege.</td></tr>
+<tr><td><strong>Dependency and security upkeep</strong></td><td>Patch cadence for the framework, the commerce core and every dependency. You are a payment-adjacent target.</td></tr>
+<tr><td><strong>Compliance drift</strong></td><td>VAT rates change, WCAG audits go stale, PCI script inventories rot the moment marketing adds a pixel. Someone owns a recurring review.</td></tr>
+<tr><td><strong>Bus factor</strong></td><td>If one engineer built it and leaves, the business's revenue path is undocumented. Write the runbook as you go, not later.</td></tr>
+</tbody></table></div>
+<p>Realistic ongoing cost: <strong>10–20 hours per month</strong> in steady state, spiking hard around peak season and any compliance deadline. At a loaded rate of ~$125/hour that is <strong>$1,250–2,500/month</strong> — and as §9.6 shows, there are no platform savings for it to come out of. It is a straight addition to the cost of running the business.</p>
+</section>
+<section id="scost-model">
+<h2><span class="secnum">09</span><span>Cost model</span></h2>
+<p><strong>Method and assumptions.</strong> Product $64.99, shipping $4.99 charged to the customer, discounts applied. Volumes are <strong>scenarios, not forecasts</strong> — a greenfield store starts at zero. Primary market is the US, so the payment mix is taken as <strong>90% domestic / 10% international</strong>, giving a blended Stripe rate of <strong>3.15% + $0.30</strong> (0.9 × 2.9% + 0.1 × 5.4%). Shopify column uses Shopify Payments on the plan appropriate to the volume. Both columns include the third-party tooling a real store needs.</p>
+<h3>9.1 Unit economics per order</h3>
+<p>Two things about this price point matter more than they look.</p>
+<p><strong>Stripe charges on the whole transaction, shipping included.</strong> The $4.99 shipping charge is part of the processed amount, so it carries roughly <strong>$0.15</strong> of card fees. Shipping is not a fee-free pass-through.</p>
+<p><strong>The fixed $0.30 makes discounts disproportionately expensive.</strong> As the discount deepens the processed amount falls but the $0.30 does not, so your <em>effective</em> rate rises:</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>List</th><th>10% off</th><th>15% off</th><th>20% off</th></tr></thead>
+<tbody>
+<tr><td>Product</td><td class="num">$64.99</td><td class="num">$58.49</td><td class="num">$55.24</td><td class="num">$51.99</td></tr>
+<tr><td>Shipping</td><td class="num">$4.99</td><td class="num">$4.99</td><td class="num">$4.99</td><td class="num">$4.99</td></tr>
+<tr><td><strong>Processed</strong></td><td><strong>$69.98</strong></td><td><strong>$63.48</strong></td><td><strong>$60.23</strong></td><td><strong>$56.98</strong></td></tr>
+<tr><td>Stripe fee (2.9% + $0.30)</td><td class="num">$2.33</td><td class="num">$2.14</td><td class="num">$2.05</td><td class="num">$1.95</td></tr>
+<tr><td><strong>Effective rate</strong></td><td><strong>3.33%</strong></td><td><strong>3.37%</strong></td><td><strong>3.40%</strong></td><td><strong>3.43%</strong></td></tr>
+<tr><td>Shopify Advanced (2.4% + $0.30)</td><td class="num">$1.98</td><td class="num">$1.82</td><td class="num">$1.75</td><td class="num">$1.67</td></tr>
+<tr><td><strong>Per-order penalty vs Advanced</strong></td><td><strong>$0.35</strong></td><td><strong>$0.32</strong></td><td><strong>$0.30</strong></td><td><strong>$0.28</strong></td></tr>
+</tbody></table></div>
+<p>That last row is the whole cost argument in one number: <strong>you pay Stripe roughly $0.30–0.35 more per order than Shopify Advanced would charge.</strong> At 10,000 orders/month that is $3,000–3,500 before any other line item.</p>
+<p>Three consequences worth acting on:</p>
+<ol><li><strong>Discounts are more expensive than the headline percentage.</strong> A 20% discount costs you $13.00 of revenue <em>and</em> raises your effective processing rate by 10 basis points. Prefer mechanics that protect the processed amount — free shipping over a threshold, multi-buy, a free personalisation upgrade — over straight percentage-off. See §12.4.</li><li><strong>Check whether $4.99 covers the label.</strong> A jersey in a poly mailer runs roughly $5–7 domestic on commercial ground rates, so $4.99 is at or slightly below break-even. If it is subsidised, that subsidy belongs in the unit economics explicitly, not hidden in shipping.</li><li><strong>Shipping taxability varies by state.</strong> Some US states tax shipping charges, others do not, and several depend on whether shipping is separately stated. Shipping has to be its own taxable line with a per-jurisdiction rule, and the discount has to reduce the taxable base before tax is computed. This is a real data-model requirement (§6), not a tax-tool checkbox.</li></ol>
+<p><strong>A pricing warning.</strong> You said discounts will be applied. If $64.99 is presented as a reduction from a higher "regular" price that you do not actually charge for meaningful periods, that is the exact practice the EU Omnibus Directive prohibits and the FTC treats as deceptive pricing (§7.10, §12.6). Whatever compare-at price you show must be the genuine lowest price of the previous 30 days, provable from your own order data. Owning the database makes this easy — do it from day one rather than retrofitting it.</p>
+<h3>9.2 Monthly run rate</h3>
+<p>At ~$67 average processed per order:</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th><strong>100 orders/mo</strong></th><th><strong>1,000 orders/mo</strong></th><th><strong>10,000 orders/mo</strong></th></tr></thead>
+<tbody>
+<tr><td>Processed volume</td><td class="num">$6,700</td><td class="num">$67,000</td><td class="num">$670,000</td></tr>
+<tr class="grouprow"><td colspan="4"><strong>Shopify path</strong></td></tr>
+<tr><td>Plan</td><td>Basic, $39</td><td>Grow, $105</td><td>Advanced, $399</td></tr>
+<tr><td>Processing (2.9 / 2.7 / 2.4% + $0.30)</td><td class="num">$224</td><td class="num">$2,109</td><td class="num">$19,080</td></tr>
+<tr><td>Typical app stack</td><td class="num">$200</td><td class="num">$500</td><td class="num">$1,500</td></tr>
+<tr><td><strong>Shopify total</strong></td><td><strong>~$463</strong></td><td><strong>~$2,714</strong></td><td><strong>~$20,980</strong></td></tr>
+<tr class="grouprow"><td colspan="4"><strong>Own stack — buy the managed version of everything</strong></td></tr>
+<tr><td>Processing (3.15% + $0.30)</td><td class="num">$241</td><td class="num">$2,411</td><td class="num">$24,105</td></tr>
+<tr><td>Stripe Radar ($0.05/txn)</td><td class="num">$5</td><td class="num">$50</td><td class="num">$500</td></tr>
+<tr><td>Stripe Tax (0.5% of volume)</td><td class="num">$34</td><td class="num">$335</td><td class="num">$3,350</td></tr>
+<tr><td>Infrastructure + SaaS (see 9.3)</td><td class="num">$155</td><td class="num">$370</td><td class="num">$1,770</td></tr>
+<tr><td><strong>Own stack total</strong></td><td><strong>~$435</strong></td><td><strong>~$3,166</strong></td><td><strong>~$29,725</strong></td></tr>
+<tr class="grouprow"><td colspan="4"><strong>Own stack — optimised</strong></td></tr>
+<tr class="grouprow"><td colspan="4">Own tax engine instead of Stripe Tax, self-hosted search, Hetzner instead of Vercel</td></tr>
+<tr><td><strong>Own stack total</strong></td><td><strong>~$356</strong></td><td><strong>~$2,691</strong></td><td><strong>~$25,705</strong></td></tr>
+<tr><td></td><td></td><td></td><td></td></tr>
+<tr><td><strong>Difference vs Shopify (optimised)</strong></td><td><strong>$107 cheaper</strong></td><td><strong>$23 cheaper</strong></td><td><strong>$4,725 more</strong></td></tr>
+<tr><td><strong>Annualised</strong></td><td><strong>$1,284 saved</strong></td><td><strong>$276 saved</strong></td><td><strong>$56,700 lost</strong></td></tr>
+</tbody></table></div>
+<p>A US-primary payment mix keeps the gap smaller than it would be for a heavily international seller — fewer non-US cards means fewer 1.5% surcharges — but the direction is unchanged:</p>
+<ol><li><strong>At small and mid volume it is roughly a wash.</strong> $107/month at 100 orders and $23/month at 1,000 are noise. Neither funds a build.</li><li><strong>At scale it is decisively more expensive.</strong> Shopify Advanced processes at 2.4%; your blended Stripe rate is 3.15%. That 0.75-point deficit is structural.</li><li><strong>Stripe Tax at 0.5% is $3,350/month at the top tier</strong> — nearly twice your entire infrastructure bill, and the reason the optimised row assumes you eventually own tax calculation.</li></ol>
+<h3>9.3 Infrastructure detail</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Component</th><th>100/mo</th><th>1,000/mo</th><th>10,000/mo</th></tr></thead>
+<tbody>
+<tr><td>Storefront hosting (Vercel Pro + usage)</td><td class="num">$20</td><td class="num">$40</td><td class="num">$250</td></tr>
+<tr><td>Commerce backend (Railway)</td><td class="num">$20</td><td class="num">$50</td><td class="num">$200</td></tr>
+<tr><td>Postgres (managed)</td><td class="num">$19</td><td class="num">$50</td><td class="num">$200</td></tr>
+<tr><td>Redis / queue</td><td class="num">$10</td><td class="num">$20</td><td class="num">$50</td></tr>
+<tr><td>Search (Typesense/Meilisearch)</td><td class="num">$20</td><td class="num">$50</td><td class="num">$150</td></tr>
+<tr><td>Media + CDN (Cloudflare R2)</td><td class="num">$5</td><td class="num">$20</td><td class="num">$80</td></tr>
+<tr><td>Transactional email (Postmark)</td><td class="num">$15</td><td class="num">$15</td><td class="num">$100</td></tr>
+<tr><td>Marketing email (Omnisend/Brevo)</td><td class="num">$9</td><td class="num">$60</td><td class="num">$500</td></tr>
+<tr><td>Observability (Sentry, uptime, logs)</td><td class="num">$30</td><td class="num">$50</td><td class="num">$200</td></tr>
+<tr><td>Domain, TLS, misc</td><td class="num">$7</td><td class="num">$15</td><td class="num">$40</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>~$155</strong></td><td><strong>~$370</strong></td><td><strong>~$1,770</strong></td></tr>
+</tbody></table></div>
+<p>Vercel's headline Pro price is $20 but real bills are usage-driven — a mid-size app with 2,000 active users has been documented at $850/month once bandwidth, database and function time were counted. Hetzner starts at €5.49/month for 2 vCPU / 4 GB and is roughly 10–20× cheaper at team scale, at the cost of running it yourself. Typesense and Meilisearch are free to self-host against Algolia's Grow plan at $550/month. Klaviyo reaches ~$1,380/month at 100,000 profiles; Omnisend or Brevo cover most of what a store this size needs for far less.</p>
+<h3>9.4 Compliance run cost — new, and not optional</h3>
+<p>Selling internationally from the US adds fixed annual costs that have no Shopify equivalent because they attach to the <em>seller</em>, not the platform. Ranges are indicative; get quotes.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Item</th><th>Indicative annual cost</th></tr></thead>
+<tbody>
+<tr><td>IOSS intermediary / fiscal representative (§7.2)</td><td class="num">$1,000–3,000</td></tr>
+<tr><td>GDPR Article 27 EU representative (§7.6)</td><td class="num">$500–2,000</td></tr>
+<tr><td>UK GDPR representative</td><td class="num">$500–1,500</td></tr>
+<tr><td>GPSR EU Responsible Person (§7.8)</td><td class="num">$1,000–3,000</td></tr>
+<tr><td>US sales tax registration + filing across states (§7.1)</td><td>$2,000–10,000+, scaling with state count</td></tr>
+<tr><td>UK VAT registration and filing (§7.3)</td><td class="num">$1,000–2,500</td></tr>
+<tr><td>WCAG 2.1 AA audit, initial then annual (§7.9)</td><td>$5,000–15,000 initial</td></tr>
+<tr><td><strong>Indicative total, year one</strong></td><td><strong>~$11,000–37,000</strong></td></tr>
+</tbody></table></div>
+<p>These land whether you build or stay on Shopify — but Shopify's apps and Shopify Tax absorb part of the tax-filing work, so the own-build carries more of it directly.</p>
+<h3>9.5 Build effort</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Phase</th><th>Scope</th><th>Weeks</th></tr></thead>
+<tbody>
+<tr><td class="num">0</td><td>Spike: Medusa v2 + Next.js + Stripe Checkout, one product, one real payment end to end</td><td class="num">1</td></tr>
+<tr><td class="num">1</td><td>Catalog, PDP with variants, collections, cart, Stripe Checkout, order-from-webhook</td><td class="num">4</td></tr>
+<tr><td class="num">2</td><td><strong>Personalisation</strong>: add-on model, live preview, print-file generation, production hand-off</td><td class="num">3</td></tr>
+<tr><td class="num">3</td><td>Orders, admin surface, fulfilment, carrier labels, returns/refunds</td><td class="num">4</td></tr>
+<tr><td class="num">4</td><td>Search, transactional + marketing email, CMS pages, discounts, customer accounts</td><td class="num">3</td></tr>
+<tr><td class="num">5</td><td>Compliance: multi-jurisdiction tax, invoicing, WCAG 2.1 AA, GDPR + GPC, PCI script controls</td><td class="num">3</td></tr>
+<tr><td class="num">6</td><td>Storefront conversion surface (§12.6)</td><td class="num">3</td></tr>
+<tr><td></td><td><strong>Total</strong></td><td><strong>21</strong></td></tr>
+</tbody></table></div>
+<p>At a fully-loaded $4,000/engineer-week, 21 weeks is <strong>~$84,000</strong>, realistically <strong>$60,000–110,000</strong> (15–27 weeks) depending on storefront polish and how much of the tax problem you own.</p>
+<h3>9.6 The verdict on cost</h3>
+<p>There is no payback period, because at any volume worth having the own stack costs <strong>more</strong> to run than Shopify. Stated plainly:</p>
+<blockquote><p><strong>Building this saves nothing. It costs roughly $60,000–110,000 up front, $4,725/month more at scale, and 10–20 hours/month of maintenance. The only thing that justifies it is revenue Shopify cannot produce.</strong></p></blockquote>
+<p>That revenue is personalisation. The bar it must clear at 10,000 orders/month is <strong>$4,725/month of incremental margin — $0.47 per order.</strong> A $15 name-and-number upcharge at a 20% attach rate produces ~$30,000/month, more than six times the bar. The project is fundable on that basis and on no other. Two consequences follow:</p>
+<ol><li><strong>Personalisation is not a feature, it is the business case.</strong> It cannot slip out of v1 — you confirmed it as core, and §9.5 puts it in Phase 2 — before orders and admin — for exactly this reason. If it slips, stop the project.</li><li><strong>Negotiate Stripe's rate before committing.</strong> Interchange-plus pricing at volume is the only lever that closes the processing gap. Every 0.1 point is $670/month at the top tier.</li></ol>
+</section>
+<section id="sphased-roadmap">
+<h2><span class="secnum">10</span><span>Phased roadmap</span></h2>
+<p>Each phase has a definition of done. Do not start the next one until the current one is met.</p>
+<h3>Phase 0 — Spike (1 week)</h3>
+<p>Prove the risky path first, before any design work.</p>
+<ul><li>Medusa v2 running locally and deployed to a real host</li><li>One product with variants, seeded</li><li>Next.js storefront rendering PDP from the backend</li><li>Stripe test-mode Checkout Session → webhook → order row in Postgres</li><li>One real transaction in <strong>live</strong> mode for $1, refunded</li></ul>
+<p><strong>Done when:</strong> a real card charge produces a correct order row via webhook, and killing the browser immediately after payment still produces that order.</p>
+<p><strong>Status: built, 7 of 8 steps verified</strong> (<code>spike/</code>). Medusa 2.18 on Node 22, Postgres and Redis in Docker, a US/USD region with Stripe registered, one real product from <code>tools/out/</code> at $64.99 with $4.99 shipping and <code>manage_inventory: false</code>, an <code>order.placed</code> subscriber proving the webhook→order path, and <code>verify_flow.py</code> driving the whole purchase through the Store API with <strong>no browser involved</strong> — the cleanest possible test of the closed-browser case. Cart totals came out at exactly <strong>$69.98</strong>, matching §9.1. The remaining step needs a Stripe test key.</p>
+<p>Two findings came out of it. The Elements/PCI consequence is recorded in §5.1 and §7.5. The second: <strong>with <code>STRIPE_WEBHOOK_SECRET</code> unset, the webhook endpoint returns HTTP 200 to unsigned and badly-signed payloads</strong> — measured, not assumed. Nothing was mutated, because the forged event resolved to no payment session, but the endpoint acknowledged rather than rejected it. The secret must be set before that endpoint is ever public.</p>
+<h3>Phase 1 — Storefront and checkout (4 weeks)</h3>
+<ul><li>Full catalog import from the current store, including images</li><li>PLP with filtering and sorting, PDP with variant selection and media</li><li>Collections, cart with cross-device persistence</li><li>Stripe hosted Checkout with automatic tax, shipping options, Apple/Google Pay + PayPal + a BNPL method; EU/UK methods gated behind the §7 hard gates</li><li>Inventory reservation with TTL, commit on payment, scheduled release</li><li>Order confirmation email</li><li>Accessibility built in from the first component, not audited in later</li></ul>
+<p><strong>Done when:</strong> a colleague can buy a real product, receive a correct confirmation, and stock decrements exactly once. Overselling is impossible under a concurrent-checkout test.</p>
+<h3>Phase 2 — Operations (4 weeks)</h3>
+<ul><li>Admin: orders list and detail, fulfilment, refunds, manual orders, product editing</li><li>Carrier integration (Shippo/EasyPost): rate shopping, label generation, customs documentation for international, tracking pushed back to the customer</li><li>Returns flow with restocking</li><li>Refunds and partial refunds, with correct records</li><li>Roles and permissions</li><li>Reconciliation export for bookkeeping</li></ul>
+<p><strong>Done when:</strong> a non-technical colleague runs a full day of orders — pick, pack, label, ship, one return, one partial refund — without an engineer.</p>
+<h3>Phase 3 — Growth surface (3 weeks)</h3>
+<ul><li>Search with typo tolerance, synonyms, facets</li><li>Discount codes and automatic promotions</li><li>Customer accounts and order history</li><li>CMS pages and blog</li><li>Marketing email with abandoned-cart and post-purchase flows</li><li>Analytics and funnel tracking</li></ul>
+<p><strong>Done when:</strong> marketing can launch a campaign, publish a page and create a discount without a deploy.</p>
+<h3>Phase 4 — Compliance (2 weeks)</h3>
+<ul><li><strong>The three hard gates cleared and documented</strong>: IOSS registration via an EU intermediary, GDPR Article 27 EU representative, GPSR EU Responsible Person (§7.2, §7.6, §7.8). No EU orders before all three exist.</li><li>US sales-tax registration in every state where nexus is met — <strong>modelled on order count, not revenue</strong>, because of the 200-transaction trap (§7.1)</li><li>UK VAT registration for £135-and-under consignments; destination VAT verified against a test matrix per market</li><li>Compliant invoice generation and archiving</li><li>WCAG 2.1 AA audit — automated (axe-core in CI) plus manual keyboard and screen-reader pass on the full funnel</li><li>GDPR: DPA register, processing map, export and anonymisation flows, consent gating before any non-essential script, DPF certification or SCCs + Transfer Impact Assessment</li><li><strong>Global Privacy Control honoured automatically</strong> in the 12 states that require it (§7.7)</li><li>PCI: CSP, SRI, script inventory document, change monitoring, SAQ A completed</li><li>Consumer law both regimes: EU withdrawal form and pre-contract disclosure, Omnibus 30-day reference pricing, FTC-compliant review handling and ROSCA cancellation (§7.10)</li></ul>
+<p><strong>Done when:</strong> each item has a written artefact — not a belief that it is handled.</p>
+<h3>Phase 5 — Cutover (2 weeks)</h3>
+<ul><li>Customer and historical order import</li><li><strong>Complete 301 redirect map</strong> from every Shopify URL to its new equivalent — products, collections, pages, blog posts. This is the single highest-risk item in the migration; a botched redirect map costs organic traffic that takes many months to recover.</li><li>Structured data, sitemap, canonical parity check against the old store</li><li>Parallel run: new store live on a subdomain, real orders through both</li><li>Load test at 20× expected peak</li><li>Rollback plan with DNS TTL lowered in advance</li><li>DNS switch during the lowest-traffic window, with someone watching</li></ul>
+<p><strong>Done when:</strong> the redirect map is verified crawl-complete, and you can point DNS back inside 15 minutes if needed.</p>
+</section>
+<section id="srisk-register">
+<h2><span class="secnum">11</span><span>Risk register</span></h2>
+<p>Ranked by expected cost, highest first.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td><strong>SEO collapse at cutover</strong> — incomplete redirects, lost rankings</td><td><span class="sev sev-hi">High</span></td><td>Severe, months to recover</td><td>Crawl the old store, generate the redirect map programmatically, verify every URL returns 301 to a 200. Keep the old sitemap. Do not change URL structure and platform in the same move.</td></tr>
+<tr><td class="num">2</td><td><strong>Scope discovery</strong> — the §2 checklist turns out to be 60 items, not 20</td><td><span class="sev sev-hi">Very high</span></td><td>Budget doubles</td><td>Use §2 as the actual project backlog. Cut scope deliberately and in writing, not by discovery.</td></tr>
+<tr><td class="num">3</td><td><strong>Oversell / inventory drift</strong></td><td><span class="sev sev-hi">High</span></td><td>Cancellations, reputation</td><td>Three-state inventory with TTL reservations (§6.2). Concurrency test before launch. Daily reconciliation job.</td></tr>
+<tr><td class="num">4</td><td><strong>Duplicate or missing orders from webhook mishandling</strong></td><td><span class="sev sev-md">Medium</span></td><td>Direct revenue and trust</td><td>Signature verification, unique index on event ID, order created only by webhook, async processing (§5.2).</td></tr>
+<tr><td class="num">5</td><td><strong>Accessibility non-conformance</strong></td><td><span class="sev sev-hi">High if not planned</span></td><td>EU fines €5k–500k; US ADA suits</td><td>WCAG 2.1 AA as a Phase 1 design constraint; axe-core in CI; manual audit in Phase 5.</td></tr>
+<tr><td class="num">6</td><td><strong>VAT error accumulating quietly</strong></td><td><span class="sev sev-md">Medium</span></td><td>Back taxes, interest, penalties</td><td>Buy Stripe Tax initially. Verify against a test matrix. Have an accountant review the first OSS return.</td></tr>
+<tr><td class="num">7</td><td><strong>Peak-season outage</strong></td><td><span class="sev sev-md">Medium</span></td><td>A large share of annual revenue</td><td>Load test at 20× in Phase 5. Autoscaling and connection pooling. Known-good rollback. Someone on call.</td></tr>
+<tr><td class="num">8</td><td><strong>PCI script-control breach</strong> — a pixel added to checkout</td><td>High over time</td><td>Attestation invalid, liability on breach</td><td>Prefer hosted Checkout (SAQ A). Strict CSP that fails loudly. Script inventory in version control. Change monitoring.</td></tr>
+<tr><td class="num">9</td><td><strong>Bus factor of one</strong></td><td><span class="sev sev-md">Medium</span></td><td>Revenue path becomes unmaintainable</td><td>Runbook written during the build. Two people who can deploy and roll back.</td></tr>
+<tr><td class="num">10</td><td><strong>Maintenance drag</strong> — the store consumes the engineering capacity that was supposed to build the differentiator</td><td><span class="sev sev-hi">High</span></td><td>The whole rationale evaporates</td><td>Budget the 10–20 h/month explicitly (§8). If that capacity does not exist, do not start.</td></tr>
+<tr><td class="num">11</td><td><strong>Fraud and card testing against a new checkout</strong></td><td><span class="sev sev-md">Medium</span></td><td>Chargebacks at 200 kr each</td><td>Radar on from day one, rate limiting on the session endpoint, review queue owned by a person.</td></tr>
+<tr><td class="num">12</td><td><strong>Deliverability failure</strong> — confirmations in spam</td><td><span class="sev sev-md">Medium</span></td><td>Support load, refund requests</td><td>Dedicated sending domain, SPF/DKIM/DMARC, Postmark, monitor bounce and complaint rates.</td></tr>
+<tr><td class="num">13</td><td><strong>A hard gate is missed and EU orders are taken anyway</strong> — no GPSR Responsible Person, no IOSS intermediary, no Art 27 rep</td><td>High if not tracked</td><td>Unlawful sales, listing removal, enforcement</td><td>Treat all three as launch blockers with named owners (§10 Phase 4). Geo-block EU checkout until they exist — a lost order is cheaper than an enforcement action.</td></tr>
+<tr><td class="num">14</td><td><strong>Transaction-count nexus trips unnoticed</strong> at $65 AOV</td><td><span class="sev sev-hi">High</span></td><td>Back taxes, penalties, interest across multiple states</td><td>Monitor order count per state monthly, not revenue. Automate the alert (§7.1).</td></tr>
+<tr><td class="num">15</td><td><strong>Data Privacy Framework struck down</strong> on the pending CJEU appeal</td><td><span class="sev sev-md">Medium</span></td><td>Every EU→US transfer needs re-papering at short notice</td><td>Maintain SCCs + TIA in parallel now, so invalidation is a paperwork switch rather than a scramble (§7.6).</td></tr>
+<tr><td class="num">16</td><td><strong>Stripe rate never renegotiated</strong> — the build ships on standard 2.9%</td><td><span class="sev sev-hi">High</span></td><td>~$4,725/mo structural loss at scale; $0.30–0.35 per order</td><td>Open the pricing conversation before Phase 1, not after launch (§9.1, §9.6).</td></tr>
+<tr><td class="num">17</td><td><strong>Licensing status of the catalog unconfirmed</strong> — team and player marks across 3,400+ products</td><td>Unknown, unrecorded</td><td><strong>Existential</strong>: processor termination, domain and listing takedowns, Lanham Act damages</td><td>Resolve before engineering spend (§13.9). This is the first question, not a launch checklist item.</td></tr>
+<tr><td class="num">18</td><td><strong>Youth sizes sold without CPSIA documentation</strong></td><td>High if unaddressed</td><td>CPSC action, recall, sales halt</td><td>Get supplier documentation for tracking labels, flammability and drawstrings, or drop youth sizes at launch (§13.9).</td></tr>
+<tr><td class="num">19</td><td><strong>Webhook deployed with <code>STRIPE_WEBHOOK_SECRET</code> unset</strong></td><td>Observed in the spike</td><td>Unauthenticated endpoint accepting forged payment events</td><td>Fail startup when the secret is missing outside development. Do not rely on remembering (§10 Phase 0).</td></tr>
+<tr><td class="num">20</td><td><strong>SAQ A-EP script controls drift</strong> after launch</td><td>High over time</td><td>PCI attestation invalidated</td><td>CSP that fails loudly, script inventory in version control, checkout changes behind code review (§7.5).</td></tr>
+</tbody></table></div>
+</section>
+<section id="sstorefront-reference-the-glowfare-model">
+<h2><span class="secnum">12</span><span>Storefront reference: the Glowfare model</span></h2>
+<p class="lede"><strong>Two references, two different jobs.</strong></p>
+<ul><li><strong><a href="https://anyjersey.com">anyjersey.com</a> is the portrayal reference</strong> — what the store says, how a jersey is shown, the brand, the voice, and the proposition. It is the existing store, and its positioning is the strongest asset in this project.</li><li><strong><a href="https://glowfare.com">glowfare.com</a> is the structural template</strong> — how a page is built to convert. A direct-to-consumer funnel executed at a high standard, whose structural discipline transfers even though its category does not.</li></ul>
+<p>The work is AnyJersey's portrayal delivered inside Glowfare's structure. Neither alone is the answer: AnyJersey knows what it is selling and has a bare page to sell it on; Glowfare has an excellent page selling something with far less inherent appeal.</p>
+<h3>12.1 What AnyJersey already gets right</h3>
+<p>The proposition is not "we sell jerseys". It is <strong>"we find the jersey you cannot find"</strong>:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Element</th><th>Verbatim</th></tr></thead>
+<tbody>
+<tr><td>Announcement bar</td><td>"Can't find your jersey? Request it — we'll source it for you fast"</td></tr>
+<tr><td>Hero</td><td><strong>"FIND ANY JERSEY"</strong> / "Hard-to-find Jerseys Shipped On-Demand"</td></tr>
+<tr><td>Request block</td><td>"CAN'T FIND YOUR JERSEY?" → "Tell us what you want" · "We find it + confirm details" · "We ship it to your door"</td></tr>
+<tr><td>Trust row</td><td>"Tracked Shipping" · "Trusted by Fans" · "Secure checkout" · <strong>"Rare Jerseys"</strong> — "Sold out or custom? We'll find it"</td></tr>
+<tr><td>Social proof</td><td>"4.9/5 based on 84 reviews" (Judge.me — real and verifiable)</td></tr>
+<tr><td>Nav</td><td>Best Sellers · All Jerseys · Request a Jersey · Contact</td></tr>
+</tbody></table></div>
+<p><strong>The request mechanic is the differentiator, and it is better than anything in the Glowfare playbook.</strong> It converts the catalog's biggest weakness — a long tail nobody stocks — into the reason to visit, and it is honest: no manufactured scarcity, just a real service. It also generates something no competitor has: <strong>a demand signal</strong>. Every request is a customer telling you what to source next, with an email address attached.</p>
+<p>Two consequences for the build:</p>
+<ol><li><strong>Requests are a first-class object</strong>, not a contact form. <code>jersey_requests</code> is in <code>tools/schema.sql</code> — captured on the homepage, on every product page, and on any empty search result, with the parsed team/player/size so the queue is sortable by demand.</li><li><strong>"Sold out" should never appear.</strong> On the live store every variant of the product I examined reads "Variant sold out or unavailable", and the data agrees: inventory is untracked on 26,663 of 27,703 variants, so 0-quantity plus a deny policy blocks a purchase the business would happily fulfil. For an on-demand sourcing model the correct setting is untracked with continue-selling, and the honest signal is a lead time, not a stock count. This is a live revenue leak, not a migration detail.</li></ol>
+<h3>12.2 What Glowfare is, structurally</h3>
+<p>Read from the page source: <strong>Glowfare is a Shopify store.</strong> Its stack is <strong>GemPages</strong> (landing-page builder), <strong>Klaviyo</strong> (email/SMS), <strong>Rebuy</strong> (upsells and cross-sell), <strong>Recharge</strong> (subscriptions), <strong>Judge.me</strong> (reviews) and <strong>Triple Whale</strong> (attribution).</p>
+<p>That matters more than anything else in this section. <strong>Nothing about this storefront requires leaving Shopify.</strong> Everything that makes it convert — the offer construction, the page architecture, the creative, the review volume, the email flows — sits <em>above</em> the platform. It is the clearest possible confirmation of §1: build your own stack for product capability you cannot otherwise have, not because a competitor's storefront looks better than yours.</p>
+<p>It also means the reference is fully reproducible either way. Every mechanic below is listed with its own-build equivalent in §12.6.</p>
+<h3>12.3 Page architecture — the product page <em>is</em> the site</h3>
+<p>The homepage is deliberately thin, a doorway with one job: get to the product page.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Homepage block</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>Announcement bar, "LIMITED TIME OFFER" + countdown</td><td>Manufacture urgency (see §12.7)</td></tr>
+<tr><td class="num">2</td><td>Hero — "Your Unfair Advantage. One Gummy At A Time" → CTA "Get Started Now"</td><td>One thesis, one action</td></tr>
+<tr><td class="num">3</td><td>Four expandable benefit cards</td><td>Benefit before ingredient</td></tr>
+<tr><td class="num">4</td><td>Brand story — "Become Your Best Self"</td><td>Identity, not product</td></tr>
+<tr><td class="num">5</td><td>Social proof — "Loved By Thousands!", "Over 5.6M Views On TikTok", 4.8/5</td><td>Borrowed credibility</td></tr>
+<tr><td class="num">6</td><td>"Money-Back Guarantee", 30 days</td><td>Remove the risk</td></tr>
+<tr><td class="num">7</td><td>Footer — policies, payment icons</td><td>Legitimacy</td></tr>
+</tbody></table></div>
+<p>The product page carries the real weight — <strong>17 stacked blocks</strong>, in this order:</p>
+<ol><li>Six-image gallery with thumbnails</li><li>Title, 4.7 stars, "8,342 Happy Customers"</li><li>Tagline — "Replaces your morning coffee. Upgrades your entire day."</li><li>Four benefit icons</li><li><strong>Bundle tier selector</strong> (§12.4)</li><li>Subscription option</li><li>"ADD TO CART"</li><li>Free-gift stack — "LIMITED TIME - FREE GIFT OFFER"</li><li>Guarantee badge — "Less than 1% of customers claim our 30-Day Money Back Guarantee"</li><li>FAQ, expandable</li><li>"Are these gummies for me?" — self-qualification</li><li>"How do they work?" — mechanism</li><li>"See it in action" — UGC video, "Over 4.4M Views On Instagram"</li><li>"As seen in" — press logos</li><li>Ingredient carousel, then "THE GLOWFARE PROMISE"</li><li>Founder story, then "TRANSFORM YOURSELF IN 90 DAYS" (day 1 / 30 / 60 / 90)</li><li>Comparison table — "We're Not Just Another Energy Booster" — then reviews, then the guarantee again</li></ol>
+<p>The pattern worth taking: <strong>the PDP is a long-form landing page that answers every objection in order, and the buy box sits at the top with everything below it existing only to send the reader back up to it.</strong> A sticky add-to-cart makes that return trip free.</p>
+<h3>12.4 The offer architecture</h3>
+<p>This is the most transferable part, and it is pricing design rather than web design. Values confirmed against the product JSON:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Tier</th><th>Label</th><th>Price</th><th>Compare-at</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>"Buy 1 Pack Get 1 Free — 30 DAY SUPPLY"</td><td class="num">$69</td><td class="num">$137.99</td></tr>
+<tr><td class="num">2</td><td>"Buy 2 Pack Get 2 Free — <strong>MOST POPULAR!</strong>"</td><td class="num">$119</td><td class="num">$237.99</td></tr>
+<tr><td class="num">3</td><td>"Buy 3 Pack Get 3 Free — <strong>BEST VALUE!</strong>"</td><td class="num">$169</td><td class="num">$337.99</td></tr>
+</tbody></table></div>
+<p>Note the construction: buy-one-get-one framing rather than a percentage, an anchor at roughly 2×, the middle tier labelled most popular and the top tier labelled best value, so the decision becomes <em>which</em> tier rather than <em>whether</em>. Layered on top: a subscription option ("Zero Commitment | Exclusive Discounts | Cancel Anytime"), a four-item free-gift stack, and a <strong>$4.99 shipping protection</strong> upsell in the cart drawer with a free-shipping progress bar.</p>
+<p><strong>Translating this to jerseys.</strong> Quantity bundles do not map — nobody wants six of the same shirt. The equivalents are:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Glowfare mechanic</th><th>Jersey-store equivalent</th></tr></thead>
+<tbody>
+<tr><td>Quantity tiers (1/2/3 packs)</td><td><strong>Multi-buy across different shirts</strong> — 2 for 15% off, 3 for 25%</td></tr>
+<tr><td>—</td><td><strong>Kit bundle</strong> — shirt + shorts + socks at a bundle price</td></tr>
+<tr><td>Free-gift stack</td><td><strong>Personalisation included free</strong> at the top tier (name + number print)</td></tr>
+<tr><td>Subscription (Recharge)</td><td><strong>Season drop list</strong> — pre-order the new kit, notify on restock</td></tr>
+<tr><td>Shipping protection $4.99</td><td>Same, as a real line-item product</td></tr>
+<tr><td>Percentage-off codes</td><td><strong>Free shipping over $X</strong> instead — protects the processed amount and the effective card rate (§9.1), and $4.99 is a cheaper giveaway than 10% of $64.99</td></tr>
+<tr><td>"30 DAY SUPPLY" framing</td><td><strong>Size confidence</strong> — free size exchange, fit guide, "true to size" review data</td></tr>
+</tbody></table></div>
+<p>Personalisation deserves emphasis: it is a paid add-on that raises AOV, is impossible to returns-abuse, and — per §1 and §9 — is exactly the kind of product capability that justifies owning the stack in the first place. It is the strongest argument in this whole document for building.</p>
+<h3>12.5 Design language</h3>
+<p><strong>Take the brand from AnyJersey, not from Glowfare.</strong> The existing store already has a coherent athletic identity, read from its live CSS:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Role</th><th>AnyJersey (use this)</th><th>Glowfare (do not)</th></tr></thead>
+<tbody>
+<tr><td>Display face</td><td><strong>Oswald</strong> — condensed, uppercase, reads as sports lettering</td><td>Rounded sans</td></tr>
+<tr><td>Body face</td><td><strong>Inter</strong></td><td>Rounded sans</td></tr>
+<tr><td>Accent</td><td><strong><code>#F9E806</code></strong> high-visibility yellow</td><td><code>#EF4A65</code> coral</td></tr>
+<tr><td>Secondary</td><td><strong><code>#108474</code></strong> teal</td><td><code>#6B2FA0</code> purple</td></tr>
+<tr><td>Ink / ground</td><td><strong><code>#121212</code></strong> on white</td><td><code>#211A28</code> on white</td></tr>
+</tbody></table></div>
+<p>Oswald set uppercase is doing real work: it is the register of a shirt number and a scoreboard, and it is exactly what a supplement brand cannot borrow. Keep it. The yellow is the single bold spend — use it for one action colour and nothing else, and let jersey photography carry the rest of the page.</p>
+<p>What to take from Glowfare here is structural, not chromatic: full-bleed single column, white ground so product imagery carries the page, one high-contrast action colour, badge rows, sticky add-to-cart.</p>
+<p><strong>One data note.</strong> Titles are stored Title Case (<code>Buffalo Bills Josh Allen Grey Jersey</code>) and uppercased in the display layer via <code>text-transform</code>. The live store stores them shouted, which makes the data wrong for search, alt text, structured data and any future export. Keep the caps as a presentation choice, not a storage one.</p>
+<h3>12.6 Mechanics inventory → own-build equivalents</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Mechanic</th><th>Glowfare uses</th><th>Own-build equivalent</th><th>Effort</th></tr></thead>
+<tbody>
+<tr><td>Page building without deploys</td><td>GemPages</td><td>CMS with section blocks (Payload, §4)</td><td>2 weeks</td></tr>
+<tr><td>Bundle and tier pricing</td><td>Theme + variants</td><td>Price-rules engine over <code>discounts</code> (§6)</td><td>1 week</td></tr>
+<tr><td>Reviews with photos</td><td>Judge.me</td><td>Own reviews + moderation, or keep Judge.me</td><td>1 week</td></tr>
+<tr><td>Email and SMS flows</td><td>Klaviyo</td><td>Omnisend or Brevo (§4)</td><td>included</td></tr>
+<tr><td>Cart and post-purchase upsell</td><td>Rebuy</td><td>Own upsell slot in cart drawer</td><td>1 week</td></tr>
+<tr><td>Subscriptions</td><td>Recharge</td><td>Stripe Billing, 0.7% of billing volume</td><td>1–2 weeks</td></tr>
+<tr><td>Attribution</td><td>Triple Whale</td><td>PostHog + server-side events</td><td>1 week</td></tr>
+<tr><td>Cart drawer, free-ship progress</td><td>Theme</td><td>Own component</td><td>3 days</td></tr>
+<tr><td>Shipping protection upsell</td><td>App</td><td>Own line-item product</td><td>3 days</td></tr>
+<tr><td>Countdown and urgency</td><td>App</td><td>Own — but read §12.7 first</td><td>2 days</td></tr>
+</tbody></table></div>
+<p>The full list sums to roughly <strong>7–9 engineer-weeks</strong>, but email, reviews and attribution overlap Phases 4 and 5. The genuinely additional work is about <strong>3 weeks — Phase 6 in §9.5</strong>. Budget it explicitly; the storefront conversion surface is the part most often left out of build estimates entirely.</p>
+<h3>12.7 What not to copy — EU legal exposure</h3>
+<p>Glowfare sells primarily into the US. Several of its highest-performing tactics are unlawful for EU customers — and since October 2024 the review tactics are directly actionable <strong>in the US too</strong>, at $51,744 per violation. This is not a stylistic objection.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Tactic on the site</th><th>EU position</th></tr></thead>
+<tbody>
+<tr><td><strong>Countdown timer that resets</strong> on every visit</td><td>Blacklisted outright — Unfair Commercial Practices Directive, Annex I: falsely stating a product will be available only for a very limited time. Prohibited per se, no proof of harm needed.</td></tr>
+<tr><td><strong>"$69, was $137.99"</strong> as a permanent compare-at price</td><td>Omnibus Directive requires any price-reduction announcement to reference the <strong>lowest price charged in the previous 30 days</strong>. A compare-at that was never actually charged is a prohibited practice, and Forbrugerombudsmanden actively enforces it in Denmark.</td></tr>
+<tr><td><strong>"Low Stock - Selling Fast"</strong> when not true</td><td>Misleading commercial practice.</td></tr>
+<tr><td><strong>Review counts that disagree</strong> — 137,135 on the homepage vs 8,342 on the product page</td><td>EU: Omnibus requires you to disclose whether and how you verify reviews. US: the <strong>FTC Consumer Reviews and Testimonials Rule</strong> (effective 21 Oct 2024) bans fake, AI-generated and insider reviews, review suppression and incentivised sentiment — <strong>$51,744 per violation</strong>, with the first warning letters issued 22 Dec 2025. This one is enforceable in your primary market.</td></tr>
+<tr><td><strong>"Clinically Proven Results"</strong>, comparison to a prescription stimulant</td><td>Unsubstantiated claims. Not directly applicable to jerseys, but the underlying rule is: every factual claim needs evidence.</td></tr>
+<tr><td><strong>Four-item "free gift" stack</strong> whose cost is inside the price</td><td>"Free" must mean free.</td></tr>
+<tr><td><strong>Heavy third-party script load</strong></td><td>Collides with your PCI script-inventory duty (§7.5), EU consent-before-firing and US Global Privacy Control (§7.6, §7.7).</td></tr>
+</tbody></table></div>
+<p><strong>The lawful version of the same playbook</strong> — and it converts nearly as well:</p>
+<ul><li><strong>Real deadlines only.</strong> A drop that genuinely closes Sunday, a pre-order window with a real production cut-off, a restock date. Truthful scarcity is more credible than a fake clock.</li><li><strong>Honest reference pricing.</strong> Show the 30-day lowest price and be able to prove it from your own order data. Owning the database makes this straightforward — a real advantage of the own-build.</li><li><strong>Verified reviews only</strong>, with the verification method stated, sourced from actual orders.</li><li><strong>Real inventory numbers</strong> — you have them; "3 left in L" is both true and more persuasive.</li><li><strong>Guarantee near the CTA.</strong> Free size exchange within 30 days is the jersey-category equivalent of the money-back guarantee, and it directly answers the real objection, which is fit.</li></ul>
+<h3>12.8 Blueprint: AnyJersey portrayal, Glowfare structure</h3>
+<p>AnyJersey's proposition and brand, in Glowfare's page architecture, with one image per product (§13.6) and honest urgency (§12.7).</p>
+<p><strong>Homepage</strong> — keep AnyJersey's order; it is already close:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Block</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>Announcement: "Can't find your jersey? Request it — we'll source it for you fast"</td><td>AnyJersey, unchanged</td></tr>
+<tr><td class="num">2</td><td>Hero: <strong>FIND ANY JERSEY</strong> / "Hard-to-find Jerseys Shipped On-Demand", one CTA</td><td>AnyJersey, unchanged</td></tr>
+<tr><td class="num">3</td><td>Trust row: Tracked Shipping · Trusted by Fans · Secure checkout · Rare Jerseys</td><td>AnyJersey, unchanged</td></tr>
+<tr><td class="num">4</td><td>Verified rating, sourced from real orders</td><td>AnyJersey + §12.7</td></tr>
+<tr><td class="num">5</td><td><strong>Shop by league / team / player</strong> — 3,591 products need real facets, not four collections</td><td>New (§13.3)</td></tr>
+<tr><td class="num">6</td><td>Best Sellers, NFL 2026, Rookie Class grids</td><td>AnyJersey, unchanged</td></tr>
+<tr><td class="num">7</td><td><strong>Personalisation teaser with live preview</strong></td><td>New — the business case (§9.6)</td></tr>
+<tr><td class="num">8</td><td>Request block: the three-step process</td><td>AnyJersey, promoted</td></tr>
+<tr><td class="num">9</td><td>Newsletter, footer, payment marks</td><td>AnyJersey, unchanged</td></tr>
+</tbody></table></div>
+<p><strong>Product page</strong> — this is where the work is. AnyJersey's PDP is currently a single image, an all-caps title, a price, a size dropdown, an add-to-cart and a newsletter. Glowfare's is 17 blocks of objection handling. The target:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Block</th><th>Status today</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>Single image, large, zoom on click</td><td><span class="pick" aria-label="recommended">pick</span> exists</td></tr>
+<tr><td class="num">2</td><td>Title, verified rating, price</td><td><span class="pick" aria-label="recommended">pick</span> exists</td></tr>
+<tr><td class="num">3</td><td><strong>Size selector as buttons, not a dropdown</strong>, with a fit note</td><td>⚠️ dropdown</td></tr>
+<tr><td class="num">4</td><td><strong>Personalisation module</strong> — name, number, live preview, clear add-on price</td><td>❌ missing</td></tr>
+<tr><td class="num">5</td><td><strong>Sticky "Add to cart"</strong></td><td>❌ missing</td></tr>
+<tr><td class="num">6</td><td><strong>Delivery estimate + free-exchange promise, directly under the button</strong></td><td>❌ missing</td></tr>
+<tr><td class="num">7</td><td><strong>Description</strong> — what it is, colourway, season</td><td>❌ missing (now generated, §13.7)</td></tr>
+<tr><td class="num">8</td><td><strong>Fit and sizing guide</strong> — the biggest objection in apparel</td><td>❌ missing</td></tr>
+<tr><td class="num">9</td><td><strong>FAQ</strong> — sourcing, lead time, returns, personalisation</td><td>❌ missing</td></tr>
+<tr><td class="num">10</td><td><strong>Verified reviews</strong>, filterable by "true to size"</td><td>⚠️ site-wide only, not per product</td></tr>
+<tr><td class="num">11</td><td><strong>"Can't find your size or colourway?"</strong> → request block, pre-filled</td><td>⚠️ generic version exists</td></tr>
+<tr><td class="num">12</td><td>Related: same team, same player, complete the kit</td><td>❌ missing</td></tr>
+</tbody></table></div>
+<p>Blocks 3–9 are the entire gap between the current store and the reference, and none of them needs photography — which is what makes the one-image decision affordable. <strong>The copy, the fit information and the personalisation preview do the work the missing five photos would have done.</strong></p>
+<p>Two rules to hold onto:</p>
+<ol><li><strong>The buy box is at the top; everything below it exists to send the reader back up.</strong> A sticky add-to-cart makes that trip free.</li><li><strong>Never show "sold out" on a sourcing model.</strong> Show a lead time. The request block is the fallback, and it captures the customer instead of losing them.</li></ol>
+</section>
+<section id="scatalog-data-readiness">
+<h2><span class="secnum">13</span><span>Catalog data readiness</span></h2>
+<p>The 2026-08-18 archive was profiled and a migration path built (<code>tools/</code>). The catalog is in better shape than the CSV exports suggest, and worse shape than a launch needs.</p>
+<h3>13.1 What is actually there</h3>
+<p><code>products_full.jsonl</code> in the full backup is the authoritative source — richer than the CSV exports, which carry no SKUs, no descriptions and inconsistent option names. The four <code>products_export_*.csv</code> files are disjoint slices of the same catalog.</p>
+<div class="table-wrap"><table>
+<tbody>
+<tr><td>Products</td><td><strong>4,205</strong> — 3,593 active, 609 draft, 2 archived, 1 unlisted</td></tr>
+<tr><td>Variants</td><td><strong>27,703</strong></td></tr>
+<tr><td>Distinct images</td><td><strong>4,635</strong> referenced, from 6,323 archived blobs — <strong>3.09 GB</strong></td></tr>
+<tr><td>Collections</td><td>21, with 11,190 memberships</td></tr>
+<tr><td>Price</td><td>$64.99 on 25,268 of 27,703 variants</td></tr>
+<tr><td>Integrity</td><td>verified against the archive's own <code>checksums.sha256</code>, zero missing files</td></tr>
+</tbody></table></div>
+<p>After filtering drafts and two zero-priced products, the import emits <strong>3,591 products and 23,997 variants</strong> — then <strong>3,155 products and 21,188 variants</strong> once duplicate listings are merged (§13.10).</p>
+<h3>13.2 Where the images belong — not in Postgres</h3>
+<p>Bytes go in object storage; the database holds metadata only. Keys are content-addressed as <code>originals/&lt;sha256&gt;.&lt;ext&gt;</code>, which makes the upload idempotent and collapses the 6,323 archived blobs onto the 4,635 images actually in use. The reasons are operational:</p>
+<ul><li><strong>Backups and restore.</strong> 3 GB of images would ride along in every base backup and point-in-time restore. The database should restore in minutes.</li><li><strong>Buffer cache.</strong> Large TOAST values evict hot index pages, so checkout gets slower because someone opened a product page.</li><li><strong>Connection pressure.</strong> Image traffic runs 10–50× page traffic; each request would hold a DB connection and compete with the cart.</li><li><strong>No CDN semantics.</strong> ETag, <code>Cache-Control</code> and range requests would all be hand-rolled.</li><li><strong>Derivatives.</strong> AVIF/WebP at ~5 breakpoints turns 4,635 originals into tens of thousands of files, which should be generated on demand at the edge and stored nowhere.</li><li><strong>Cost.</strong> R2 is ~$0.015/GB-month with zero egress — about <strong>$0.05/month</strong> for this archive — against managed Postgres at ~$0.20–0.35/GB before backup multiples.</li></ul>
+<p>Originals stay private; only derivatives are served.</p>
+<h3>13.3 The taxonomy has to be reconstructed</h3>
+<p>There is no usable structured data to navigate by: <strong>4,014 of 4,205 products carry the single tag <code>jersey</code></strong>, <code>productType</code> has four values, and the <code>custom.team</code>/<code>player</code>/<code>sport</code> metafields are set on 60 products. Titles, however, are structured, so team, player, colourway, season and edition are recovered by parsing:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Field</th><th>Resolved</th></tr></thead>
+<tbody>
+<tr><td>League</td><td class="num">95%</td></tr>
+<tr><td>Team</td><td class="num">94%</td></tr>
+<tr><td>Player</td><td class="num">91%</td></tr>
+<tr><td>Colourway</td><td class="num">89%</td></tr>
+<tr><td>Season</td><td class="num">15%</td></tr>
+<tr><td>Edition</td><td class="num">8%</td></tr>
+</tbody></table></div>
+<p>The remaining <strong>262 products (7%) are flagged <code>needs_review</code></strong> rather than guessed. These derived columns are what faceted search and navigation are built on, and they are the §6 data-model work made concrete.</p>
+<h3>13.4 Cleanups the import performs</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Problem in source</th><th>Handling</th></tr></thead>
+<tbody>
+<tr><td>143 distinct size values (<code>Xl</code>, <code>XXL</code>, <code>Youth XL</code>, <code>Mens S</code>, <code>Default Title</code>, <code>Adult2xl</code>)</td><td>Normalised to a canonical set; <strong>fit split into its own dimension</strong>, because <code>Mens S</code> and <code>Womens S</code> are two real variants, not a duplicate</td></tr>
+<tr><td>819 duplicate SKUs; 26,272 variants with none</td><td>Source SKUs used only where unique; otherwise deterministic <code>AJ-&lt;hash&gt;-&lt;size&gt;</code></td></tr>
+<tr><td>2 products priced $0.00</td><td>Rejected, not imported</td></tr>
+<tr><td>124 <code>untitled-*</code> handles</td><td>Slugs regenerated from parsed fields — free to do, since a greenfield store has no redirect obligation</td></tr>
+<tr><td>Zero alt text</td><td>Carried through as empty; needs generating for §7.9 accessibility</td></tr>
+</tbody></table></div>
+<h3>13.5 Regulatory fields exist and are empty</h3>
+<p>Field <em>names</em> are not regulated, so the schema is designed for this store rather than inherited from Shopify's export shape. Certain <em>information</em> is regulated, so it lives in first-class columns: <code>manufacturer_name</code>, <code>manufacturer_address</code>, <code>eu_responsible_person</code>, <code>fibre_composition</code>, <code>country_of_origin</code>, <code>hs_code</code>, <code>care_instructions</code>, <code>safety_information</code>.</p>
+<p><strong>All 3,591 imported products have every one of them empty.</strong> That is a hard gate on EU orders (§7.8), not a cosmetic gap, so the schema carries a partial index (<code>products_eu_ready_idx</code>) letting the application enforce it rather than trusting a spreadsheet.</p>
+<h3>13.6 One image per product — decided, and what it costs</h3>
+<p><strong>Decision: ship with the single image the catalog already has.</strong> No law requires a minimum number of product images. What EU consumer law requires (Consumer Rights Directive Art. 6) is that the <em>main characteristics of the goods</em> are disclosed before purchase "to an extent appropriate to the medium" — text satisfies that. GPSR requires product and safety information, also text. Accessibility requires alt text on whatever images do exist, which is now generated for all 4,853 (§13.7). So one image is lawful, and this is a commercial call rather than a compliance one.</p>
+<p>What it costs, so the decision is made with open eyes:</p>
+<ul><li><strong>Returns.</strong> Apparel returns are driven by fit and appearance mismatch. A buyer who cannot see the back, the crest or the print detail is likelier to be surprised on arrival. At a $64.99 price point with $4.99 shipping, each return is roughly a <strong>full order of margin</strong> plus the outbound label. This is the real cost, and it does not show up until after launch.</li><li><strong>Conversion.</strong> The reference storefront runs a six-image gallery for a reason (§12.2).</li><li><strong>Personalisation.</strong> The print add-on is the entire business case (§9.6), and it is the thing a buyer most wants to see before paying extra for it. A single front-of-shirt shot cannot show a name and number on the back.</li></ul>
+<p class="lede"><strong>Two mitigations worth taking, both cheap:</strong></p>
+<ol><li><strong>A live personalisation preview</strong> rendered from the parameters, not photographed. It substitutes for the missing back shot exactly where it matters most, and it is already in Phase 2.</li><li><strong>A detailed fit and sizing block</strong> plus a generous free-exchange policy, doing the work the missing photography would have done. §12.4 already recommends size confidence as the jersey-category equivalent of a money-back guarantee.</li></ol>
+<p><strong>Photograph the top sellers only.</strong> Once there is order data, a second and third shot for the best-selling few hundred products is a targeted spend against known revenue rather than a 3,591-product programme. Revisit this then.</p>
+<h3>13.7 Descriptions and alt text — generated</h3>
+<p>The remaining content gaps are closed (<code>tools/describe.py</code>):</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>Before</th><th>After</th></tr></thead>
+<tbody>
+<tr><td>Products with a description</td><td class="num">89</td><td><strong>3,591</strong></td></tr>
+<tr><td>SEO title / meta description</td><td class="num">1</td><td><strong>3,591</strong></td></tr>
+<tr><td>Image alt text</td><td><strong>0</strong></td><td><strong>4,853</strong></td></tr>
+</tbody></table></div>
+<p>The 89 pre-existing descriptions were kept and used as the voice model, but not copied: they are one template with the names swapped, and near-identical text across thousands of URLs is thin content that competes with itself. The generator composes from several sentence patterns selected deterministically per product, giving <strong>98.7% distinct strings</strong> across 3,502 descriptions — stable across re-runs, so the copy does not churn.</p>
+<p>Two things it deliberately fixes rather than inherits:</p>
+<ul><li><strong>Sizes are stated from the variant data.</strong> The original template claimed "men's, youth, and women's sizes from S-XXL" on every product, while the catalog is overwhelmingly unisex S–4XL. Advertising sizes you do not stock is a misleading claim (§7.10), not a copy nit.</li><li><strong>No unverifiable assertions.</strong> Nothing claims "officially licensed", "authentic", a fabric composition, or a stitching method, because none of that is in the data. Inventing it is an FTC §5 exposure and a textile-labelling problem. Fabric and care belong in the regulatory columns (§13.5) once known.</li></ul>
+<p>Alt text names the player, team, colourway and garment. Second and later images are numbered rather than described as "back", because an alt text that guesses the view is worse than one that does not.</p>
+<h3>13.8 What remains open, ranked by what it actually costs</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Gap</th><th>Count</th><th>Consequence</th></tr></thead>
+<tbody>
+<tr><td><strong>Licensing status unrecorded</strong></td><td>whole catalog</td><td>Not in the data anywhere. See §13.9 — this outranks everything else here</td></tr>
+<tr><td><strong>Youth sizes without CPSIA documentation</strong></td><td>199 products, 849 variants</td><td>US children's-apparel rules apply <strong>at launch</strong>, not at EU expansion (§13.9)</td></tr>
+<tr><td><strong>Regulatory block empty</strong></td><td>3,591 of 3,591</td><td>Hard gate on EU sales (§7.8). Partly relevant to the US too — see §13.9</td></tr>
+<tr><td><strong>Products flagged <code>needs_review</code></strong></td><td class="num">262</td><td>Housekeeping, not a blocker — see below</td></tr>
+<tr><td><strong>Second product image</strong></td><td><strong>2,174</strong> products (69%, was 2,607 of 3,591)</td><td>Accepted (§13.6). Revisit for top sellers once there is order data</td></tr>
+</tbody></table></div>
+<p><strong>On the 262 flagged products — smaller than it looks.</strong> 221 have an unresolved team and 42 defaulted their garment. But collection membership comes from the archive independently of title parsing, so <strong>all 221 are still in collections; only 13 products in the whole catalog sit in none.</strong> Navigation is not broken. What the gap actually costs is narrower: those products are missing from <em>faceted</em> filters (filter by team or league and they do not appear), their slugs and SEO titles are weaker, and their generated copy uses the no-team sentence patterns. 176 products also have no league.</p>
+<p>The fix is a vocabulary gap, not a data problem: add the missing club and programme names to <code>tools/vocab.py</code> and re-run. That is an afternoon, and it is worth doing before launch because league and team facets are the primary way anyone navigates a 3,591-product jersey catalog.</p>
+<h3>13.9 Two things the empty columns are actually telling you</h3>
+<p>An empty column looks like a data-entry chore. In this case it is a signal that the underlying facts are unknown, and two of them carry real consequences.</p>
+<p><strong>1. Nobody knows what the garments are made of, or who made them.</strong> That is a supplier question, not 3,591 lookups — the catalog is one vendor and probably one or two fabric specs, so it is a single conversation. Worth having early, because:</p>
+<ul><li><strong>It is not purely an EU problem.</strong> US law requires fibre content, country of origin and manufacturer identity (or RN number) on the <strong>garment label</strong> under the Textile Fiber Products Identification Act, and FTC textile rules extend fibre-content disclosure into mail-order and online advertising. Confirm the exact online obligation with counsel, but do not assume a US-only launch removes it.</li><li><strong>199 products carry youth sizes</strong> (849 variants). Children's apparel in the US brings in CPSIA: permanent tracking labels, flammability under 16 CFR 1610, and the drawstring rule for children's upper outerwear under 16 CFR 1120, which the CPSC treats as a substantial product hazard. This applies <strong>at launch</strong>, and it is the most under-appreciated exposure in the dataset. If the supplier cannot document it, the cheapest answer is to not sell youth sizes on day one.</li><li><strong>It gates the EU entirely</strong> (§7.8), and the stated plan is to sell into other regions.</li><li>Support cannot answer "what is it made of?" until someone can.</li></ul>
+<p><strong>2. The catalog's licensing status is not recorded anywhere.</strong> The products are 2,186 NFL, 501 soccer, 470 MLB, 168 NCAA, 44 NBA and 9 NHL items carrying team names, player names and crests. Those are trademarked marks, and nothing in the archive — no metafield, no vendor note, no supplier record — says whether the product is licensed.</p>
+<p>This is worth resolving before any engineering spend, because it is the only risk in this document that can end the business rather than cost it money:</p>
+<ul><li><strong>Payment processing.</strong> Stripe's and PayPal's terms prohibit counterfeit and IP-infringing goods. A processor termination mid-season ends the store regardless of how good the stack is, and it takes the payout balance with it for a while. That makes this a §5 risk, not just a legal one.</li><li><strong>Takedowns.</strong> Leagues and their enforcement agents pursue domains, listings, ads accounts and registrars, not just sellers.</li><li><strong>Lanham Act exposure</strong>, including statutory damages for counterfeit marks.</li><li><strong>It changes the build-versus-buy answer.</strong> Shopify absorbs some of this risk as the merchant of record's platform; owning the stack means owning the processor relationship and the domain directly, with nobody between you and an enforcement notice.</li></ul>
+<p>None of this is a conclusion about the products — the data simply does not say. But it is the first question to answer, because a confirmed licensing position makes everything in this document actionable, and an unconfirmed one makes the rest of it premature.</p>
+<p>One piece of genuinely good news: <strong>zero compare-at prices are set anywhere in the catalog.</strong> There is no reference price to inherit, so the 30-day-lowest-price discipline in §7.10 can be built correctly from the first day rather than retrofitted onto a history of invented "was" prices.</p>
+<h3>13.10 Duplicate listings, merged</h3>
+<p><strong>21% of the catalog was the same product listed several times.</strong> 328 exact duplicate titles across 764 products — "Las Vegas Raiders Black Shorts" existed 6 times, "Los Angeles Dodgers Blue Shorts" 14. Same price in 314 of the 328 groups, but 313 had <em>different</em> photographs.</p>
+<p>Merged rather than deleted, because the photographs were the point:</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>Before</th><th>After</th></tr></thead>
+<tbody>
+<tr><td>Products</td><td class="num">3,591</td><td><strong>3,155</strong></td></tr>
+<tr><td>Variants</td><td class="num">23,997</td><td class="num">21,188</td></tr>
+<tr><td>Duplicate titles</td><td class="num">328</td><td><strong>0</strong></td></tr>
+<tr><td>Products with one image</td><td>2,607 (73%)</td><td><strong>2,174 (69%)</strong></td></tr>
+<tr><td>Products with 3+ images</td><td class="num">130</td><td><strong>247</strong></td></tr>
+<tr><td>Most images on one product</td><td class="num">6</td><td class="num">26</td></tr>
+</tbody></table></div>
+<p>One survivor per title keeps its taxonomy and copy; the other listings' images and sizes fold into it, deduplicated by <code>sha256</code>. <code>tools/out/merge_log.csv</code> records all 436 merges for provenance, and re-running <code>tools/extract.py --write</code> regenerates the un-merged CSVs, so the merge is reversible.</p>
+<p><strong>Be honest about the size of the image win.</strong> It is real but modest: 649 images were redistributed, products with three or more images went from 130 to 247, and the single-image share fell only from 73% to 69%. Merging was worth doing on its own merits — duplicates split reviews, compete on facets, and inflated the catalog by a fifth — but it does not solve the photography gap. Roughly seven products in ten still have one image.</p>
+<p>Two things this surfaced:</p>
+<ul><li><strong>A third of some teams' listings were duplicates.</strong> Dallas Cowboys went from 144 products to 98, and the NFL facet from 2,237 to 2,018. Any pre-merge count elsewhere in this document is inflated by roughly that ratio.</li><li><strong>Deleting a Medusa product does not cascade to a linked custom module.</strong> 436 <code>jersey_detail</code> rows were left orphaned, which silently inflated every facet count until they were pruned. Worth knowing before the next bulk delete.</li></ul>
+</section>
+<section id="sshipping-economics-and-the-rate-model">
+<h2><span class="secnum">14</span><span>Shipping economics and the rate model</span></h2>
+<p>$4.99 was carried through this document as the shipping charge. Checked against real carrier rates, it is roughly break-even domestically and nowhere near viable internationally — and since the plan is to sell beyond the US, the rate model has to be designed rather than assumed.</p>
+<h3>14.1 What a jersey actually costs to ship</h3>
+<p>A jersey in a poly mailer is roughly 7–16 oz. Commercial rates, verified August 2026:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Lane</th><th>Carrier</th><th>Real cost</th><th>Charged</th><th>Position</th></tr></thead>
+<tbody>
+<tr><td><strong>US domestic</strong></td><td>USPS Ground Advantage, 1 lb</td><td><strong>~$7.61</strong></td><td class="num">$4.99</td><td><strong>−$2.62</strong></td></tr>
+<tr><td>US domestic</td><td>USPS Ground Advantage, ~8 oz</td><td class="num">~$5.00–5.50</td><td class="num">$4.99</td><td>~break-even</td></tr>
+<tr><td>US domestic</td><td>UPS/FedEx Ground, 1 lb</td><td>~$7.67 + <strong>$6.45–6.95 residential surcharge</strong></td><td class="num">$4.99</td><td>heavily negative</td></tr>
+<tr><td><strong>US → UK / EU</strong></td><td>USPS First-Class Package International, 1 lb</td><td><strong>$25–37</strong></td><td>—</td><td>must be priced</td></tr>
+<tr><td>US → UK / EU</td><td>DHL / FedEx / UPS express</td><td class="num">$70–155</td><td>—</td><td>not a DTC option</td></tr>
+<tr><td>US → AU</td><td>as above</td><td class="num">$25–37</td><td>—</td><td>must be priced</td></tr>
+</tbody></table></div>
+<p>Three consequences:</p>
+<ol><li><strong>$4.99 works only at low weight and only on USPS.</strong> Ground Advantage has no residential surcharge; UPS and FedEx do, at $6.45–6.95, which alone exceeds the shipping charge. <strong>Weigh a packed jersey before committing</strong> — at 8 oz the current price is fine, at 1 lb it costs roughly 4% of revenue.</li><li><strong>USPS raised Ground Advantage 7.8% in January 2026 and layered ~8% more in April.</strong> A flat charge set once will erode; it needs an annual review with a named owner.</li><li><strong>International cannot be flat-rated at anything near $4.99.</strong> At $25–37 the parcel is <strong>38–57% of the product price.</strong> This is the single hardest number in the international plan.</li></ol>
+<h3>14.2 What an EU order actually costs the customer</h3>
+<p>Combining the parcel cost with §7.2's rules — the €150 duty exemption ended 1 July 2026, a €3 duty applies per HS code per parcel, and import VAT applies to every commercial parcel regardless of value:</p>
+<div class="table-wrap"><table>
+<tbody>
+<tr><td>Jersey</td><td class="num">$64.99</td></tr>
+<tr><td>Shipping (at cost)</td><td class="num">$24.99</td></tr>
+<tr><td>Import VAT (~21% average EU rate, on goods + shipping)</td><td class="num">~$18.87</td></tr>
+<tr><td>Customs duty (€3 flat)</td><td class="num">~$3.25</td></tr>
+<tr><td><strong>Customer pays</strong></td><td><strong>~$112.10</strong></td></tr>
+<tr><td>Stripe fee (5.4% + $0.30 on a EUR card)</td><td class="num">~$6.35</td></tr>
+</tbody></table></div>
+<p><strong>A $64.99 jersey lands at ~$112 in the EU — a 72% uplift.</strong> That is not a pricing mistake to be tuned away; it is what cross-border DTC on a low-value parcel costs after July 2026. Any international plan has to start from this number.</p>
+<h3>14.3 Proposed rate model</h3>
+<p>Zone-based, priced at or near cost, with duties and VAT collected at checkout rather than sprung on the customer at the door. <strong>DDP, not DAP</strong> — a surprise bill on delivery produces refusals, returns and chargebacks, and the refused parcel still costs you the outbound leg.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Zone</th><th>Countries</th><th>Rate</th><th>Free over</th><th>Rationale</th></tr></thead>
+<tbody>
+<tr><td><strong>1</strong></td><td>US</td><td><strong>$4.99</strong></td><td><strong>$75</strong></td><td>Near cost at low weight. The free-shipping threshold is the discount mechanic §9.1 prefers over percentage codes</td></tr>
+<tr><td><strong>2</strong></td><td>Canada</td><td><strong>$19.99</strong></td><td class="num">$150</td><td>Short lane, still 4× domestic</td></tr>
+<tr><td><strong>3</strong></td><td>UK, EU</td><td><strong>$24.99</strong></td><td class="num">$175</td><td>At the low end of $25–37; VAT and the €3 duty are separate checkout lines via IOSS (§7.2)</td></tr>
+<tr><td><strong>4</strong></td><td>Australia, NZ, Japan, Korea</td><td><strong>$29.99</strong></td><td class="num">$200</td><td>Longer lane, no duty-collection scheme as favourable as IOSS</td></tr>
+<tr><td><strong>5</strong></td><td>Rest of world</td><td><strong>$34.99</strong> or quote</td><td>—</td><td>Enable deliberately, country by country</td></tr>
+</tbody></table></div>
+<p>Two design points worth stating explicitly:</p>
+<ul><li><strong>Free-shipping thresholds rise with the zone cost.</strong> A $75 threshold makes sense when shipping costs $5; at $25 it would give away a third of the order value. The threshold is a lever to amortise the parcel across more items, which is exactly what makes international orders work.</li><li><strong>Multi-item orders are where international becomes viable.</strong> The parcel cost is largely fixed, so a two-jersey EU order carries ~$12.50 of shipping per item instead of $25. This is the strongest argument for the multi-buy mechanic in §12.4 — internationally it is not an AOV nicety, it is the difference between a viable order and a marginal one.</li></ul>
+<h3>14.4 The structural fix, when volume justifies it</h3>
+<p>Everything above is the cost of shipping single parcels across a border. An <strong>EU fulfilment hub</strong> removes most of it: EU orders become domestic EU parcels at roughly €5, the €3-per-parcel customs duty disappears, delivery drops from 2 weeks to 2 days, and returns become tractable. It also changes the tax position — an EU-established stock location may bring OSS into play instead of IOSS, and the GPSR responsible-person requirement is satisfied differently.</p>
+<p>Do not do this early: it means EU VAT registration, a 3PL contract and inventory committed abroad. But it is the answer at volume, and the international rate card above should be understood as the interim position rather than the destination.</p>
+<h3>14.5 What to decide</h3>
+<ol><li><strong>Weigh a packed jersey.</strong> Everything in §14.1 turns on 8 oz versus 1 lb.</li><li><strong>Confirm the carrier.</strong> USPS Ground Advantage domestically, on the residential surcharge alone.</li><li><strong>Approve or amend the zone rates</strong> in §14.3.</li><li><strong>Decide the international launch set.</strong> "Everywhere" is a worse answer than three markets priced properly.</li><li><strong>Set the free-shipping thresholds</strong>, or reject the mechanic and price shipping into the product instead — a defensible alternative, but it has to be chosen.</li></ol>
+</section>
+<section id="sadmin-parity-with-shopify">
+<h2><span class="secnum">15</span><span>Admin parity with Shopify</span></h2>
+<p>§2 listed what Shopify's platform fee buys. This is the narrower question: how much of Shopify's <strong>admin</strong> does Medusa's give you? Verified against the running instance — every endpoint below was probed, not assumed.</p>
+<h3>15.1 Present and working</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Area</th><th>Medusa admin</th></tr></thead>
+<tbody>
+<tr><td>Orders</td><td>list, detail, cancel, archive, complete, <strong>order changes</strong>, <strong>credit lines</strong>, line-item edits, fulfilments, payment sessions, transfer, CSV export</td></tr>
+<tr><td>Draft orders</td><td>first-class (phone and manual orders)</td></tr>
+<tr><td>Returns · exchanges · claims</td><td><strong>three separate resources</strong>, each with its own workflow</td></tr>
+<tr><td>Products</td><td>list, detail, variants, options, images, <strong>batch ops, CSV import and export</strong></td></tr>
+<tr><td>Merchandising</td><td>categories, collections, tags, types</td></tr>
+<tr><td>Inventory</td><td>inventory items, <strong>multi-location stock</strong>, <strong>reservations</strong></td></tr>
+<tr><td>Customers</td><td>customers, customer groups</td></tr>
+<tr><td>Discounting</td><td><strong>promotions</strong>, <strong>campaigns</strong>, <strong>price lists</strong>, price preferences</td></tr>
+<tr><td>Payments</td><td>payments, refunds, refund reasons, return reasons</td></tr>
+<tr><td>Regions &amp; tax</td><td>regions, currencies, tax regions, tax rates, tax providers</td></tr>
+<tr><td>Fulfilment</td><td>shipping profiles, shipping options, option types, fulfilment providers, fulfilment sets</td></tr>
+<tr><td>Channels</td><td>sales channels, publishable and secret API keys</td></tr>
+<tr><td>Staff</td><td>users, invites, <strong>RBAC roles</strong></td></tr>
+<tr><td>Store</td><td>store settings, policies, <strong>translations and locales</strong></td></tr>
+<tr><td>Observability</td><td><strong>workflow execution log</strong> — see and retry failed workflows</td></tr>
+</tbody></table></div>
+<h3>15.2 Where Medusa's admin is actually better</h3>
+<ul><li><strong>Returns, exchanges and claims are three first-class objects</strong> with their own workflows. Shopify's native returns are thinner and most merchants add an app.</li><li><strong>Order editing is more granular</strong> — order changes and credit lines let you restructure a paid order and account for the difference properly.</li><li><strong>Multi-location inventory with explicit reservations</strong>, which is what §6.2 trap 4 is about. Reservations are visible and auditable rather than implied.</li><li><strong>A workflow execution log.</strong> When a fulfilment or payment workflow fails you can see the step, the input and the error, and retry it. Shopify gives you nothing equivalent.</li><li><strong>RBAC roles</strong> without an enterprise plan.</li></ul>
+<h3>15.3 Where it is behind — and one gap dominates</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Missing</th><th>Consequence</th></tr></thead>
+<tbody>
+<tr><td><strong>Analytics and reports</strong></td><td><strong>The big one.</strong> There is no merchant-facing reporting at all. The <code>@medusajs/analytics</code> modules are event pipes to PostHog, not dashboards — no sales by product or channel, no cohorts, no conversion funnel, no period comparison. Shopify's reports have no equivalent here</td></tr>
+<tr><td><strong>Abandoned checkouts</strong></td><td>No list, no recovery. §2 listed this; it is still unbuilt and Shopify does it natively</td></tr>
+<tr><td><strong>Gift cards</strong></td><td>Not a first-class admin resource in 2.18 (only <code>gift_card_total</code> on orders)</td></tr>
+<tr><td><strong>Media library</strong></td><td>No browser for uploaded files. The file module stores; nothing lists</td></tr>
+<tr><td><strong>Metafields UI</strong></td><td>Medusa's answer is a custom module — more powerful, but every new field needs a developer. A Shopify merchant defines one in the UI</td></tr>
+<tr><td><strong>Bulk editor</strong></td><td>Batch API and CSV import exist; there is no spreadsheet-style multi-product edit screen</td></tr>
+<tr><td><strong>Pages and blog</strong></td><td>No content CMS. Adjacent to the builder you excluded, but Shopify's pages and blog are content, not theme</td></tr>
+<tr><td><strong>App ecosystem</strong></td><td>Nothing comparable. Every gap is a code change</td></tr>
+<tr><td><strong>Email template editor</strong></td><td>Templates live in code (<code>src/modules/resend/templates</code>). A merchant cannot change wording without a deploy</td></tr>
+<tr><td><strong>Fraud and payouts views</strong></td><td>Stripe's dashboard instead — a second place to look</td></tr>
+<tr><td><strong>Search configuration</strong></td><td>No synonyms or facet ordering. That belongs to Typesense (§4)</td></tr>
+<tr><td><strong>POS</strong></td><td>None</td></tr>
+</tbody></table></div>
+<h3>15.4 What this means for this store</h3>
+<p><strong>The operational admin is genuinely sufficient.</strong> A colleague can take an order, fulfil it, refund it, run a return, adjust stock and create a promotion — all of it, today, with no code. That was the thing most likely to be missing and it is not.</p>
+<p><strong>The reporting gap is real and needs an answer before launch.</strong> Three options:</p>
+<ol><li><strong>PostHog or GA4 plus the events we already emit</strong> (§4). Covers funnel, conversion and product performance. Not revenue reporting.</li><li><strong>Query Postgres directly</strong> — a Metabase or Grafana instance over the order tables. Cheap, and the data model is ours, so the queries are straightforward. This is the pragmatic answer.</li><li><strong>Build report pages into the admin.</strong> Medusa's admin is extensible — the jersey requests queue (§12.1) is a custom admin page, and reports would follow the same pattern. More work, better placed.</li></ol>
+<p>Recommended: <strong>option 2 for launch, option 3 for the two or three numbers you look at daily.</strong> Do not try to rebuild Shopify's report suite; most of it goes unread.</p>
+<p><strong>The pattern to internalise:</strong> Shopify fills gaps with an app store, Medusa fills them with a build target. Every item in §15.3 is buildable, and each one is a decision to spend engineering time that Shopify would have charged a monthly fee for. That trade is the whole of this document in miniature.</p>
+</section>
+<section id="ssources">
+<h2><span class="secnum">16</span><span>Sources</span></h2>
+<p>All URLs retrieved August 2026.</p>
+<p class="lede"><strong>Stripe</strong></p>
+<ul><li><a href="https://docs.stripe.com/payments/online-payments">Online payments — integration options and Checkout Sessions vs Payment Intents</a></li><li><a href="https://stripe.com/pricing">Stripe US pricing</a> · <a href="https://checkoutpage.com/blog/stripe-processing-fees">Stripe fees explained 2026</a> · <a href="https://checkoutpage.com/blog/stripe-international-fees">Stripe international fees by country 2026</a></li><li><a href="https://stripe.com/pricing/local-payment-methods">Stripe local payment methods pricing</a></li><li><a href="https://docs.stripe.com/payments/mobilepay">MobilePay on Stripe</a> · <a href="https://stripe.com/resources/more/mobilepay-an-in-depth-guide">MobilePay guide</a> · <a href="https://stripe.com/resources/more/payments-in-denmark-an-in-depth-guide">Accepting payments in Denmark</a></li><li><a href="https://docs.stripe.com/webhooks">Stripe webhooks</a> · <a href="https://docs.stripe.com/tax">Stripe Tax</a></li></ul>
+<p class="lede"><strong>Shopify baseline</strong></p>
+<ul><li><a href="https://www.shopify.com/pricing">Shopify pricing</a></li><li><a href="https://www.stylefactoryproductions.com/blog/shopify-fees">Shopify pricing and fees breakdown 2026 — Style Factory</a></li><li><a href="https://taxomate.com/blog/shopify-fees">Shopify fees 2026 — Taxomate</a></li></ul>
+<p class="lede"><strong>Payment alternatives</strong></p>
+<ul><li><a href="https://stackpatrol.eu/guides/european-alternatives-stripe">European alternatives to Stripe: Mollie, Adyen, Klarna compared — StackPatrol</a></li><li><a href="https://paymentproviders.io/blog/best-stripe-alternatives">Best Stripe alternatives by use case — PaymentProviders.io</a></li><li><a href="https://www.zunapro.com/europa/en/blog/cross-border-payment-solutions-eu-ecommerce">EU cross-border payments: Stripe, Adyen, Mollie — Zunapro</a></li></ul>
+<p class="lede"><strong>PCI DSS</strong></p>
+<ul><li><a href="https://pcidss-dashboard.com/blog/saq-a-for-hosted-checkout-pages-what-you-need-to-know/">SAQ A for hosted checkout pages — PCIDSS Dashboard</a></li><li><a href="https://cside.com/blog/can-you-use-stripe-for-pci-dss">Is Stripe PCI compliant? What merchants still need to do — c/side</a></li><li><a href="https://www.pcisecuritystandards.org/document_library/">PCI DSS v4.0.1 requirements 6.4.3 and 11.6.1 — PCI SSC</a></li></ul>
+<p class="lede"><strong>US sales tax</strong></p>
+<ul><li><a href="https://www.numeral.com/blog/economic-nexus">Economic nexus: state-by-state handbook 2026 — Numeral</a></li><li><a href="https://taxcloud.com/blog/sales-tax-nexus-by-state/">Sales tax nexus by state 2026 — TaxCloud</a> · <a href="https://trykintsugi.com/blog/sales-tax-nexus-by-state-in-2026">Thresholds by state — Kintsugi</a></li><li><a href="https://www.numeral.com/blog/avalara-vs-stripe-tax">Avalara vs Stripe Tax — Numeral</a> · <a href="https://www.stackscored.com/pricing/sales-tax-compliance/">Sales tax compliance pricing 2026 — StackScored</a></li></ul>
+<p class="lede"><strong>EU and UK import VAT</strong></p>
+<ul><li><a href="https://vat-one-stop-shop.ec.europa.eu/">Import One Stop Shop — European Commission</a></li><li><a href="https://hellotax.com/blog/ioss-for-non-eu-sellers/">IOSS for non-EU sellers: VAT, intermediary and the €150 rule — Hellotax</a></li><li><a href="https://www.avalara.com/blog/en/europe/2025/11/eu-end-150-customs-duty-exemption-2026.html">EU €150 customs duty exemption ended July 2026 — Avalara</a></li><li><a href="https://fulfillable.co.uk/blog/eu-ioss-changes-in-2026-what-the-new-e3-customs-duty-means-for-e-commerce-sellers/">EU IOSS changes 2026: the new €3 customs duty — Fulfillable</a></li><li><a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-directly-to-customers-in-the-uk">VAT and overseas goods sold directly to customers in the UK — GOV.UK</a> · <a href="https://landmarkglobal.com/eu/en/news-insights/uk-vat-on-low-value-goods-the-135-threshold-rule/">The £135 threshold explained — Landmark Global</a></li></ul>
+<p class="lede"><strong>Privacy</strong></p>
+<ul><li><a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj">GDPR — EUR-Lex</a> · <a href="https://eushield.eu/gdpr-article-27-guide/">Article 27 guide for non-EU businesses</a> · <a href="https://gdprlocal.com/gdpr-art-27-requirements-explained/">GDPR Local on Article 27</a></li><li><a href="https://privacyforge.io/resources/blog/gdpr-international-data-transfers-2026">International transfers in 2026: DPF, SCCs and TIAs — PrivacyForge</a> · <a href="https://europeanmartech.eu/blog/eu-us-data-privacy-framework-2026-status">Is the DPF still valid? — EuropeanMartech</a></li><li><a href="https://www.multistate.us/insider/2026/2/4/all-of-the-comprehensive-privacy-laws-that-take-effect-in-2026">20 state privacy laws in effect in 2026 — MultiState</a></li><li><a href="https://www.thsh.com/publications/universal-opt-out-mechanisms-and-global-privacy-control-state-law-requirements-and-compliance-guidance/">Universal opt-out and Global Privacy Control: state requirements — Tannenbaum Helpern</a> · <a href="https://www.pii.ai/blog/universal-opt-out-gpc-ecommerce-2026">GPC actions for ecommerce 2026</a></li></ul>
+<p class="lede"><strong>Product safety (GPSR)</strong></p>
+<ul><li><a href="https://euverify.com/resource/eu-responsible-person-under-gpsr/">EU Responsible Person under GPSR — EUVerify</a></li><li><a href="https://responsible.eldris.ai/data-centre/eu-responsible-person-compliance/gpsr-responsible-person-sellers-2026">GPSR Responsible Person: what sellers must know in 2026</a></li></ul>
+<p class="lede"><strong>US consumer protection</strong></p>
+<ul><li><a href="https://www.ftc.gov/news-events/news/press-releases/2024/08/federal-trade-commission-announces-final-rule-banning-fake-reviews-testimonials">FTC final rule banning fake reviews and testimonials</a> · <a href="https://www.ftc.gov/business-guidance/resources/consumer-reviews-testimonials-rule-questions-answers">Rule Q&amp;A — FTC</a></li><li><a href="https://www.morganlewis.com/pubs/2024/08/ftc-issues-final-rule-on-consumer-reviews-and-testimonials">Final rule analysis — Morgan Lewis</a> · <a href="https://www.crowell.com/en/insights/client-alerts/keeping-it-real-ftc-targets-fake-reviews-in-first-consumer-review-rule">First enforcement step, Dec 2025 — Crowell</a></li></ul>
+<p class="lede"><strong>Accessibility (EAA)</strong></p>
+<ul><li><a href="https://accessible.org/eaa-ecommerce-services-requirements/">EAA ecommerce services requirements — Accessible.org</a></li><li><a href="https://www.twobirds.com/en/insights/2025/a-guide-to-navigating-the-european-accessibility-act-for-online-retailers-service-providers-and-plat">Navigating the EAA for online retailers — Bird &amp; Bird</a></li><li><a href="https://www.accessibilitychecker.org/guides/eaa-compliance/">EAA compliance guide 2026 — AccessibilityChecker</a></li><li><a href="https://www.etsi.org/deliver/etsi_en/301500_301599/301549/">EN 301 549 — ETSI</a></li></ul>
+<p class="lede"><strong>Commerce backends</strong></p>
+<ul><li><a href="https://docs.medusajs.com/learn">Medusa v2 documentation</a></li><li><a href="https://vendure.io/blog/best-headless-commerce-platforms">Best headless commerce platforms 2026 — Vendure</a></li><li><a href="https://www.linearloop.io/blog/medusa-js-vs-saleor-vs-vendure">Medusa vs Saleor vs Vendure — LinearLoop</a> · <a href="https://www.pkgpulse.com/guides/medusa-vs-saleor-vs-vendure-headless-ecommerce-2026">PkgPulse comparison</a></li></ul>
+<p class="lede"><strong>Storefront reference</strong></p>
+<ul><li><a href="https://glowfare.com">glowfare.com</a> and its product page — page source inspected 21 Aug 2026 for stack, tokens and offer structure</li><li><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A32005L0029">Unfair Commercial Practices Directive 2005/29/EC, Annex I</a> — blacklisted practices, including false limited-time claims</li><li><a href="https://eur-lex.europa.eu/eli/dir/2019/2161/oj">Omnibus Directive (EU) 2019/2161</a> — price-reduction reference pricing and consumer-review authenticity</li><li><a href="https://www.forbrugerombudsmanden.dk/">Forbrugerombudsmanden — marketing rules for online sales</a></li></ul>
+<p class="lede"><strong>Shipping economics</strong></p>
+<ul><li><a href="https://goshippo.com/blog/which-is-cheaper-usps-vs-ups-vs-fedex">USPS vs UPS vs FedEx: which is cheaper in 2026 — Shippo</a></li><li><a href="https://idshipthat.app/shipping-rates/usps-ground-advantage/">USPS Ground Advantage rates 2026: zones and weight breaks</a></li><li><a href="https://goshippo.com/blog/ups-vs-fedex-vs-dhl-vs-usps-international-shipping-rates-comparison">International shipping rates: UPS, FedEx, DHL, USPS 2026 — Shippo</a></li><li><a href="https://eightx.co/blog/average-ecommerce-international-shipping-cost-by-route-2026">Average international ecommerce shipping cost by route 2026 — Eightx</a></li><li><a href="https://www.freightamigo.com/en/blog/logistics/ddp-shipping-explained-incoterms-2020-costs-and-pricing-tools/">DDP shipping costs and pricing 2026 — FreightAmigo</a></li><li><a href="https://www.usps.com/international/prepaid-import-duties.htm">Prepaid import duties — USPS</a></li></ul>
+<p class="lede"><strong>Search, email, shipping, hosting</strong></p>
+<ul><li><a href="https://www.buildmvpfast.com/api-costs/search">Search pricing comparison: Algolia, Typesense, Meilisearch — BuildMVPFast</a></li><li><a href="https://www.meilisearch.com/blog/algolia-alternatives">Top Algolia alternatives — Meilisearch</a></li><li><a href="https://automationatlas.io/answers/klaviyo-pricing-explained-2026/">Klaviyo pricing 2026 — Automation Atlas</a> · <a href="https://www.omnisend.com/blog/klaviyo-alternatives/">Klaviyo alternatives — Omnisend</a></li><li><a href="https://mailflowauthority.com/esp-reviews/best-transactional-email-service">Best transactional email services 2026 — Mailflow Authority</a></li><li><a href="https://docs.goshippo.com/">Shippo API docs</a> · <a href="https://docs.easypost.com/">EasyPost API docs</a> · <a href="https://shipmondo.dev/docs/sandbox/">Shipmondo (Nordic, for a future EU hub)</a></li><li><a href="https://temps.sh/blog/vercel-pricing-complete-guide-2026">Vercel pricing 2026 — Temps</a> · <a href="https://devtoolpicks.com/blog/when-to-use-vercel-vs-railway-vs-hetzner-solo-saas-2026">Vercel vs Railway vs Hetzner — DevToolPicks</a> · <a href="https://selfhost.dev/blog/managed-postgresql-comparison-2026/">Managed Postgres comparison 2026</a></li></ul>
+</section>
+<section id="scaveats">
+<h2><span>Caveats</span></h2>
+<ul><li><strong>Prices move.</strong> Payment rates, SaaS tiers and hosting prices all changed within the last year. Re-verify anything you are budgeting against before you commit.</li><li><strong>This is not legal or tax advice.</strong> §7 identifies the obligations and where they come from. IOSS registration, US state nexus, invoicing format, GPSR responsibility and the accessibility conformance statement should each be confirmed with a US tax adviser, an EU/UK VAT specialist and, for §7.8 and §7.10, counsel. The three hard gates in particular are legal appointments, not engineering tasks.</li><li><strong>The cost model is a model.</strong> It uses one AOV and one payment-method mix. Substitute your actual numbers before treating the payback figures as decisions.</li></ul>
+</section>
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="fi">
+    <span>Source document: research.md</span>
+    <span>Not legal or tax advice — confirm §7 with a Danish accountant and counsel</span>
+    <span>All figures re-verify before budgeting</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var secs = Array.prototype.slice.call(document.querySelectorAll('main section'));
+  if(!('IntersectionObserver' in window) || !secs.length) return;
+  var seen = {};
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ seen[e.target.id] = e.isIntersecting ? e.intersectionRatio : 0; });
+    var best = null, bv = 0;
+    Object.keys(seen).forEach(function(k){ if(seen[k] > bv){ bv = seen[k]; best = k; } });
+    if(best){ links.forEach(function(a){ a.classList.remove('on'); }); if(map[best]) map[best].classList.add('on'); }
+  }, {rootMargin:'-12% 0px -70% 0px', threshold:[0,.1,.5,1]});
+  secs.forEach(function(s){ io.observe(s); });
+})();
+</script>

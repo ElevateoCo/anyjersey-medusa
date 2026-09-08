@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Find Any Jersey — full status report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF; --card:#FBFCFD; --card-2:#F4F6F8;
+  --ink:#141E29; --ink-2:#546374; --ink-3:#7C8B99;
+  --rule:#D3DAE1; --rule-2:#E6EAEF;
+  --accent:#A8761A; --accent-ink:#835C11; --accent-wash:#F7F0E0; --accent-line:#C9A15A;
+  --good:#3D6A56; --good-wash:#E8F0EB;
+  --risk:#9C4433; --risk-wash:#F8EAE6;
+  --warn:#8A6A14; --warn-wash:#FBF3DF;
+  --serif:'Spectral',Georgia,'Times New Roman',serif;
+  --sans:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+@page{ size:A4; margin:15mm 14mm 16mm; }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#fff; color:var(--ink);
+  font-family:var(--sans); font-size:9.6pt; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:186mm; margin:0 auto}
+
+/* ---------- masthead ---------- */
+.stamp{
+  font-family:var(--mono); font-size:6.6pt; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent-ink); display:flex; gap:.8rem; align-items:center; flex-wrap:wrap;
+}
+.stamp .dot{width:3px;height:3px;background:var(--accent-line);border-radius:50%}
+h1{
+  font-family:var(--serif); font-weight:600; letter-spacing:-.015em;
+  font-size:27pt; line-height:1.03; margin:.45rem 0 .35rem;
+}
+.dek{font-size:11pt; color:var(--ink-2); max-width:64ch; margin:0 0 .9rem}
+.meta{
+  font-family:var(--mono); font-size:7pt; color:var(--ink-3);
+  display:flex; flex-wrap:wrap; gap:.25rem 1.3rem;
+  padding-bottom:.7rem; border-bottom:1px solid var(--rule);
+}
+.meta b{color:var(--ink-2); font-weight:500}
+
+/* ---------- verdict tiles ---------- */
+.verdict{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:1px; background:var(--rule); border:1px solid var(--rule);
+  margin:.9rem 0 1.4rem;
+}
+.tile{background:var(--card); padding:.6rem .7rem .7rem}
+.tile .k{
+  font-family:var(--mono); font-size:6.2pt; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-3); display:block; margin-bottom:.3rem;
+}
+.tile .v{font-family:var(--serif); font-size:15pt; font-weight:600; line-height:1.05;
+  display:block; margin-bottom:.15rem}
+.tile .n{font-size:7.4pt; color:var(--ink-2); line-height:1.35; display:block}
+.tile.risk .v{color:var(--risk)} .tile.good .v{color:var(--good)}
+.tile.warn .v{color:var(--warn)}
+
+/* ---------- structure ---------- */
+h2{
+  font-family:var(--serif); font-size:15.5pt; font-weight:600; letter-spacing:-.01em;
+  margin:1.5rem 0 .1rem; padding-top:.7rem; border-top:2px solid var(--ink);
+  break-after:avoid; break-inside:avoid;
+}
+h2 .num{font-family:var(--mono); font-size:7.4pt; color:var(--accent-ink);
+  letter-spacing:.12em; display:block; margin-bottom:.25rem; font-weight:500}
+h3{
+  font-family:var(--sans); font-size:10pt; font-weight:600; margin:1rem 0 .3rem;
+  break-after:avoid;
+}
+h4{font-family:var(--mono); font-size:7.2pt; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-3); margin:.9rem 0 .35rem; font-weight:500; break-after:avoid}
+p{margin:0 0 .55rem; max-width:74ch}
+ul,ol{margin:.2rem 0 .7rem; padding-left:1.1rem}
+li{margin-bottom:.22rem; max-width:72ch}
+strong{font-weight:600}
+code{font-family:var(--mono); font-size:8.4pt; background:var(--card-2);
+  padding:.05rem .2rem; border-radius:2px}
+a{color:var(--ink); text-decoration:none; border-bottom:1px solid var(--accent-line)}
+
+/* ---------- tables ---------- */
+/* Tables break across pages; rows do not.
+   `break-inside:avoid` on the table itself was the first attempt and it moved every table
+   wholesale to the next page, leaving three pages 40-50% empty. Keeping rows atomic and
+   repeating the header is what a long table actually needs in print. */
+table{width:100%; border-collapse:collapse; margin:.45rem 0 .9rem; font-size:8.6pt;
+  break-inside:auto}
+thead{display:table-header-group}
+tr{break-inside:avoid}
+thead th{
+  font-family:var(--mono); font-size:6.6pt; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-3); text-align:left; font-weight:500;
+  border-bottom:1px solid var(--ink); padding:.3rem .45rem .28rem;
+}
+tbody td,tbody th{padding:.32rem .45rem; border-bottom:1px solid var(--rule-2);
+  vertical-align:top; text-align:left}
+tbody th{font-weight:600; white-space:nowrap}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:1px solid var(--rule)}
+td.num,th.num{font-family:var(--mono); white-space:nowrap}
+.pill{
+  font-family:var(--mono); font-size:6.4pt; letter-spacing:.06em; text-transform:uppercase;
+  padding:.1rem .3rem; border-radius:2px; white-space:nowrap; font-weight:500;
+}
+.pill.block{background:var(--risk-wash); color:var(--risk)}
+.pill.soon{background:var(--warn-wash); color:var(--warn)}
+.pill.done{background:var(--good-wash); color:var(--good)}
+.pill.later{background:var(--card-2); color:var(--ink-3)}
+
+/* ---------- callouts ---------- */
+.note{
+  border-left:2.5px solid var(--accent-line); background:var(--accent-wash);
+  padding:.5rem .7rem; margin:.6rem 0 .9rem; font-size:8.8pt; break-inside:avoid;
+  max-width:76ch;
+}
+.note.risk{border-left-color:var(--risk); background:var(--risk-wash)}
+.note.good{border-left-color:var(--good); background:var(--good-wash)}
+.note p:last-child{margin-bottom:0}
+.note .lbl{
+  font-family:var(--mono); font-size:6.4pt; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-3); display:block; margin-bottom:.2rem;
+}
+
+/* ---------- page control ---------- */
+.pagebreak{break-before:page}
+.keep{break-inside:avoid}
+footer{
+  margin-top:1.6rem; padding-top:.6rem; border-top:1px solid var(--rule);
+  font-family:var(--mono); font-size:6.8pt; color:var(--ink-3);
+}
+
+.tile .k{margin-bottom:.3rem}
+td .k{font-family:var(--mono); font-size:6.2pt; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3)}
+th .k{font-family:var(--mono); font-size:6.2pt; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); font-weight:400}
+tbody th{white-space:normal}
+</style>
+</head><body><div class="wrap">
+
+<div class="stamp">
+  <span>Find Any Jersey</span><span class="dot"></span>
+  <span>Full status report</span><span class="dot"></span>
+  <span>4 September 2026</span>
+</div>
+<h1>Everything standing between this build and a first real order</h1>
+<p class="dek">The commerce build is substantially complete, passes its suites, and has
+never been deployed. This edition re-ran what could be re-run and corrects the single most
+important claim in the 31 August report, which was wrong in a way that matters.</p>
+<div class="meta">
+  <span><b>Stack</b> Medusa 2.18.0 &middot; Next.js 16.3.2 &middot; React 19.2.8 &middot; Postgres 17</span>
+  <span><b>Surface</b> 20 storefront routes &middot; 36 API routes &middot; 8 admin screens</span>
+  <span><b>Tests</b> 537 re-run and green today &middot; 0 unrunnable</span>
+  <span><b>Deployed</b> nowhere</span>
+</div>
+
+<div class="verdict">
+  <div class="tile risk">
+    <span class="k">Correction</span>
+    <span class="v">1</span>
+    <span class="n">The fail-closed boot guard is never called. It is dead code</span>
+  </div>
+  <div class="tile risk">
+    <span class="k">Hard blockers</span>
+    <span class="v">8</span>
+    <span class="n">4 keys, R2, hosting, managed Postgres, secrets</span>
+  </div>
+  <div class="tile risk">
+    <span class="k">Cannot be coded</span>
+    <span class="v">4</span>
+    <span class="n">IOSS, GDPR Art. 27, GPSR person, licensing. Start today</span>
+  </div>
+  <div class="tile warn">
+    <span class="k">One supplier email</span>
+    <span class="v">5 gaps</span>
+    <span class="n">Fibre, origin, HS codes, measurements, print format</span>
+  </div>
+</div>
+
+<div class="note risk">
+  <span class="lbl">Read this first &mdash; and it reverses the last report</span>
+  <p><strong>The 31 August report opened by saying production could not boot because
+  Cloudflare R2 is marked critical. That is wrong, and the truth is worse.</strong>
+  <code>assertConfigured()</code> &mdash; the function that is supposed to refuse a
+  production start when a critical key is missing &mdash; <strong>is never called
+  anywhere</strong>. Grepping the repository outside <code>node_modules</code> returns
+  exactly two hits: its own definition at <code>src/integrations.ts:113</code>, and a
+  mention of itself in its own doc comment.</p>
+  <p>So the fail-closed rule that file spends fifteen lines documenting is not in force.
+  <code>criticalInProduction: true</code> currently changes one thing: a number on the
+  <code>/admin/integrations</code> dashboard. A production container will start happily
+  with <strong>no Stripe Tax, no Shippo and no R2</strong>, and begin taking orders with
+  tax uncalculated and no ability to buy a label.</p>
+  <p>Two guards <em>are</em> real, and they are the only two: a missing
+  <code>STRIPE_WEBHOOK_SECRET</code> throws from <code>medusa-config.ts:14</code>, and a
+  missing <code>RESEND_API_KEY</code> throws from the Resend module constructor. Wiring
+  <code>assertConfigured()</code> into boot is a one-line change and should happen before
+  anything else on this list.</p>
+</div>
+
+<h2><span class="num">00</span>What was actually re-run today</h2>
+<p>Every suite was executed on 4 September 2026, including the integration suite against a real
+Postgres 17 and Redis 7 — the Docker daemon was started for the purpose. Nothing below is
+quoted from a previous run.</p>
+<table class=""><thead><tr><th>Suite</th><th>Command</th><th>Result</th><th class=num>Status</th></tr></thead><tbody><tr><th>Backend unit</th><td><code>npm run test:unit</code></td><td><strong>215 passed</strong>, 10 suites, 2.5s</td><td><span class="pill done">verified</span></td></tr><tr><th>Backend typecheck</th><td><code>npx tsc --noEmit</code></td><td>Clean, no errors</td><td><span class="pill done">verified</span></td></tr><tr><th>Storefront unit</th><td><code>npm test</code> (vitest)</td><td><strong>63 passed</strong>, 5 files</td><td><span class="pill done">verified</span></td></tr><tr><th>Storefront typecheck</th><td><code>npm run typecheck</code></td><td>Clean, no errors</td><td><span class="pill done">verified</span></td></tr><tr><th>Tools — parsing</th><td><code>python3 -m unittest discover</code></td><td><strong>82 passed</strong></td><td><span class="pill done">verified</span></td></tr><tr><th>Contrast — WCAG AA</th><td><code>contrast_check.py</code></td><td>All colour pairs pass</td><td><span class="pill done">verified</span></td></tr><tr><th>Accessibility self-test</th><td><code>a11y_selftest.py</code></td><td>24 of 24 correct — the checks can still fail</td><td><span class="pill done">verified</span></td></tr><tr><th>Backend integration</th><td><code>npm run test:integration:http</code></td><td><strong>177 passed</strong>, 12 suites, 236s against a real Postgres 17 + Redis 7</td><td><span class="pill done">verified</span></td></tr></tbody></table>
+<div class="note good">
+  <span class="lbl">On the headline number</span>
+  <p>The README&rsquo;s claim of <strong>537 tests is exact</strong>, and every one of them
+  passed today: 215 unit, 177 integration, 63 storefront, 82 tools. An earlier static count
+  in this document put the integration figure at 174 by grepping for <code>it(</code>; three
+  cases are generated rather than written out literally, so the grep undercounted and the
+  README was right. The suite was run rather than counted.</p>
+</div>
+
+<h2><span class="num">01</span>Code &mdash; front end</h2>
+<p>Next.js 16.3.2 on React 19.2.8. <strong>Twenty page routes</strong>, all rendering,
+typecheck clean, 63 unit tests green. Stripe is wired through
+<code>@stripe/react-stripe-js</code>, which is what puts the card fields on our own domain.</p>
+
+<h3>The routes that exist</h3>
+<p><code>/</code> &middot; <code>/jerseys</code> &middot; <code>/jerseys/[handle]</code> &middot;
+<code>/collections/[handle]</code> &middot; <code>/cart</code> &middot; <code>/checkout</code> &middot;
+<code>/order/[id]</code> &middot; <code>/track</code> &middot; <code>/request</code> &middot;
+<code>/returns</code> &middot; <code>/shipping</code> &middot; <code>/size-guide</code> &middot;
+<code>/contact</code> &middot; <code>/policies/[slug]</code> &middot; <code>/privacy-choices</code> &middot;
+<code>/account</code> and its five sub-routes (login, register, forgot, reset, orders).</p>
+<table class=""><thead><tr><th>Item</th><th>State</th><th class=num>When</th></tr></thead><tbody><tr><th>Screen-reader pass</th><td>The mechanical audit covers 25 pages and checks landmarks, radio grouping, live regions and the skip link. Nobody has listened to VoiceOver or NVDA work the buy box or checkout, and nobody has done a keyboard-only traversal. This is the one front-end item that cannot be automated away.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Size measurements</th><td>The <code>MEASUREMENTS</code> table is empty, so <code>/size-guide</code> says so rather than printing a generic chart. Under a final-sale policy a wrong size is the customer&rsquo;s loss, which makes this the highest-value line in the supplier email.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Favicon and brand assets</th><td>The default Next.js favicon is still in place; <code>public/</code> was emptied of the starter SVGs and nothing replaced them.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Product imagery</th><td>67% of products have exactly one photograph. A deliberate decision (§13.6) with a stated cost: fit and appearance surprises drive apparel returns. Photograph the top sellers once there is order data to pick them.</td><td><span class="pill later">after launch</span></td></tr><tr><th>Personalisation teaser</th><td>The homepage block is a placeholder. The preview itself is live on every eligible product page; a teaser that cannot lead to a finished order is not worth the space until the print-file format exists.</td><td><span class="pill later">after launch</span></td></tr><tr><th>Search quality</th><td>Free-text search is <code>ILIKE '%…%'</code>, which cannot use an index. Fine at 4,300 products, a real problem at 40,000 or under load.</td><td><span class="pill later">after launch</span></td></tr></tbody></table>
+<h2><span class="num">02</span>Code &mdash; back end</h2>
+<p>Medusa 2.18.0. <strong>36 API route files</strong> — 17 store, 17 admin, plus health and
+media — and <strong>8 admin screens</strong> built as dashboard extensions. Four custom
+modules (<code>catalog</code>, <code>resend</code>, <code>tax-stripe</code>,
+<code>fulfillment-shippo</code>), eleven migrations, 215 unit tests, typecheck clean.</p>
+
+<h3>Correctness and scale</h3>
+<table class=""><thead><tr><th>Item</th><th>Detail</th><th class=num>When</th></tr></thead><tbody><tr><th>Boot guard not wired</th><td><code>assertConfigured()</code> is exported and never called. See page one. A one-line fix that restores the fail-closed behaviour the codebase already documents and tests around.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Event bus and locking</th><td>No Redis event-bus, locking, cache or workflow-engine module is registered in <code>medusa-config.ts</code> — setting <code>projectConfig.redisUrl</code> does not switch them. Medusa announces it at every boot: <em>"Local Event Bus installed. This is not recommended for production."</em> Jobs run in-process, so a restart loses queued work, <strong>including order confirmation emails</strong>. Redis is already running in compose; this is registration, not new code.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Print-file generator</th><td>The only genuinely blocked piece of engineering. Needs the supplier&rsquo;s required format — vector or raster, spot colours, template. The on-screen preview is independent and finished.</td><td><span class="pill block">blocker</span></td></tr><tr><th>In-process caches</th><td>Four endpoints cache in module memory: facets, sitemap, store reviews, collections. Correct on one instance, wrong on two — and an import stays invisible until a TTL expires.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Refund and label execution</th><td>The returns queue records decisions and deliberately does not move money or buy labels: both are irreversible external calls and Shippo&rsquo;s transaction endpoint is not idempotent. Somebody does that step by hand in Orders, or it needs building with an idempotency key.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Instrumentation</th><td><code>instrumentation.ts</code> is the untouched Medusa stub — every line commented out. No OpenTelemetry, no traces. The custom error reporter is separate and does work.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Public write endpoints</th><td>Rate limiting exists as a tested module. <code>/store/jersey-requests</code> is a public POST that writes rows and needs it applied before it faces the internet.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Inventory</th><td><code>manage_inventory</code> is false on every variant. A decision for a sourcing model, not an oversight — but it means nothing can ever be out of stock, including things the supplier cannot get.</td><td><span class="pill later">after launch</span></td></tr><tr><th>Invoice PDFs</th><td>Required for EU B2C sales only. A US-first launch does not need them.</td><td><span class="pill later">after launch</span></td></tr></tbody></table>
+<div class="note good">
+  <span class="lbl">Worth not re-litigating</span>
+  <p>Error handling is registered as <code>config.errorHandler</code> and delegates to
+  Medusa&rsquo;s own handler explicitly, because <code>next(err)</code> fell through to
+  Express and answered a routine 400 with a 500 HTML page containing a stack trace. Request
+  ids are attached inbound and returned on every response. The Sentry reporter scrubs
+  secrets by key name <em>and</em> by value shape, because either alone misses cases.</p>
+</div>
+
+<h2><span class="num">03</span>APIs, keys and integrations</h2>
+<p>Nine integrations are declared in <code>src/integrations.ts</code>. Five are flagged
+<code>criticalInProduction</code>. Read the <em>Boot</em> column carefully: it is what
+actually happens today, not what the flag claims.</p>
+<table class=""><thead><tr><th>Integration</th><th>Implementation</th><th>Boot behaviour today</th><th class=num>When</th></tr></thead><tbody><tr><th>Stripe<br><span class="k">payments</span></th><td>Medusa&rsquo;s <code>payment-stripe</code> provider. Path proven 7 of 8 steps through the Store API with no browser involved; the last step needs a test key.</td><td><strong>Throws</strong> without <code>STRIPE_WEBHOOK_SECRET</code>. Measured: with it empty the webhook returns HTTP 200 to unsigned <em>and</em> forged payloads.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Resend<br><span class="k">transactional email</span></th><td>Own module. 9 templates wired to 6 triggers. Renders and logs without a key.</td><td><strong>Throws</strong> in production without <code>RESEND_API_KEY</code>. Order confirmations do not exist until it is set.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Stripe Tax<br><span class="k">US nexus, EU VAT</span></th><td>Own module, tested — including that it sends cents rather than dollars, and that it distinguishes "no tax owed" from "tax not switched on". One live HTTP call untested.</td><td><strong>Starts anyway.</strong> Flagged critical, guard never runs. Off unless <code>STRIPE_TAX_ENABLED=true</code>; billing is 0.5% of volume.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Shippo<br><span class="k">labels, tracking, customs</span></th><td>Own module. <strong>Rating is already live</strong> off our own rate card and needs no account. Only labels, tracking and customs documents need the key.</td><td><strong>Starts anyway.</strong> Flagged critical, guard never runs.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Cloudflare R2<br><span class="k">image storage</span></th><td><strong>No implementation at all.</strong> <code>MEDIA_BACKEND=r2</code> appears in one comment, one admin string, the compose file and the deploy template — and is read by no code. The <code>R2_*</code> variables appear only in the registry that lists them. Images are served from Postgres and work.</td><td><strong>Starts anyway.</strong> Decide: build the adapter, or set the flag to <code>false</code> and stop calling it critical.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Sentry<br><span class="k">errors</span></th><td>Custom reporter over <code>fetch</code> against Sentry&rsquo;s envelope API — no SDK, deliberately, because the SDK patches http and async_hooks at import and Medusa&rsquo;s worker split is where that goes wrong. Fingerprinting and scrubbing work without a DSN.</td><td>Optional. Nothing is being watched until <code>SENTRY_DSN</code> is set.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>PostHog<br><span class="k">analytics</span></th><td>Consent-gated loader in the storefront: nothing loads before a positive choice and nothing loads at all under Global Privacy Control. Setting the key also adds the host to the CSP allow-list.</td><td>Optional. No funnel data until the key is set.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Typesense<br><span class="k">search</span></th><td><strong>Registered with no implementation.</strong> Search falls back to SQL <code>ILIKE</code>. A key today would do nothing.</td><td>Optional.</td><td><span class="pill later">after launch</span></td></tr><tr><th>Omnisend<br><span class="k">marketing email</span></th><td><strong>Registered with no implementation.</strong> Newsletter subscribers are being collected so the list exists whenever a provider is chosen.</td><td>Optional.</td><td><span class="pill later">after launch</span></td></tr></tbody></table>
+<h3>The payment architecture decision, restated because it sets the compliance budget</h3>
+<p>Medusa 2.18&rsquo;s Stripe provider is <strong>PaymentIntents plus Elements</strong>, not
+Checkout Sessions. The research memo recommended Checkout Sessions; that path is not on
+offer. The consequence is not cosmetic: the card fields are an iframe on <em>our</em> domain,
+so the checkout page is in PCI scope and the assessment moves from
+<strong>SAQ A to SAQ A-EP</strong> — requirements 6.4.3 (script inventory and integrity) and
+11.6.1 (tamper detection) become materially heavier. The CSP has already been written for
+SAQ A-EP with every entry justified and is now derived from the environment rather than
+pinned to localhost.</p>
+<p>The functional argument for Checkout Sessions mostly evaporates anyway, because Medusa
+already owns cart, tax, discounts, shipping and addresses — which was the reason to prefer
+Checkout in the first place. What is given up is Stripe-hosted conversion tuning, Link, and
+Adaptive Pricing.</p>
+
+<h2><span class="num">04</span>Infrastructure &mdash; none of this exists</h2>
+<p>This is the largest remaining block of work and the least interesting.
+<code>docker-compose.yml</code> is production-<em>shaped</em> — built images, real Postgres
+and Redis, health checks, no bind mounts, <code>NODE_ENV: production</code> — and has never
+been run against a real environment. <code>.env.deploy</code> does not exist. Both services
+have a <code>Dockerfile</code> and CI builds both images; nothing consumes them.</p>
+<table class=""><thead><tr><th>Need</th><th>Today</th><th class=num>When</th></tr></thead><tbody><tr><th>Hosting</th><td>Nothing chosen. Two containers plus Postgres and Redis.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Managed Postgres</th><td>Docker on one laptop, and the daemon was down today. Needs automated backups, point-in-time recovery and a <em>tested</em> restore drill. Restore time is the single number that should trigger moving images out of the database — 728 MB of image bytes ride along with every backup.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Secret manager</th><td><code>.env</code> files on a laptop. Needs a real store and a rotation policy before any live key is issued.</td><td><span class="pill block">blocker</span></td></tr><tr><th>TLS and domain</th><td>Everything is localhost. The CSP now derives from <code>NEXT_PUBLIC_MEDUSA_URL</code>, so this is configuration rather than code — but it is untested against a real origin.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Redis wired for real</th><td>Running in compose and not registered as Medusa&rsquo;s event bus, cache or lock provider. See §02.</td><td><span class="pill block">blocker</span></td></tr><tr><th>CI to staging</th><td>CI runs six jobs on every push — tools, backend unit, backend integration against a real Postgres 17 and Redis 7, storefront, and both image builds. It deploys nothing, and there is no staging environment to deploy to.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Rollback</th><td>Migrations are forward-only in practice; no rollback has ever been rehearsed.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Monitoring and on-call</th><td>Nothing is watching. No uptime checks, no alerting, no log aggregation. You are the rotation.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>CDN</th><td>Images are content-addressed and served <code>immutable</code> with a one-year max-age, so they are CDN-ready — and no CDN is in front of them. Every image request currently holds a database connection and competes with checkout.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Node pinning</th><td>Node 22.23.2 via a <code>PATH</code> export. Medusa supports 20/22 LTS only and this machine defaults to unsupported Node 25. Pinned correctly in CI and in the images; unpinned locally.</td><td><span class="pill soon">before launch</span></td></tr></tbody></table>
+<h2><span class="num">05</span>Legal and compliance</h2>
+<div class="note risk">
+  <span class="lbl">The four that no code can close</span>
+  <p>Three gate EU revenue outright and one gates personalisation, which is the entire
+  commercial argument for owning this stack. They have lead times measured in weeks, they
+  cost nothing to begin, and they can all start today in parallel with everything else. The
+  storefront already refuses EU addresses and names which appointment is missing, so the
+  <em>build</em> is not waiting on them — the revenue is.</p>
+</div>
+<table class=""><thead><tr><th>Requirement</th><th>Consequence while missing</th><th class=num>When</th></tr></thead><tbody><tr><th>IOSS registration + EU intermediary</th><td>Import VAT on EU B2C consignments cannot be collected correctly. EU sales blocked.</td><td><span class="pill block">blocker</span></td></tr><tr><th>GDPR Article 27 EU representative</th><td>Required to sell into the EU from the US. EU sales blocked.</td><td><span class="pill block">blocker</span></td></tr><tr><th>GPSR EU Responsible Person</th><td>Without one, apparel cannot lawfully be placed on the EU market at all.</td><td><span class="pill block">blocker</span></td></tr><tr><th>Licensing position</th><td>Unresolved. Printing a player&rsquo;s name to order raises the question more sharply than selling a stock shirt does. This gates personalisation <em>going live</em>, not being built.</td><td><span class="pill block">blocker</span></td></tr><tr><th>US economic nexus registrations</th><td>Stripe Tax calculates; it does not register. Nexus reaches 45 states.</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Legal review of the policies</th><td>Privacy, terms, refunds and shipping are published with a visible draft banner. A refund policy is a contract term; the banner is honest, not sufficient.</td><td><span class="pill soon">before launch</span></td></tr></tbody></table>
+<h3>Trader identity — three disclosures still outstanding</h3>
+<p>Eight identity fields are enumerated in one place (<code>storefront/lib/site.ts</code>)
+with the legal basis for each. The policy pages call <code>pendingEntityFields()</code> and
+render every unset field as a <strong>labelled gap with the reason it is required</strong>,
+rather than omitting a required disclosure or inventing a value. Five are filled from the
+live store&rsquo;s own published contact information. Three are empty:</p>
+<ul>
+  <li><strong>Registered postal address</strong> — required on the storefront and on every
+  invoice. The live store publishes none either.</li>
+  <li><strong>Privacy / data-subject request channel</strong> — GDPR Art. 15–22 and the US
+  state privacy laws all require one.</li>
+  <li><strong>A domain mailbox.</strong> Support currently resolves to a personal Gmail
+  address, and the trading entity (<em>Crux Christi</em>) differs from the brand
+  (<em>Find Any Jersey</em>). Both are lawful; neither is a good long-term answer.</li>
+</ul>
+
+<div class="note good">
+  <span class="lbl">Already done, and worth not re-litigating</span>
+  <p>Consent is opt-in with Global Privacy Control honoured silently and without a banner.
+  The US state opt-out page exists with a working control. The CSP is written for PCI SAQ
+  A-EP with every entry justified. Reviews carry provenance and cannot be presented as
+  verified when they are not. No compare-at price, countdown or stock claim appears anywhere
+  the data cannot support it. WCAG AA contrast is enforced by a script that runs in CI and
+  has already caught one real 1.27:1 failure.</p>
+</div>
+
+<h2><span class="num">06</span>Data and supplier inputs</h2>
+<div class="note">
+  <span class="lbl">One email closes five gaps</span>
+  <p>Fibre composition, country of origin, HS codes, care instructions and chest/length
+  measurements. Four are regulatory and one is the highest-leverage line on the storefront
+  under a final-sale policy. The <code>jersey_detail</code> table has eight regulatory
+  columns and <strong>every one is null on every product</strong>.</p>
+</div>
+<table class=""><thead><tr><th>Field</th><th>Coverage</th><th>Blocks</th><th class=num>When</th></tr></thead><tbody><tr><th>Fibre composition</th><td>none</td><td>EU Textile Regulation</td><td><span class="pill block">blocker</span></td></tr><tr><th>Country of origin</th><td>none</td><td>Customs declarations</td><td><span class="pill block">blocker</span></td></tr><tr><th>HS code</th><td>none</td><td>Cross-border shipping</td><td><span class="pill block">blocker</span></td></tr><tr><th>EU responsible person</th><td>none</td><td>GPSR — EU market entry</td><td><span class="pill block">blocker</span></td></tr><tr><th>Print-file format</th><td>unknown</td><td>Every queued personalisation</td><td><span class="pill block">blocker</span></td></tr><tr><th>Size measurements</th><td>none</td><td>Size guide, and returns we cannot accept</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Supplier cost per personalisation</th><td>unknown</td><td>Confirming the 55% margin assumption — not the build</td><td><span class="pill soon">before launch</span></td></tr><tr><th>Patch list per league</th><td>none</td><td>The patch tier is built and offers nothing until <code>PATCHES_&lt;LEAGUE&gt;</code> is set</td><td><span class="pill later">after launch</span></td></tr></tbody></table>
+<h3>Catalog</h3>
+<p>The database is not running today, so these are carried forward from the 29 August sync
+and the 31 August audit rather than re-counted. What <em>was</em> re-checked is the source
+data on disk, which agrees.</p>
+<table class=""><thead><tr><th>Measure</th><th>Value</th><th class=num>Source</th></tr></thead><tbody><tr><th>Live-store snapshot on disk</th><td><strong>4,318</strong> products</td><td>re-counted today <span class="pill done">verified</span></td></tr><tr><th>Imported catalog</th><td>4,323 products / 29,002 variants</td><td><span class="pill later">carried fwd</span></td></tr><tr><th>Catalogue price</th><td><strong>$65.99 flat</strong>, every product, every region</td><td>set and verified today <span class="pill done">verified</span></td></tr><tr><th>Custom blanks</th><td><strong>111</strong>, printing included at $89.99 — 69 from the NFL snapshot plus 42 living inside the main catalog with ordinary-looking handles</td><td>re-counted today <span class="pill done">verified</span></td></tr><tr><th>Curated collections</th><td>11</td><td>re-counted today <span class="pill done">verified</span></td></tr><tr><th>Flagged <code>needs_review</code></th><td>157</td><td><span class="pill later">carried fwd</span></td></tr><tr><th>No team resolved</th><td>113 — excluded from the team facet until reviewed</td><td><span class="pill later">carried fwd</span></td></tr><tr><th>Exactly one image</th><td>67%</td><td><span class="pill later">carried fwd</span></td></tr><tr><th>Imported reviews</th><td>84, average 4.94 — matching the source aggregate exactly</td><td><span class="pill later">carried fwd</span></td></tr><tr><th>&hellip; attached to a product</th><td>17</td><td><span class="pill later">carried fwd</span></td></tr><tr><th>In our catalog, not on the live store</th><td>1,076 — left alone deliberately</td><td><span class="pill later">carried fwd</span></td></tr></tbody></table>
+<div class="note good">
+  <span class="lbl">Pricing, set 4 September</span>
+  <p>The catalog now carries <strong>one price: $65.99 USD</strong> — 4,212 products and
+  28,221 variants, identical in all five regions. It replaced a spread of $30&ndash;$119.99.
+  All five regions were already <code>usd</code> with no price lists and no currency
+  conversion, so the same number is what a shopper sees in Sydney and in Ohio; only shipping
+  and tax vary by destination.</p>
+  <p>Two things were deliberately left alone: the <strong>111 custom blanks at $89.99</strong>,
+  which ship with the name and number included, and the <strong>personalisation add-ons</strong>
+  ($9.99 number, $14.99 name, $19.99 bundle, $7.99 patch). Pricing a blank the same as a plain
+  shirt would have made the bundle unsellable.</p>
+</div>
+
+<p>The <code>needs_review</code> flags are mostly unresolvable ambiguity rather than error:
+"Los Angeles Basketball" is the Lakers or the Clippers, and a wrong team is worse than a
+missing one. The 67 reviews that did not attach name no product, or name a shirt we no
+longer stock — there is no more per-product data in existence, so this is not a migration
+failure to go back and fix.</p>
+
+<h2><span class="num">07</span>The order to do it in</h2>
+<p>Grouped by what unblocks what, not by size. Nothing in the first group takes long, and
+nothing in the later groups can start without it.</p>
+
+<h3>This week — costs nothing, unblocks everything</h3>
+<ol>
+  <li><strong>Wire <code>assertConfigured()</code> into boot</strong> and re-check every
+  <code>criticalInProduction</code> flag against what is actually implemented. R2 is flagged
+  critical and does not exist; either build the adapter or set the flag to
+  <code>false</code>. One line, and it decides whether the next fifteen items are guarded or
+  merely documented.</li>
+  <li><strong>Start the four legal appointments.</strong> IOSS and an EU intermediary, the
+  Article 27 representative, the GPSR responsible person, and a licensing opinion. Weeks of
+  lead time, nothing to build, nothing to wait for.</li>
+  <li><strong>Send the supplier email.</strong> Five gaps, one message: fibre composition,
+  country of origin, HS codes, care instructions, chest and length measurements — plus the
+  print-file format and the per-personalisation cost.</li>
+  <li><strong>Register Redis</strong> as Medusa&rsquo;s event bus, cache and lock provider.
+  It is already running; this is configuration.</li>
+</ol>
+
+<h3>Next — the deployment block</h3>
+<ol start="5">
+  <li>Choose hosting and stand up managed Postgres with automated backups. <strong>Run a
+  restore drill and time it</strong> — that number decides whether images stay in the
+  database.</li>
+  <li>Stand up a secret manager. No live key touches a laptop.</li>
+  <li>Domain, TLS, and the first real origin. Verify the derived CSP against it.</li>
+  <li>Issue the four blocking keys: Stripe live plus webhook secret, Resend, Stripe Tax,
+  Shippo. Finish the eighth step of the payment path first, in test mode.</li>
+  <li>Extend CI to deploy to staging. Rehearse one rollback before you need one.</li>
+  <li>Uptime checks, alerting, log aggregation, and a Sentry DSN.</li>
+</ol>
+
+<h3>Before the first real order</h3>
+<ol start="11">
+  <li>Screen-reader pass and keyboard traversal, by a human.</li>
+  <li>Legal review of the four policy pages; fill the three outstanding trader fields.</li>
+  <li>Rate-limit the public write endpoints.</li>
+  <li>Move the four in-process caches to Redis, or accept a single instance and say so.</li>
+  <li>Decide the refund and label execution path: by hand in Orders, or built with an
+  idempotency key.</li>
+  <li>US nexus registrations, starting with the home state.</li>
+</ol>
+
+<h2><span class="num">08</span>Three things to decide, not just do</h2>
+<h3>1. The fail-closed design was never switched on</h3>
+<p>This is worth more than the one-line fix. The codebase argues carefully, in comments and
+in tests, that a silently disabled integration is worse than a container that refuses to
+start — and then never calls the function that enforces it. Two module constructors happen
+to guard themselves, which is why the gap was invisible: boot <em>does</em> fail without
+Stripe or Resend, so it looks like the system works. It does not. Decide whether the rule is
+real, and if it is, make the flag mean something.</p>
+
+<h3>2. R2 is a five-minute decision that has been open for a week</h3>
+<p>Images in Postgres genuinely work, and the reasoning behind them is sound: WebP at q78
+capped at 1400px is about 410 MB rather than 3.09 GB, one canonical asset with derivatives
+rendered on request, content-addressed and served immutable. The stated trigger for moving
+them out was restore time. Nobody has run a restore, so nobody has that number. Either
+accept Postgres and drop the R2 flag, or build the adapter — but stop carrying a critical
+dependency that no code reads.</p>
+
+<h3>3. The business case still rests on personalisation, and personalisation is gated on licensing</h3>
+<p>Cost never justified leaving Shopify; capability did, and the capability is
+name-and-number personalisation. That module is built, tested with 45 unit cases, and
+priced through the pricing engine rather than the browser. It is blocked on two things
+neither of which is engineering: the supplier&rsquo;s print-file format, and a licensing
+position on printing a player&rsquo;s name to order. Two personalisations are already queued
+in the database and nothing can print them.</p>
+
+<div class="note">
+  <span class="lbl">Where this stands overall</span>
+  <p>The interesting work is done. What remains is one unwired guard, a deployment that has
+  never happened, four appointments with lead times, one supplier email, and a human
+  listening to a screen reader. None of it is hard. All of it is sequential, and the first
+  four items on the list cost nothing and can start today.</p>
+</div>
+
+<footer>
+  Find Any Jersey / Crux Christi &middot; full status report &middot; 4 September 2026 &middot;
+  compiled from the repository at spike/ &mdash; suites re-run on the day, catalog counts
+  carried forward and marked as such.
+</footer>
+</div></body></html>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img"
+     aria-label="Find Any Jersey">
+  <!--
+    The brand mark.
+
+    Replaces the Next.js starter triangle, which was still the favicon on every page and
+    is the kind of thing that reads as "unfinished" in a tab strip before a customer has
+    read a word of the site.
+
+    It is the same shirt the personalisation preview draws (components/JerseyBack.tsx),
+    reduced to a silhouette: at 16px a shirt with a number on it is mud, and a shirt shape
+    alone still reads as a shirt. Yellow on ink because those are the two brand colours the
+    tokens already define — #F9E806 on #121212 is 15.6:1, so the mark survives being shown
+    at 16px on a light or a dark tab strip.
+
+    SVG rather than .ico so there is one file at every size. The PNG siblings exist only
+    for the surfaces that refuse SVG — Apple's touch icon and the web manifest.
+  -->
+  <rect width="512" height="512" rx="96" fill="#121212"/>
+  <g transform="translate(56 26)">
+    <path d="M 140 40 L 120 34 L 58 76 L 92 132 L 116 116 L 110 420
+             Q 200 434 290 420 L 284 116 L 308 132 L 342 76 L 280 34 L 260 40
+             Q 200 66 140 40 Z"
+          fill="#F9E806"/>
+    <path d="M 140 40 Q 200 66 260 40 Q 200 24 140 40 Z" fill="#121212"/>
+  </g>
+</svg>

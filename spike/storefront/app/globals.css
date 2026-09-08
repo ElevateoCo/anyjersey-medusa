@@ -1,0 +1,880 @@
+/* Design tokens read from the live anyjersey.com CSS — research.md §12.5.
+   Oswald condensed uppercase is the register of a shirt number and a scoreboard;
+   yellow is the single bold spend and is used for one action colour only. */
+
+:root{
+  --yellow:#F9E806;
+  --teal:#108474;
+  --ink:#121212;
+  --ink-2:#4A4A4A;
+  --ink-3:#6A6A6A;   /* was #7B7B7B — 4.5:1 is borderline on white; this is 5.4:1 */
+  --paper:#FFFFFF;
+  --wash:#F7F7F5;
+  --rule:#E4E4E1;    /* decorative dividers only — 1.27:1, and exempt as such */
+  --rule-2:#F0F0EE;
+  /* Form control borders. WCAG 1.4.11 wants 3:1 on a UI component boundary, and --rule
+     is 1.27:1 against white — fine for a divider, which is explicitly exempt, and not
+     fine for the edge of an input a customer has to find. 3.37:1 on paper, 3.14:1 on
+     wash, both measured. Kept as its own token so the next person cannot "tidy" the two
+     back together. */
+  --field:#8C8C89;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --display:'Oswald','Arial Narrow',Impact,sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit; text-decoration:none}
+img{display:block; max-width:100%; height:auto}
+button{font:inherit; cursor:pointer}
+:focus-visible{outline:3px solid var(--teal); outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.wrap{max-width:1280px; margin:0 auto; padding:0 clamp(1rem,3vw,2rem)}
+
+/* ---------------- display type ---------------- */
+h1,h2,h3,.display{
+  font-family:var(--display); font-weight:600; text-transform:uppercase;
+  letter-spacing:.01em; line-height:1.05; margin:0; text-wrap:balance;
+}
+h1{font-size:clamp(2rem,5vw,3.4rem)}
+h2{font-size:clamp(1.4rem,3vw,2.1rem)}
+h3{font-size:1.05rem; letter-spacing:.04em}
+.eyebrow{
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.14em;
+  font-size:.75rem; color:var(--ink-3); font-weight:500;
+}
+
+/* ---------------- announcement + header ---------------- */
+.announce{
+  background:var(--ink); color:#fff; text-align:center;
+  font-size:.82rem; padding:.6rem 1rem;
+}
+.announce a{border-bottom:1px solid var(--yellow); padding-bottom:1px}
+.announce strong{color:var(--yellow); font-weight:600}
+
+header.site{border-bottom:1px solid var(--rule); background:var(--paper);
+  position:sticky; top:0; z-index:40}
+.hrow{display:flex; align-items:center; gap:1.5rem; height:66px}
+.logo{font-family:var(--display); font-weight:700; font-size:1.35rem;
+  text-transform:uppercase; letter-spacing:.02em; white-space:nowrap}
+.logo em{font-style:normal; background:var(--yellow); padding:0 .25rem}
+/* Nine items since the custom line was added, which wrapped "Bag" onto a second row at
+   1280px. Clamped rather than fixed so the gap tightens before anything wraps. */
+nav.main{display:flex; gap:clamp(.75rem,1.1vw,1.35rem); margin-left:auto; flex-wrap:wrap;
+  align-items:center}
+nav.main a{
+  font-family:var(--display); text-transform:uppercase; font-size:.85rem;
+  letter-spacing:.06em; font-weight:500; padding:.35rem 0;
+  border-bottom:2px solid transparent;
+}
+nav.main a:hover{border-bottom-color:var(--yellow)}
+@media (max-width:720px){.hrow{height:auto; padding:.8rem 0; flex-wrap:wrap; gap:.75rem}
+  nav.main{margin-left:0; width:100%; gap:1rem}}
+
+/* ---------------- hero ---------------- */
+.hero{
+  background:var(--ink); color:#fff;
+  padding:clamp(3rem,8vw,6rem) 0;
+}
+.hero h1{font-size:clamp(2.6rem,8vw,5.5rem); letter-spacing:-.005em}
+.hero h1 em{font-style:normal; color:var(--yellow)}
+.hero p{color:#D6D6D2; font-size:clamp(1rem,2vw,1.2rem); margin:.9rem 0 1.8rem; max-width:46ch}
+
+.btn{
+  display:inline-block; background:var(--yellow); color:var(--ink);
+  font-family:var(--display); text-transform:uppercase; font-weight:600;
+  letter-spacing:.06em; padding:.9rem 1.6rem; font-size:.95rem;
+  border:2px solid var(--yellow);
+}
+.btn:hover{background:transparent; color:var(--yellow)}
+.btn.ghost{background:transparent; color:#fff; border-color:#fff}
+.btn.ghost:hover{background:#fff; color:var(--ink)}
+.btn.block{display:block; width:100%; text-align:center}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+
+/* ---------------- trust row ---------------- */
+.trust{border-bottom:1px solid var(--rule); background:var(--wash)}
+.trust ul{
+  list-style:none; margin:0; padding:1.4rem 0; display:grid; gap:1.2rem;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+}
+.trust li strong{
+  display:block; font-family:var(--display); text-transform:uppercase;
+  font-size:.9rem; letter-spacing:.05em;
+}
+.trust li span{font-size:.85rem; color:var(--ink-2)}
+
+/* ---------------- sections ---------------- */
+section.band{padding:clamp(2.5rem,5vw,4rem) 0; border-bottom:1px solid var(--rule-2)}
+.sechead{display:flex; align-items:baseline; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap}
+.sechead a{margin-left:auto; font-size:.85rem; border-bottom:1px solid var(--ink); font-weight:500}
+
+/* ---------------- product grid ---------------- */
+.grid{display:grid; gap:1.5rem 1.25rem;
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.card figure{margin:0; background:var(--wash); aspect-ratio:1/1; overflow:hidden}
+.card figure img{width:100%; height:100%; object-fit:cover; transition:transform .35s ease}
+.card:hover figure img{transform:scale(1.035)}
+.card .meta{padding:.7rem 0}
+.card .t{
+  font-family:var(--display); text-transform:uppercase; font-size:.92rem;
+  line-height:1.2; letter-spacing:.01em; margin:0 0 .3rem;
+}
+.card .sub{font-size:.78rem; color:var(--ink-3); margin:0 0 .35rem}
+.card .p{font-weight:600; font-size:.9rem; font-variant-numeric:tabular-nums}
+.card .noimg{display:grid; place-items:center; height:100%; color:var(--ink-3);
+  font-family:var(--display); font-size:.8rem; letter-spacing:.1em}
+
+/* ---------------- facets ---------------- */
+.plp{display:grid; grid-template-columns:230px minmax(0,1fr); gap:clamp(1.5rem,3vw,3rem);
+  align-items:start; padding:2rem 0}
+@media (max-width:860px){.plp{grid-template-columns:1fr}}
+.facets{position:sticky; top:80px}
+.facets section{margin-bottom:1.6rem}
+.facets h3{margin-bottom:.6rem; color:var(--ink-2)}
+.facets ul{list-style:none; margin:0; padding:0; max-height:270px; overflow-y:auto}
+.facets li a{
+  display:flex; justify-content:space-between; gap:.5rem; padding:.28rem 0;
+  font-size:.85rem; color:var(--ink-2);
+}
+.facets li a:hover{color:var(--ink)}
+.facets li a.on{color:var(--ink); font-weight:600}
+.facets li a.on::before{content:'× '; color:var(--teal)}
+.facets .n{color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:.78rem}
+
+.chips{display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.2rem}
+.chip{
+  display:inline-flex; gap:.4rem; align-items:center; background:var(--wash);
+  border:1px solid var(--rule); padding:.3rem .6rem; font-size:.8rem;
+}
+.chip a{color:var(--teal); font-weight:600}
+
+.pager{display:flex; gap:.75rem; align-items:center; margin-top:2rem;
+  padding-top:1.5rem; border-top:1px solid var(--rule)}
+.pager a{border:1px solid var(--ink); padding:.5rem 1rem; font-size:.85rem;
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.05em}
+.pager span{color:var(--ink-3); font-size:.85rem; margin-left:auto}
+
+/* ---------------- PDP ---------------- */
+.pdp{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,460px);
+  gap:clamp(1.5rem,4vw,3.5rem); padding:2rem 0}
+@media (max-width:900px){.pdp{grid-template-columns:1fr}}
+.gallery{background:var(--wash); position:relative}
+.gallery img{width:100%; aspect-ratio:1/1; object-fit:cover}
+.onlyone{
+  position:absolute; bottom:0; left:0; right:0; background:rgba(18,18,18,.82);
+  color:#fff; font-size:.72rem; padding:.5rem .75rem; letter-spacing:.02em;
+}
+.buybox h1{margin-bottom:.5rem}
+.pdp .rating{font-size:.85rem; color:var(--ink-2); margin:0 0 1rem}
+.pdp .rating b{color:var(--ink)}
+.price{font-family:var(--display); font-size:2rem; margin:0 0 .25rem}
+.price small{font-size:.85rem; color:var(--ink-3); font-family:var(--sans);
+  text-transform:none; letter-spacing:0; margin-left:.5rem}
+.sizes{display:flex; flex-wrap:wrap; gap:.5rem; margin:.75rem 0 1.25rem}
+.sizes button{
+  min-width:52px; padding:.6rem .55rem; background:#fff; border:1px solid var(--ink);
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.04em;
+  font-size:.85rem;
+}
+.sizes button[aria-pressed="true"]{background:var(--ink); color:#fff}
+/* Disabled sizes must still be legible — a struck-through label at 1.5:1 tells a
+   sighted user nothing and a screen-reader user gets no reason either, hence the
+   title attribute in SizePicker. */
+.sizes button:disabled{
+  border-color:var(--rule); color:var(--ink-3); background:var(--wash);
+  text-decoration:line-through; cursor:not-allowed;
+}
+.promise{border:1px solid var(--rule); background:var(--wash);
+  padding:.85rem 1rem; font-size:.85rem; margin:1rem 0 0}
+.promise b{font-family:var(--display); text-transform:uppercase; letter-spacing:.04em;
+  font-size:.8rem; display:block; margin-bottom:.2rem}
+.pdp .desc{margin:1.25rem 0; font-size:.95rem; color:var(--ink-2); max-width:62ch}
+.spec{width:100%; border-collapse:collapse; font-size:.86rem; margin-top:.5rem}
+.spec th{text-align:left; font-weight:500; color:var(--ink-3); padding:.45rem 0;
+  border-bottom:1px solid var(--rule-2); width:40%}
+.spec td{padding:.45rem 0; border-bottom:1px solid var(--rule-2)}
+
+/* things that are deliberately not built yet — visible, not hidden */
+.todo{
+  border:1px dashed var(--rule); background:#fff; padding:.9rem 1rem;
+  font-size:.83rem; color:var(--ink-2); margin:1rem 0;
+}
+.todo b{font-family:var(--display); text-transform:uppercase; letter-spacing:.05em;
+  font-size:.76rem; color:var(--teal); display:block; margin-bottom:.25rem}
+
+/* ---------------- request block ---------------- */
+.request{background:var(--ink); color:#fff; padding:clamp(2.5rem,5vw,4rem) 0}
+.request h2{color:#fff}
+.request h2 em{font-style:normal; color:var(--yellow)}
+.request .steps{list-style:none; margin:1.5rem 0; padding:0; display:grid; gap:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); counter-reset:s}
+.request .steps li{counter-increment:s; font-size:.9rem; color:#D6D6D2;
+  border-top:2px solid var(--yellow); padding-top:.7rem}
+.request .steps li::before{
+  content:counter(s); display:block; font-family:var(--display);
+  color:var(--yellow); font-size:1.1rem; margin-bottom:.2rem;
+}
+.rform{display:grid; gap:.6rem; grid-template-columns:1fr 1fr auto; margin-top:.5rem}
+@media (max-width:720px){.rform{grid-template-columns:1fr}}
+.rform input{
+  padding:.8rem .9rem; border:1px solid #3A3A38; background:#1C1C1A; color:#fff;
+  font:inherit; font-size:.9rem;
+}
+.rform input::placeholder{color:#8A8A86}
+.rmsg{margin-top:.75rem; font-size:.85rem}
+.rmsg.ok{color:var(--yellow)}
+.rmsg.err{color:#FF8A7A}
+
+/* ---------------- footer ---------------- */
+footer.site{background:var(--wash); border-top:1px solid var(--rule);
+  padding:2.5rem 0; font-size:.85rem; color:var(--ink-2)}
+footer.site .cols{display:grid; gap:1.5rem;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+footer.site h2{margin-bottom:.6rem; font-size:.8rem; letter-spacing:.08em}
+footer.site ul{list-style:none; margin:0; padding:0}
+footer.site li{padding:.2rem 0}
+footer.site .base{margin-top:2rem; padding-top:1.2rem; border-top:1px solid var(--rule);
+  display:flex; gap:1rem; flex-wrap:wrap; align-items:center;
+  color:var(--ink-3); font-size:.8rem}
+
+/* Accepted payment methods. Names in chips rather than trademarked artwork — see
+   components/PaymentMethods.tsx for why, and for why the list is four long and not nine. */
+footer.site .paymethods{margin-top:2rem; padding-top:1.2rem;
+  border-top:1px solid var(--rule)}
+footer.site .paymethods ul{display:flex; flex-wrap:wrap; gap:.4rem; margin:0 0 .6rem}
+footer.site .paymethods li{padding:.25rem .55rem; border:1px solid var(--field);
+  border-radius:3px; font-size:.72rem; letter-spacing:.02em; color:var(--ink-2);
+  background:var(--paper)}
+footer.site .paymethods p{margin:0; font-size:.76rem; color:var(--ink-3); max-width:70ch}
+footer.site .paymethods svg{display:inline-block; vertical-align:-2px}
+
+/* The store's own rating, store scope only. */
+footer.site .footrating{display:inline-flex; align-items:center; gap:.4rem; flex-wrap:wrap}
+footer.site .footrating .stars{letter-spacing:.02em; color:var(--ink-3)}
+footer.site .footrating .stars .on{color:var(--teal)}
+footer.site .footrating a{border-bottom:1px solid var(--rule)}
+footer.site .footratingnote{color:var(--ink-3)}
+
+/* Trader identity — a legal disclosure, so it is legible rather than decorative. */
+footer.site .trader{margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--rule-2);
+  font-size:.78rem; color:var(--ink-3)}
+footer.site .trader p{margin:0 0 .3rem}
+footer.site .trader a{border-bottom:1px solid var(--rule)}
+footer.site .trader .pending abbr{border-bottom:1px dotted var(--field);
+  text-decoration:none; cursor:help}
+
+/* Field-level help, and the "(optional)" marker beside a label. Both are small and both
+   have to stay legible — .ink-3 on paper is 5.41:1, checked. */
+.fieldnote{display:block; margin-top:.3rem; font-size:.78rem; color:var(--ink-3);
+  max-width:44ch}
+.optional{font-weight:400; color:var(--ink-3); font-size:.85em}
+
+/* ---------------- share ---------------- */
+.sharerow{display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; margin:1rem 0 0}
+.sharebtn{display:inline-flex; align-items:center; gap:.4rem; background:none;
+  border:1px solid var(--field); border-radius:3px; padding:.4rem .7rem;
+  font-size:.82rem; color:var(--ink-2)}
+.sharebtn:hover{border-color:var(--ink-2); color:var(--ink)}
+.sharemsg{font-size:.8rem; color:var(--ink-3)}
+
+/* ---------------- accessibility helper ---------------- */
+.visually-hidden{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+.skip{
+  position:absolute; left:-9999px; top:0; z-index:100;
+  background:var(--yellow); color:var(--ink); padding:.7rem 1rem;
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.05em;
+}
+.skip:focus{left:0}
+
+/* ---------------- cart ---------------- */
+.freeship{border:1px solid var(--rule); background:var(--wash); padding:.9rem 1rem; margin:1.5rem 0}
+.freeship p{margin:0 0 .5rem; font-size:.88rem}
+.freeship .bar{height:6px; background:var(--rule); overflow:hidden}
+.freeship .bar span{display:block; height:100%; background:var(--teal); transition:width .3s ease}
+
+table.cart{width:100%; border-collapse:collapse; margin:1.5rem 0}
+table.cart th{
+  text-align:left; font-family:var(--display); text-transform:uppercase;
+  font-size:.75rem; letter-spacing:.08em; color:var(--ink-3); font-weight:500;
+  padding:.5rem 0; border-bottom:1px solid var(--rule);
+}
+table.cart td{padding:.85rem .5rem .85rem 0; border-bottom:1px solid var(--rule-2); vertical-align:middle}
+table.cart td:first-child{padding-left:0}
+table.cart .t{font-family:var(--display); text-transform:uppercase; font-size:.9rem}
+table.cart .sub{font-size:.78rem; color:var(--ink-3)}
+
+.totals{max-width:340px; margin-left:auto; margin-top:1.5rem}
+.totals div{display:flex; justify-content:space-between; gap:1rem; padding:.4rem 0; font-size:.9rem}
+.totals div b{font-variant-numeric:tabular-nums}
+.totals .grand{border-top:1px solid var(--ink); margin-top:.4rem; padding-top:.7rem;
+  font-family:var(--display); text-transform:uppercase; font-size:1.05rem}
+.totals .note{font-size:.78rem; color:var(--ink-3); margin:.5rem 0 1rem}
+
+.cartlink{position:relative; font-family:var(--display); text-transform:uppercase;
+  font-size:.85rem; letter-spacing:.06em}
+.cartlink b{background:var(--yellow); padding:0 .35rem; margin-left:.3rem}
+
+/* ---------------- checkout ---------------- */
+.checkout{display:grid; grid-template-columns:minmax(0,1fr) 320px;
+  gap:clamp(1.5rem,4vw,3rem); align-items:start}
+@media (max-width:840px){.checkout{grid-template-columns:1fr}}
+.steps-inline{list-style:none; display:flex; gap:1.25rem; padding:0; margin:1rem 0 2rem;
+  font-family:var(--display); text-transform:uppercase; font-size:.8rem; letter-spacing:.06em}
+.steps-inline li{color:var(--ink-3)}
+.steps-inline li.on{color:var(--ink); border-bottom:2px solid var(--yellow)}
+.steps-inline li.done{color:var(--teal)}
+.cform{max-width:520px}
+.cform h2{margin-bottom:1rem}
+.cform p{margin:0 0 .9rem}
+.cform .two{display:grid; grid-template-columns:1fr 1fr; gap:.9rem}
+.cform label{display:block; font-size:.78rem; color:var(--ink-2); margin-bottom:.25rem}
+.cform input,.cform select,.cform textarea{width:100%; padding:.7rem .8rem;
+  border:1px solid var(--field);
+  font:inherit; font-size:.92rem; background:#fff}
+.cform input:focus,.cform select:focus,.cform textarea:focus{border-color:var(--ink)}
+.cform .note{font-size:.8rem; color:var(--ink-3)}
+.summary{border:1px solid var(--rule); padding:1.1rem; background:var(--wash)}
+.summary h2{font-size:1rem; margin-bottom:.75rem}
+.summary ul{list-style:none; margin:0 0 1rem; padding:0}
+.summary li{display:flex; justify-content:space-between; gap:.75rem; font-size:.84rem;
+  padding:.35rem 0; border-bottom:1px solid var(--rule-2)}
+.summary .totals{max-width:none; margin:0}
+.note code{background:var(--wash); padding:.1em .3em; font-size:.9em}
+
+/* ---------------- search ---------------- */
+.search{display:flex; gap:0; max-width:520px; margin:0}
+.search input{
+  flex:1; min-width:0; padding:.85rem 1rem; border:2px solid var(--ink);
+  font:inherit; font-size:.95rem; background:#fff; color:var(--ink);
+}
+.search input::placeholder{color:var(--ink-3)}
+.search button{
+  padding:.85rem 1.3rem; border:2px solid var(--ink); border-left:0;
+  background:var(--yellow); color:var(--ink);
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
+  font-size:.9rem; font-weight:600; white-space:nowrap;
+}
+.search button:hover{background:var(--ink); color:var(--yellow)}
+.search.compact{max-width:280px; margin-left:auto}
+.search.compact input{padding:.5rem .7rem; font-size:.85rem; border-width:1px}
+.search.compact button{padding:.5rem .8rem; font-size:.75rem; border-width:1px}
+@media (max-width:900px){.search.compact{order:3; max-width:none; width:100%; margin-left:0}}
+
+.plphead{
+  display:flex; gap:1rem; align-items:center; flex-wrap:wrap;
+  margin:1.25rem 0 .5rem;
+}
+.plphead .search{flex:1 1 260px}
+.sortwrap{display:flex; gap:.5rem; align-items:center; margin-left:auto}
+.sortwrap label{
+  font-family:var(--display); text-transform:uppercase; font-size:.75rem;
+  letter-spacing:.08em; color:var(--ink-3);
+}
+.sortwrap select{
+  padding:.55rem .6rem; border:1px solid var(--field); background:#fff;
+  font:inherit; font-size:.85rem;
+}
+
+/* numbered pagination */
+.pager{flex-wrap:wrap}
+.pager .pagegroup{display:inline-flex; align-items:center; gap:.4rem}
+.pager b{
+  border:1px solid var(--ink); background:var(--ink); color:#fff;
+  padding:.5rem .85rem; font-family:var(--display); font-size:.85rem;
+  letter-spacing:.05em;
+}
+.pager .gap{color:var(--ink-3); padding:0 .2rem}
+.pager .count{margin-left:auto; color:var(--ink-3); font-size:.85rem}
+
+/* ---------------- autocomplete ---------------- */
+.searchwrap{position:relative; max-width:520px; width:100%}
+.searchwrap.compact{max-width:280px; margin-left:auto}
+@media (max-width:900px){.searchwrap.compact{order:3; max-width:none; margin-left:0}}
+.searchwrap .search{max-width:none}
+
+ul.suggest{
+  position:absolute; z-index:60; top:calc(100% + 4px); left:0; right:0;
+  list-style:none; margin:0; padding:.25rem; background:#fff;
+  border:2px solid var(--ink); max-height:340px; overflow-y:auto;
+  box-shadow:0 12px 28px -12px rgba(18,18,18,.35);
+}
+ul.suggest li{
+  display:flex; align-items:baseline; gap:.6rem; padding:.5rem .6rem;
+  cursor:pointer; font-size:.88rem;
+}
+ul.suggest li.on{background:var(--yellow)}
+ul.suggest li .kind{
+  font-family:var(--display); text-transform:uppercase; font-size:.62rem;
+  letter-spacing:.1em; color:var(--ink-3); min-width:44px; flex:none;
+}
+ul.suggest li.on .kind{color:var(--ink)}
+ul.suggest li .lbl{flex:1; min-width:0}
+ul.suggest li .n{
+  color:var(--ink-3); font-size:.75rem; font-variant-numeric:tabular-nums; flex:none;
+}
+ul.suggest li.on .n{color:var(--ink)}
+ul.suggest li:last-child{
+  border-top:1px solid var(--rule); margin-top:.25rem; font-weight:600;
+}
+
+/* ---------------- notify me ---------------- */
+.notify{margin:1rem 0 0}
+.notify.done{
+  border:1px solid var(--teal); background:#F1FAF8; padding:.8rem 1rem;
+  font-size:.88rem; margin:1rem 0 0;
+}
+.notifybtn{
+  width:100%; text-align:left; background:none; border:1px dashed var(--rule);
+  padding:.8rem 1rem; font-size:.88rem; color:var(--ink-2);
+}
+.notifybtn:hover{border-color:var(--ink); color:var(--ink)}
+.notifybtn strong{color:var(--ink); border-bottom:2px solid var(--yellow)}
+.notify form{border:1px solid var(--rule); padding:.9rem 1rem; background:var(--wash)}
+.notifywhat{margin:0 0 .6rem; font-size:.85rem; color:var(--ink-2)}
+.notifyrow{display:flex; gap:0}
+.notifyrow input{
+  flex:1; min-width:0; padding:.7rem .8rem; border:1px solid var(--ink);
+  font:inherit; font-size:.9rem;
+}
+.notifyrow button{
+  padding:.7rem 1.1rem; border:1px solid var(--ink); border-left:0;
+  background:var(--ink); color:#fff; font-family:var(--display);
+  text-transform:uppercase; letter-spacing:.05em; font-size:.82rem; white-space:nowrap;
+}
+.notifyrow button:hover{background:var(--teal); border-color:var(--teal)}
+.notifynote{margin:.5rem 0 0; font-size:.75rem; color:var(--ink-3)}
+
+/* ---------------- order tracking ---------------- */
+.track{max-width:620px}
+ol.steps-track{
+  list-style:none; display:flex; gap:.5rem; padding:0; margin:1.25rem 0 1.5rem;
+}
+ol.steps-track li{
+  flex:1; text-align:center; padding:.55rem .4rem; font-family:var(--display);
+  text-transform:uppercase; letter-spacing:.06em; font-size:.74rem;
+  border-top:3px solid var(--rule); color:var(--ink-3);
+}
+ol.steps-track li.done{border-top-color:var(--teal); color:var(--ink)}
+ol.steps-track li[aria-current="step"]{border-top-color:var(--yellow); font-weight:700}
+
+/* ---------------- mobile filter drawer ---------------- */
+.filterbtn{display:none}
+@media (max-width:860px){
+  /* the rail stacked above the grid and pushed products off screen */
+  .facets.desktop-only{display:none}
+  .filterbtn{
+    display:inline-flex; align-items:center; gap:.4rem;
+    padding:.6rem 1rem; border:2px solid var(--ink); background:#fff;
+    font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
+    font-size:.82rem;
+  }
+  .filterbtn b{background:var(--yellow); padding:0 .35rem}
+  .plp{grid-template-columns:minmax(0,1fr)}
+}
+.drawer-scrim{
+  position:fixed; inset:0; background:rgba(18,18,18,.5); z-index:80;
+}
+.drawer{
+  position:fixed; inset:0 0 0 auto; width:min(360px,88vw); background:#fff; z-index:90;
+  display:flex; flex-direction:column; border-left:2px solid var(--ink);
+}
+.drawer-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1rem 1.1rem; border-bottom:1px solid var(--rule);
+}
+.drawer-head strong{
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
+}
+.drawer-head button{background:none; border:0; font-size:1.1rem; padding:.2rem .4rem}
+.drawer-body{flex:1; overflow-y:auto; padding:1rem 1.1rem}
+.drawer-body .facets{position:static}
+.drawer-body .facets ul{max-height:none}
+.drawer-foot{padding:1rem 1.1rem; border-top:1px solid var(--rule)}
+
+/* ---------------- reviews ---------------- */
+.reviews{max-width:70ch}
+.reviews h2{margin-bottom:1rem}
+.reviews-none{font-size:.92rem; color:var(--ink-2)}
+.linkish{background:none; border:0; padding:0; font:inherit;
+  border-bottom:2px solid var(--yellow); color:var(--ink)}
+.reviews-head{display:flex; flex-wrap:wrap; gap:.75rem 1.5rem; align-items:baseline;
+  padding-bottom:1rem; border-bottom:1px solid var(--rule)}
+.reviews-agg{display:flex; align-items:baseline; gap:.6rem}
+.reviews-agg strong{font-family:var(--display); font-size:2rem; line-height:1}
+.reviews-agg .n{font-size:.85rem; color:var(--ink-2)}
+.stars{letter-spacing:.06em; color:var(--rule)}
+.stars .on{color:var(--yellow); text-shadow:0 0 1px var(--ink-3)}
+.fitline{margin:0; font-size:.88rem; font-weight:600}
+ul.reviewlist{list-style:none; padding:0; margin:1rem 0 0}
+ul.reviewlist li{padding:1rem 0; border-bottom:1px solid var(--rule-2)}
+.rhead{display:flex; align-items:baseline; gap:.6rem; flex-wrap:wrap; margin-bottom:.35rem}
+.rhead strong{font-size:.9rem}
+.verified{
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
+  font-size:.62rem; background:var(--teal); color:#fff; padding:.15rem .4rem;
+}
+.rtitle{margin:0 0 .25rem; font-weight:600; font-size:.92rem}
+.rbody{margin:0; font-size:.92rem; color:var(--ink-2)}
+.rfit{margin:.35rem 0 0; font-size:.8rem; color:var(--ink-3)}
+.reviews-note{margin:1rem 0 0; font-size:.78rem; color:var(--ink-3)}
+.reviewform{margin-top:1.5rem; border:1px solid var(--rule); padding:1.1rem; background:var(--wash)}
+.reviewform h3{margin-bottom:.75rem}
+.reviewform label{display:block; font-size:.78rem; color:var(--ink-2); margin:.6rem 0 .2rem}
+.reviewform input,.reviewform select,.reviewform textarea{
+  width:100%; padding:.6rem .7rem; border:1px solid var(--field); font:inherit;
+  font-size:.9rem; background:#fff;
+}
+.rf-row{display:grid; grid-template-columns:1fr 1fr; gap:.9rem}
+@media (max-width:600px){.rf-row{grid-template-columns:1fr}}
+.reviewform .btn{margin-top:.9rem}
+.btn.ghost.dark{background:transparent; color:var(--ink); border-color:var(--ink); margin-top:1rem}
+.btn.ghost.dark:hover{background:var(--ink); color:#fff}
+a.rating{border-bottom:1px solid var(--rule); font-size:.85rem; color:var(--ink-2)}
+
+/* ---------------- cart drawer ---------------- */
+.cart-drawer{width:min(400px,92vw)}
+.freeship.in-drawer{margin:0; border:0; border-bottom:1px solid var(--rule)}
+ul.drawerlines{list-style:none; margin:0; padding:0}
+ul.drawerlines li{
+  display:grid; grid-template-columns:56px 1fr auto; gap:.75rem;
+  padding:.9rem 0; border-bottom:1px solid var(--rule-2); align-items:start;
+}
+ul.drawerlines img,.drawerlines .ph{
+  width:56px; height:56px; object-fit:cover; background:var(--wash); display:block;
+}
+.dl-meta{min-width:0}
+.dl-title{margin:0 0 .1rem; font-family:var(--display); text-transform:uppercase;
+  font-size:.82rem; line-height:1.2}
+.dl-sub{margin:0 0 .35rem; font-size:.75rem; color:var(--ink-3)}
+.dl-qty{display:flex; align-items:center; gap:.35rem}
+.dl-qty button{
+  width:24px; height:24px; border:1px solid var(--field); background:#fff;
+  font-size:.9rem; line-height:1;
+}
+.dl-qty span{min-width:18px; text-align:center; font-size:.85rem}
+.dl-remove{
+  width:auto!important; border:0!important; padding:0 0 0 .5rem!important;
+  color:var(--ink-3); text-decoration:underline; font-size:.75rem;
+}
+.dl-price{font-size:.85rem; font-variant-numeric:tabular-nums; white-space:nowrap}
+.dl-totals{display:flex; justify-content:space-between; font-size:.9rem; padding:.2rem 0}
+.dl-totals.muted{color:var(--ink-2); font-size:.82rem; margin-bottom:.6rem}
+.dl-view{display:block; text-align:center; margin-top:.6rem; font-size:.82rem;
+  color:var(--ink-2); border-bottom:1px solid var(--rule)}
+button.cartlink{background:none; border:0; cursor:pointer}
+
+/* ---------------- consent ---------------- */
+.consent{
+  position:fixed; bottom:0; left:0; right:0; z-index:120;
+  background:var(--ink); color:#fff; border-top:3px solid var(--yellow);
+}
+.consent-inner{
+  max-width:1280px; margin:0 auto; padding:1rem clamp(1rem,3vw,2rem);
+  display:flex; gap:1rem 1.5rem; align-items:center; flex-wrap:wrap;
+}
+.consent p{margin:0; font-size:.86rem; color:#D6D6D2; max-width:62ch}
+.consent p strong{color:#fff}
+.consent-actions{display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; margin-left:auto}
+.consent .btn{padding:.6rem 1.1rem; font-size:.82rem}
+.consent .btn.ghost.dark{background:transparent; color:#fff; border-color:#fff}
+.consent .btn.ghost.dark:hover{background:#fff; color:var(--ink)}
+.consent-link{
+  background:none; border:0; color:#D6D6D2; font-size:.8rem;
+  text-decoration:underline; padding:.4rem;
+}
+.consent-link:hover{color:#fff}
+.consent-note{flex-basis:100%; font-size:.75rem; color:var(--yellow)}
+
+/* ---------------- personalisation ---------------- */
+.pers{margin:1.25rem 0}
+.pers-unavailable{
+  margin:1.25rem 0; padding:.7rem .9rem; font-size:.82rem; color:#6B6B66;
+  border:1px dashed var(--rule); border-radius:2px;
+}
+.pers-open{
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  gap:1rem; padding:.9rem 1rem; background:transparent; cursor:pointer;
+  border:1px solid var(--ink); border-radius:2px; text-align:left; font:inherit;
+  transition:background .12s ease, color .12s ease;
+}
+.pers-open:hover{background:var(--ink); color:#fff}
+.pers-open strong{display:block; font-size:.95rem}
+.pers-open small{display:block; font-size:.8rem; opacity:.7; margin-top:.15rem}
+.pers-chev{font-size:1.3rem; line-height:1; font-weight:300}
+
+.pers-panel{border:1px solid var(--ink); border-radius:2px; padding:1rem}
+.pers-head{display:flex; align-items:baseline; justify-content:space-between; gap:1rem}
+.pers-head h3{font-size:.95rem; margin:0}
+.pers-close{
+  background:none; border:0; font:inherit; font-size:.8rem; cursor:pointer;
+  color:#6B6B66; text-decoration:underline; padding:0;
+}
+.pers-close:hover{color:var(--ink)}
+
+.pers-grid{display:grid; grid-template-columns:minmax(0,150px) minmax(0,1fr); gap:1.25rem; margin-top:1rem}
+@media (max-width:520px){.pers-grid{grid-template-columns:1fr}}
+
+.pers-preview{display:flex; flex-direction:column; gap:.4rem}
+.jersey-back{width:100%; height:auto; display:block; border-radius:2px}
+.pers-preview-note{font-size:.7rem; color:#8A8A85; margin:0; line-height:1.35}
+
+.pers-fields{display:flex; flex-direction:column; gap:.85rem; min-width:0}
+.pers-field label{
+  display:flex; align-items:baseline; justify-content:space-between; gap:.5rem;
+  font-size:.8rem; font-weight:600; margin-bottom:.3rem;
+}
+.pers-field label span{font-weight:400; color:#6B6B66}
+.pers-field input, .pers-field select{
+  width:100%; padding:.55rem .65rem; font:inherit; font-size:.9rem;
+  border:1px solid var(--field); border-radius:2px; background:#fff;
+}
+.pers-field input{text-transform:uppercase; letter-spacing:.08em}
+.pers-field input:focus-visible, .pers-field select:focus-visible{
+  outline:2px solid var(--ink); outline-offset:1px; border-color:var(--ink);
+}
+.pers-field input[aria-invalid="true"]{border-color:#B4342A}
+.pers-help{font-size:.72rem; color:#8A8A85; margin:.3rem 0 0; line-height:1.35}
+.pers-err{font-size:.72rem; color:#B4342A; margin:.3rem 0 0; line-height:1.35}
+
+.pers-total{border-top:1px solid var(--rule); padding-top:.7rem; min-height:2.2rem}
+.pers-total ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.3rem}
+.pers-total li{display:flex; justify-content:space-between; gap:1rem; font-size:.82rem}
+.pers-total li b{font-variant-numeric:tabular-nums}
+.pers-saving{font-size:.72rem; color:#0E7A56; margin:.45rem 0 0}
+
+.pers-notice{
+  margin:1rem 0 0; padding:.65rem .8rem; font-size:.75rem; line-height:1.5;
+  background:#FAF8F3; border-left:3px solid var(--yellow); color:#4A4A45;
+}
+.pers-notice strong{color:var(--ink)}
+
+/* ================================================================ written pages
+   Policy, shipping, returns and the size guide. One set of styles for all of them,
+   because they are rendered by one component — which is also what keeps their heading
+   order correct rather than trusting whoever wrote the markup. */
+/* Centred, not left-aligned in a 1280px wrap — a 760px column pinned to the left of a
+   wide viewport reads as a layout bug. */
+.prose{max-width:760px; margin-inline:auto}
+.prose .standfirst{font-size:1.05rem; color:var(--ink-2); margin:.75rem 0 2rem; max-width:60ch}
+.psec{margin-top:2.25rem}
+.psec h2{font-size:clamp(1.15rem,2.2vw,1.5rem); margin-bottom:.75rem}
+.psec h3{margin:1.5rem 0 .5rem}
+.prose p{margin:0 0 1rem; max-width:68ch}
+.prose ul.bullets,.prose ol.bullets{margin:0 0 1rem; padding-left:1.25rem; max-width:66ch}
+.prose ul.bullets li,.prose ol.bullets li{margin-bottom:.4rem}
+.prose a{border-bottom:1px solid var(--field)}
+.prose a:hover{border-bottom-color:var(--ink)}
+
+/* A boxed aside. `warn` is for something the reader must not miss — an unreviewed legal
+   document, a measurement we do not have, a market we cannot ship to yet. The left bar
+   carries the emphasis rather than a background wash, so the text keeps full contrast. */
+.callout{
+  border-left:3px solid var(--teal); background:var(--wash);
+  padding:.9rem 1rem; margin:0 0 1.25rem; font-size:.95rem; max-width:66ch;
+}
+.callout.warn{border-left-color:#B3261E}
+
+.spec.wide{width:100%; margin:0 0 1.25rem}
+.spec.wide th[scope="row"]{width:12rem; vertical-align:top; padding-right:1rem}
+.spec.wide td{vertical-align:top}
+@media (max-width:600px){
+  .spec.wide th[scope="row"]{width:auto; display:block; padding:.6rem 0 .2rem}
+  .spec.wide td{display:block; padding:0 0 .6rem}
+}
+
+/* An entity detail nobody has filled in. Shown as a gap with the reason, never blank and
+   never guessed — the same pattern the product page uses for the regulatory block. */
+.entity{margin:0 0 1.25rem}
+.entity .gap{color:#B3261E; font-style:normal}
+.prose .updated{margin-top:2.5rem; padding-top:1rem; border-top:1px solid var(--rule)}
+
+/* ==================================================================== breadcrumb
+   Visible, not only in the JSON-LD. It is how a customer arriving from search finds the
+   league and team listings, which is the navigation this catalog has instead of
+   collections. */
+.crumbs{padding:1rem 0 0}
+.crumbs ol{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:.4rem;
+  font-size:.8rem; color:var(--ink-3)}
+.crumbs li+li::before{content:'/'; margin-right:.4rem; color:var(--rule); }
+.crumbs a{border-bottom:1px solid transparent}
+.crumbs a:hover{border-bottom-color:var(--ink-3)}
+.crumbs [aria-current="page"]{color:var(--ink-2)}
+
+/* ================================================================= region picker */
+.regionpick{display:flex; align-items:center; gap:.5rem; flex-wrap:wrap}
+.regionpick label{font-size:.8rem; color:var(--ink-2)}
+.regionpick select{
+  font:inherit; font-size:.85rem; padding:.35rem .5rem;
+  border:1px solid var(--field); background:var(--paper); color:var(--ink);
+}
+.regionpick select:disabled{opacity:.6}
+.regionpick.compact label{font-size:.75rem}
+
+/* ==================================================================== promo code
+   Collapsed by default. An open, empty discount field tells every customer a better price
+   exists and sends them off to look for it — and §9.1 argues against percentage codes for
+   this shop anyway, which is why the free-shipping bar is the loud mechanic and this is
+   one line of text. */
+.promo{margin:.9rem 0}
+.promotoggle{
+  background:none; border:0; padding:0; font:inherit; font-size:.85rem;
+  color:var(--ink-2); border-bottom:1px solid var(--field); cursor:pointer;
+}
+.promotoggle:hover{color:var(--ink); border-bottom-color:var(--ink)}
+.promoform label{display:block; font-size:.8rem; margin-bottom:.3rem; color:var(--ink-2)}
+.promorow{display:flex; gap:.5rem}
+.promorow input{
+  flex:1; min-width:0; padding:.6rem .7rem; border:1px solid var(--field); font:inherit;
+  text-transform:uppercase;
+}
+.promorow .btn{white-space:nowrap}
+.promolist{list-style:none; margin:0 0 .6rem; padding:0; display:flex; flex-wrap:wrap; gap:.4rem}
+.promolist li{display:flex; align-items:center; gap:.4rem}
+.promotag{
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
+  font-size:.75rem; background:var(--yellow); color:var(--ink); padding:.2rem .45rem;
+}
+.promolist button{
+  background:none; border:0; padding:0; font:inherit; font-size:.75rem;
+  color:var(--ink-3); border-bottom:1px solid var(--field); cursor:pointer;
+}
+.promolist button:hover{color:var(--ink)}
+
+/* ======================================================================= returns */
+.rfield{border:0; padding:0; margin:0 0 1.25rem}
+.rfield legend{
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
+  font-size:.85rem; margin-bottom:.5rem; padding:0;
+}
+.ropt{
+  display:flex; align-items:flex-start; gap:.6rem; padding:.55rem .7rem;
+  border:1px solid var(--rule); margin-bottom:.4rem; cursor:pointer; font-size:.9rem;
+}
+.ropt:hover{border-color:var(--field)}
+.ropt:has(input:checked){border-color:var(--ink); background:var(--wash)}
+.ropt input{margin-top:.2rem; flex:none}
+.rvar{color:var(--ink-3)}
+.rblocked{border-left:3px solid var(--rule); padding-left:.9rem; margin:0 0 1.25rem}
+.rblocked h3{font-size:.85rem; letter-spacing:.06em; margin-bottom:.5rem; color:var(--ink-2)}
+
+/* ====================================================================== account */
+.linkbtn{
+  background:none; border:0; padding:0; font:inherit;
+  color:var(--ink-2); border-bottom:1px solid var(--field); cursor:pointer;
+}
+.linkbtn:hover{color:var(--ink); border-bottom-color:var(--ink)}
+.orderlist{list-style:none; margin:0; padding:0}
+.orderlist li{padding:1rem 0; border-bottom:1px solid var(--rule)}
+.orow{display:flex; justify-content:space-between; align-items:baseline; gap:1rem}
+.orow a{border-bottom:1px solid var(--field)}
+.othumbs{display:flex; align-items:center; gap:.5rem; margin-top:.6rem; flex-wrap:wrap}
+.othumbs img{width:48px; height:48px; object-fit:cover; background:var(--wash)}
+
+/* The size-guide pointer in the buy box. Between the price and the details, which is where
+   the size question is actually asked. */
+.fitlink{font-size:.85rem; color:var(--ink-2); margin:1rem 0 0}
+.fitlink a{border-bottom:1px solid var(--field)}
+
+/* Provenance on a review card. Deliberately quieter than the verified badge — it is a fact
+   about origin, not a mark of trust, and the two must not read alike. */
+.viasrc{
+  font-size:.7rem; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--ink-3); border:1px solid var(--rule); padding:.1rem .35rem;
+}
+
+/* ================================================================ store reviews
+   The rating bar and card row, in the two slots anyjersey.com used them. */
+.storerev{background:var(--wash)}
+.srbar{display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; margin-bottom:1.5rem}
+.srbar strong{font-family:var(--display); font-size:2rem; line-height:1}
+.srcount{font-size:.85rem; color:var(--ink-2)}
+.stars .on{color:#B8860B}
+.stars.small{font-size:.85rem}
+.srcards{
+  list-style:none; margin:0; padding:0;
+  display:grid; gap:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+}
+.srcards li{background:var(--paper); border:1px solid var(--rule); padding:1rem}
+.srtitle{font-weight:600; font-size:.9rem; margin:.5rem 0 .3rem}
+.srbody{font-size:.85rem; color:var(--ink-2); margin:0 0 .75rem}
+.srwho{
+  font-size:.75rem; color:var(--ink-3); margin:0;
+  display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+}
+.srnote{margin-top:1.25rem; max-width:70ch}
+
+/* The zone rate card. Four columns where the last one is a sentence, so the row header
+   cannot keep the 12rem it gets elsewhere — the delivery estimate ends up one word per
+   line. Explicit widths, and the lead time gets whatever is left. */
+.ratetable th[scope="row"]{width:auto; white-space:nowrap}
+.ratetable th:nth-child(2),.ratetable th:nth-child(3),
+.ratetable td:nth-child(2),.ratetable td:nth-child(3){width:6.5rem; white-space:nowrap}
+.ratetable td:last-child{width:auto; min-width:18ch}
+@media (max-width:700px){
+  /* Stacked, because four columns including a sentence cannot fit a phone. */
+  .ratetable thead{display:none}
+  .ratetable tr{display:block; padding:.75rem 0; border-bottom:1px solid var(--rule)}
+  .ratetable th[scope="row"]{display:block; width:auto; padding:0 0 .3rem; white-space:normal}
+  .ratetable td{display:block; width:auto!important; padding:0 0 .2rem; white-space:normal}
+  .ratetable td:nth-child(2)::before{content:'Rate: '; color:var(--ink-3)}
+  .ratetable td:nth-child(3)::before{content:'Free over: '; color:var(--ink-3)}
+}
+
+/* ================================================================== custom line
+   A different product at a different price, so it is marked rather than left to look like
+   an ordinary jersey that costs $25 more for no stated reason. */
+/* Inline, not absolutely positioned. The first version sat at `top:-.35rem` and overlapped
+   the announcement bar above the header — and pushed the nav onto two rows below 1200px. */
+.navcustom::after{
+  content:'NEW'; margin-left:.3rem; vertical-align:.35em;
+  font-size:.55rem; letter-spacing:.08em; background:var(--yellow); color:var(--ink);
+  padding:.05rem .25rem; font-weight:700;
+}
+.customband{background:var(--ink); color:#fff}
+.customband .sechead h2{color:#fff}
+.customband .sechead a{color:var(--yellow); border-bottom:1px solid var(--yellow)}
+.customlede{color:#D6D6D2; margin:.25rem 0 1.5rem; font-size:1.05rem}
+.customband .card h3,.customband .card a{color:#fff}
+.customband .price{color:var(--yellow)}
+
+.plpintro{
+  max-width:62ch; margin:.75rem 0 1.25rem; font-size:.95rem; color:var(--ink-2);
+  border-left:3px solid var(--yellow); padding-left:.9rem;
+}
+.plpintro a{border-bottom:1px solid var(--field)}
+
+/* The badge on a product card. */
+.custombadge{
+  display:inline-block; font-family:var(--display); text-transform:uppercase;
+  letter-spacing:.06em; font-size:.62rem; background:var(--yellow); color:var(--ink);
+  padding:.1rem .35rem; margin-bottom:.3rem;
+}
+
+/* The opt-out control on Your Privacy Choices. */
+.choices{margin:0 0 1rem}
+.choicerow{display:flex; gap:.75rem; flex-wrap:wrap; margin:.75rem 0}
+.choicerow .btn:disabled{opacity:.45; cursor:default}
+
+/* Footer newsletter. */
+.newsletter{margin:0 0 2rem; max-width:34rem}
+.newsletter h2{font-size:1rem; letter-spacing:.04em; margin-bottom:.6rem}
+.newsletter label{display:block; font-size:.8rem; margin-bottom:.3rem; color:var(--ink-2)}
+.nlrow{display:flex; gap:.5rem}
+.nlrow input{
+  flex:1; min-width:0; padding:.6rem .7rem; border:1px solid var(--field);
+  font:inherit; background:var(--paper);
+}
+.nlrow .btn{white-space:nowrap}
+.newsletter .note{margin-top:.5rem}
+.newsletter .note a{border-bottom:1px solid var(--field)}

@@ -1,0 +1,1317 @@
+{
+ "source": "https://cruxchristi.com/collections/customs-nfl/products.json",
+ "fetched_at": "2026-08-29",
+ "products": [
+  {
+   "handle": "dallas-cowboys-custom-blue-jersey",
+   "title": "DALLAS COWBOYS CUSTOM BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/C8A3DE00-C501-4CE1-AFFF-77B9FE5C62DB.png?v=1787329129",
+   "published_at": "2026-08-21T11:18:46-05:00"
+  },
+  {
+   "handle": "pittsburgh-steelers-custom-black-color-rush-jersey",
+   "title": "PITTSBURGH STEELERS CUSTOM BLACK COLOR RUSH JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/IMG-6779.jpg?v=1787600002",
+   "published_at": "2026-08-24T14:50:53-05:00"
+  },
+  {
+   "handle": "green-bay-packers-custom-green-jersey-1",
+   "title": "GREEN BAY PACKERS CUSTOM GREEN JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/9A1AA780-F94D-4EF9-95CD-FAF62A3E3159.jpg?v=1787659838",
+   "published_at": "2026-08-25T07:59:47-05:00"
+  },
+  {
+   "handle": "chicago-bears-custom-orange-jersey",
+   "title": "CHICAGO BEARS CUSTOM ORANGE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/481C36F7-1FF8-4934-8B4C-97FEC3CA4C23.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:42:07-05:00"
+  },
+  {
+   "handle": "new-york-giants-custom-blue-jersey",
+   "title": "NEW YORK GIANTS CUSTOM BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/101_8c8883c5-a753-48b8-8766-8ce4353d0677.jpg?v=1787586329",
+   "published_at": "2026-08-24T10:46:06-05:00"
+  },
+  {
+   "handle": "washington-commanders-custom-burgandy-jersey",
+   "title": "WASHINGTON COMMANDERS CUSTOM BURGANDY JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/F50949FC-A66C-42DC-B3B2-524DD658B778.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:50:57-05:00"
+  },
+  {
+   "handle": "dallas-cowboys-custom-color-rush-jersey",
+   "title": "DALLAS COWBOYS CUSTOM COLOR RUSH JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/AAA7730D-D093-4E9B-A8BC-58659258D26F.png?v=1787329127",
+   "published_at": "2026-08-21T11:18:44-05:00"
+  },
+  {
+   "handle": "atlanta-falcons-custom-red-jersey",
+   "title": "ATLANTA FALCONS CUSTOM RED JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/C9B53EE7-5059-4AEC-8EF5-5F1065C6FF94.jpg?v=1787659838",
+   "published_at": "2026-08-25T07:53:50-05:00"
+  },
+  {
+   "handle": "denver-broncos-custom-orange-jersey",
+   "title": "DENVER BRONCOS CUSTOM ORANGE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/EADE76B8-8602-460C-AEB2-BCB5B6328077.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:41:08-05:00"
+  },
+  {
+   "handle": "kansas-city-chiefs-red-custom-jersey",
+   "title": "KANSAS CITY CHIEFS RED CUSTOM JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/1E29CD55-1C7E-4255-81E6-B0C08135A2C5.jpg?v=1787659838",
+   "published_at": "2026-08-25T07:40:08-05:00"
+  },
+  {
+   "handle": "los-angeles-chargers-custom-blue-jersey",
+   "title": "LOS ANGELES CHARGERS CUSTOM BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/778B4531-17F8-4658-8F43-D44E91A0C8EE.jpg?v=1787659838",
+   "published_at": "2026-08-25T07:49:04-05:00"
+  },
+  {
+   "handle": "jacksonville-jaguars-custom-throwback-jersey",
+   "title": "JACKSONVILLE JAGUARS CUSTOM THROWBACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/98A94E9B-2ABB-4675-9122-51AC5F7621AE.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:40:38-05:00"
+  },
+  {
+   "handle": "carolina-panthers-blue-custom-jersey",
+   "title": "CAROLINA PANTHERS BLUE CUSTOM JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/3CEE0341-CFE1-4FDE-B8B9-98982CEAE0F0.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:52:06-05:00"
+  },
+  {
+   "handle": "los-angeles-chargers-custom-white-jersey",
+   "title": "LOS ANGELES CHARGERS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/9CB554EC-CF6B-4AFF-ACE5-DA51DC8E7534.jpg?v=1787659838",
+   "published_at": "2026-08-25T07:48:18-05:00"
+  },
+  {
+   "handle": "los-angeles-chargers-custom-baby-blue-jersey",
+   "title": "LOS ANGELES CHARGERS CUSTOM BABY BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/D9018F41-FC87-4E2A-A6C3-F36B379BC140.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:47:25-05:00"
+  },
+  {
+   "handle": "detroit-lions-custom-white-jersey",
+   "title": "DETROIT LIONS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/F92560A2-95A0-4FB4-AB54-19671D77D09A.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:44:59-05:00"
+  },
+  {
+   "handle": "chicago-bears-custom-white-jersey",
+   "title": "CHICAGO BEARS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/3C3EBBAC-E4F6-4821-B68E-9AD78D619E18.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:44:02-05:00"
+  },
+  {
+   "handle": "las-vegas-raiders-custom-black-jersey",
+   "title": "LAS VEGAS RAIDERS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/1FA69037-71C4-4369-9D19-6A12AB12A222.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:36:19-05:00"
+  },
+  {
+   "handle": "chicago-bears-custom-blue-jersey",
+   "title": "CHICAGO BEARS CUSTOM BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/9610BB62-6F50-4219-8B46-D9F847E6D935.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:43:01-05:00"
+  },
+  {
+   "handle": "kansas-city-chiefs-white-custom-jersey",
+   "title": "KANSAS CITY CHIEFS WHITE CUSTOM JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/C43879A4-DCB2-4264-925A-19BC347AAA53.jpg?v=1787659838",
+   "published_at": "2026-08-25T07:39:18-05:00"
+  },
+  {
+   "handle": "detroit-lions-custom-black-jersey",
+   "title": "DETROIT LIONS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/B37604F4-42EE-4529-98FF-27D5A96E8658.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:46:18-05:00"
+  },
+  {
+   "handle": "las-vegas-raiders-custom-white-jersey",
+   "title": "LAS VEGAS RAIDERS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/92D748AF-51EB-4732-B7C7-F81DF53C668C.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:38:03-05:00"
+  },
+  {
+   "handle": "las-vegas-raiders-custom-throwback-jersey",
+   "title": "LAS VEGAS RAIDERS CUSTOM THROWBACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/0491EECA-7C75-4382-BF75-904CDC779C2C.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:37:13-05:00"
+  },
+  {
+   "handle": "tennessee-titans-custom-white-jersey",
+   "title": "TENNESSEE TITANS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/CCCD6ECD-3E43-4E85-9B0E-6611E4DA3D47.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:35:10-05:00"
+  },
+  {
+   "handle": "jacksonville-jaguars-custom-white-jersey",
+   "title": "JACKSONVILLE JAGUARS CUSTOM WHITE JERSEY",
+   "product_type": "",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/BEEEF04E-785A-44C5-9086-4CC26E58D721.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:39:07-05:00"
+  },
+  {
+   "handle": "washington-commanders-custom-black-jersey",
+   "title": "WASHINGTON COMMANDERS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/D7CECF25-3C19-4471-9EC2-FBC155750DA8.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:50:15-05:00"
+  },
+  {
+   "handle": "atlanta-falcons-custom-white-jersey",
+   "title": "ATLANTA FALCONS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/4D5A0520-9E31-4A39-9B92-2D6B576ADF33.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:53:09-05:00"
+  },
+  {
+   "handle": "minnesota-vikings-custom-alternate-jersey",
+   "title": "MINNESOTA VIKINGS CUSTOM ALTERNATE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/42F1169B-ABE3-4B19-86D2-58F3B40533FB.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:54:57-05:00"
+  },
+  {
+   "handle": "minnesota-vikings-custom-rival-jersey",
+   "title": "MINNESOTA VIKINGS CUSTOM RIVAL JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/A6142118-3DF8-4377-A59F-3B8C0C1BA0F4.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:55:44-05:00"
+  },
+  {
+   "handle": "minnesota-vikings-custom-white-jersey",
+   "title": "MINNESOTA VIKINGS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/A5958B6B-D1A5-43B4-8547-2EB88EEB71B0.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:56:28-05:00"
+  },
+  {
+   "handle": "minnesota-vikings-custom-purple-jersey",
+   "title": "MINNESOTA VIKINGS CUSTOM PURPLE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/4E5D49DB-BCFA-48F4-B557-9C7F1F0715F4.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:57:17-05:00"
+  },
+  {
+   "handle": "green-bay-packers-custom-green-jersey",
+   "title": "GREEN BAY PACKERS CUSTOM BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/910279ED-3DB6-4D38-8D4D-AE0DFB1CBE46.jpg?v=1787659838",
+   "published_at": "2026-08-25T07:58:07-05:00"
+  },
+  {
+   "handle": "green-bay-packers-custom-white-jersey",
+   "title": "GREEN BAY PACKERS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/1ABC6AD5-57B8-42D8-B267-A3BD6FF2C71B.jpg?v=1787659837",
+   "published_at": "2026-08-25T07:59:08-05:00"
+  },
+  {
+   "handle": "dallas-cowboys-custom-thanksgiving-jersey",
+   "title": "DALLAS COWBOYS CUSTOM THANKSGIVING JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/C2330F91-5B2E-41FC-A8B5-E1966F45F8C8.png?v=1787329126",
+   "published_at": "2026-08-21T11:18:43-05:00"
+  },
+  {
+   "handle": "buffalo-bills-custom-grey-jersey",
+   "title": "BUFFALO BILLS CUSTOM GREY JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/9B75AC06-3846-41ED-B648-B3FE4C3F04DE.jpg?v=1787596886",
+   "published_at": "2026-08-24T13:54:12-05:00"
+  },
+  {
+   "handle": "new-york-jets-custom-black-jersey",
+   "title": "NEW YORK JETS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/73AA4107-2C4C-42F4-A627-6D23932651DC.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:43:00-05:00"
+  },
+  {
+   "handle": "new-york-jets-custom-white-jersey",
+   "title": "NEW YORK JETS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/54C107E5-8F65-44E3-9E4F-C0419269B56E.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:42:17-05:00"
+  },
+  {
+   "handle": "baltimore-ravens-custom-black-jersey",
+   "title": "BALTIMORE RAVENS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/6011F51C-C019-4487-8BEB-761394A58214.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:40:35-05:00"
+  },
+  {
+   "handle": "baltimore-ravens-custom-white-jersey",
+   "title": "BALTIMORE RAVENS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/521FEBFB-E4D9-4323-8CCF-F84C61452D86.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:39:43-05:00"
+  },
+  {
+   "handle": "baltimore-ravens-custom-purple-jersey",
+   "title": "BALTIMORE RAVENS CUSTOM PURPLE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/9AE7C0B0-FC12-4390-A94F-27E8651A8830.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:38:54-05:00"
+  },
+  {
+   "handle": "cincinnati-bengals-custom-black-jersey",
+   "title": "CINCINNATI BENGALS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/IMG-6773.jpg?v=1787600002",
+   "published_at": "2026-08-24T14:37:58-05:00"
+  },
+  {
+   "handle": "cincinnati-bengals-custom-white-jersey",
+   "title": "CINCINNATI BENGALS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/AAC64294-770D-463B-A2D6-6FA55E9C137C.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:37:14-05:00"
+  },
+  {
+   "handle": "cincinnati-bengals-custom-orange-jersey",
+   "title": "CINCINNATI BENGALS CUSTOM ORANGE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/218810F0-2023-421E-9ED2-1A9B58459F6D.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:36:17-05:00"
+  },
+  {
+   "handle": "new-england-patriots-custom-rival-jersey",
+   "title": "NEW ENGLAND PATRIOTS CUSTOM RIVAL JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/FA859673-E9D2-4FF6-8858-FABF39A4CA11.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:45:16-05:00"
+  },
+  {
+   "handle": "buffalo-bills-custom-rival-jersey",
+   "title": "BUFFALO BILLS CUSTOM RIVAL JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/F3208EC4-4785-4389-A43C-4B2A482E9262.jpg?v=1787596885",
+   "published_at": "2026-08-24T13:53:21-05:00"
+  },
+  {
+   "handle": "buffalo-bills-custom-white-jersey",
+   "title": "BUFFALO BILLS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/59E1CAD8-383C-4202-AA3E-DD7130FE5807.jpg?v=1787596892",
+   "published_at": "2026-08-24T13:52:30-05:00"
+  },
+  {
+   "handle": "miami-dolphins-custom-black-jersey",
+   "title": "MIAMI DOLPHINS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/9BD3A900-FD1A-4097-96A7-384FD436E8E7.jpg?v=1787596885",
+   "published_at": "2026-08-24T13:51:10-05:00"
+  },
+  {
+   "handle": "miami-dolphins-custom-blue-jersey",
+   "title": "MIAMI DOLPHINS CUSTOM BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/485A903B-8C68-4967-B392-B210CD96E45A.jpg?v=1787596897",
+   "published_at": "2026-08-24T13:50:16-05:00"
+  },
+  {
+   "handle": "miami-dolphins-quinn-ewers-blue-retro-jersey",
+   "title": "MIAMI DOLPHINS CUSTOM BLUE RETRO JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/02AE3EA4-E781-4F2D-B32F-54F0512E957F.jpg?v=1787596885",
+   "published_at": "2026-08-24T13:49:20-05:00"
+  },
+  {
+   "handle": "new-england-patriots-custom-white-jersey",
+   "title": "NEW ENGLAND PATRIOTS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/9267E049-1491-467D-A9D5-1CCF159912CF.jpg?v=1787596886",
+   "published_at": "2026-08-24T13:43:58-05:00"
+  },
+  {
+   "handle": "new-england-patriots-custom-red-jersey",
+   "title": "NEW ENGLAND PATRIOTS CUSTOM RED JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/677751B0-1267-4A7A-9434-C4C35D064C5C.jpg?v=1787596886",
+   "published_at": "2026-08-24T13:43:09-05:00"
+  },
+  {
+   "handle": "new-york-giants-custom-retro-blue-jersey",
+   "title": "NEW YORK GIANTS CUSTOM RETRO BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/101_7780037c-aaf3-419d-b4fe-2b6d1568f0fc.jpg?v=1787586247",
+   "published_at": "2026-08-24T10:45:00-05:00"
+  },
+  {
+   "handle": "new-england-patriots-blue-rival-jersey",
+   "title": "NEW ENGLAND PATRIOTS BLUE RIVAL JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/AA5045C5-D981-4B23-B882-4E07CF7542DD.jpg?v=1787599789",
+   "published_at": "2026-08-24T14:45:57-05:00"
+  },
+  {
+   "handle": "cleveland-browns-custom-brown-jersey",
+   "title": "CLEVELAND BROWNS CUSTOM BROWN JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/IMG-6774.jpg?v=1787600002",
+   "published_at": "2026-08-24T14:47:03-05:00"
+  },
+  {
+   "handle": "cleveland-browns-custom-white-jersey",
+   "title": "CLEVELAND BROWNS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/IMG-6775.jpg?v=1787600002",
+   "published_at": "2026-08-24T14:47:45-05:00"
+  },
+  {
+   "handle": "cleveland-browns-custom-white-retro-jersey",
+   "title": "CLEVELAND BROWNS CUSTOM WHITE RETRO JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/IMG-6776.jpg?v=1787600002",
+   "published_at": "2026-08-24T14:48:32-05:00"
+  },
+  {
+   "handle": "pittsburgh-steelers-custom-black-jersey",
+   "title": "PITTSBURGH STEELERS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/IMG-6777.jpg?v=1787600002",
+   "published_at": "2026-08-24T14:49:26-05:00"
+  },
+  {
+   "handle": "pittsburgh-steelers-custom-white-jersey",
+   "title": "PITTSBURGH STEELERS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/IMG-6778.jpg?v=1787600002",
+   "published_at": "2026-08-24T14:50:05-05:00"
+  },
+  {
+   "handle": "houston-texans-custom-blue-jersey-1",
+   "title": "HOUSTON TEXANS CUSTOM BLUE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/4120EC6C-CF25-4C98-87A1-0AE5FDC42122.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:28:14-05:00"
+  },
+  {
+   "handle": "houston-texans-custom-white-jersey",
+   "title": "HOUSTON TEXANS CUSTOM WHITE JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/0104E4DE-42E0-4D09-8D58-1D4D5EFD50D5.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:30:01-05:00"
+  },
+  {
+   "handle": "houston-texans-custom-red-jersey",
+   "title": "HOUSTON TEXANS CUSTOM RED JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/2AD63896-CBFA-42EC-A5B0-2B3620584C2B.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:31:29-05:00"
+  },
+  {
+   "handle": "houston-texans-custom-blue-retro-jersey",
+   "title": "HOUSTON TEXANS CUSTOM BLUE RETRO JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/C00B2E49-AADF-4401-9D12-7D5FFD1C882D.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:32:36-05:00"
+  },
+  {
+   "handle": "indianapolis-colts-custom-blue-jerseys",
+   "title": "INDIANAPOLIS COLTS CUSTOM BLUE JERSEYS",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/3AF2851A-6A27-48AA-AE23-4974FFDBB2F6.jpg?v=1787612279",
+   "published_at": "2026-08-24T19:34:18-05:00"
+  },
+  {
+   "handle": "denver-broncos-custom-retro-jersey",
+   "title": "DENVER BRONCOS CUSTOM RETRO JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/3EF677BC-7D6F-4E45-8CCB-F2B89AA633B0.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:35:41-05:00"
+  },
+  {
+   "handle": "jacksonville-jaguars-custom-black-jersey",
+   "title": "JACKSONVILLE JAGUARS CUSTOM BLACK JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/1567464D-A7F6-43AC-A002-1EA53FAF8B98.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:37:00-05:00"
+  },
+  {
+   "handle": "jacksonville-jaguars-custom-teal-jersey",
+   "title": "JACKSONVILLE JAGUARS CUSTOM TEAL JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/0331AAC5-DCEA-421B-82F2-321DEF96318A.jpg?v=1787612280",
+   "published_at": "2026-08-24T19:38:09-05:00"
+  },
+  {
+   "handle": "minnesota-vikings-dallas-turner-rival-jersey",
+   "title": "MINNESOTA VIKINGS DALLAS TURNER RIVAL JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "64.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/6B7E80BB-B80F-4D2E-8FFE-AD78A36146D2.png?v=1787685131",
+   "published_at": "2026-08-25T14:27:15-05:00"
+  },
+  {
+   "handle": "buffalo-bills-greg-rousseau-grey-jersey",
+   "title": "BUFFALO BILLS GREG ROUSSEAU GREY JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+   ],
+   "prices": [
+    "64.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/28725DF3-DA8D-42FE-BF49-45C25BCC450E.jpg?v=1787772448",
+   "published_at": "2026-08-26T14:38:57-05:00"
+  },
+  {
+   "handle": "green-bay-packers-custom-rival-jersey",
+   "title": "GREEN BAY PACKERS CUSTOM RIVAL JERSEY",
+   "product_type": "Jerseys",
+   "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4Xl"
+   ],
+   "prices": [
+    "89.99"
+   ],
+   "image": "https://cdn.shopify.com/s/files/1/0791/9432/5189/files/IMG-2028.png?v=1787870643",
+   "published_at": "2026-08-27T17:46:00-05:00"
+  }
+ ]
+}

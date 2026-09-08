@@ -1,0 +1,58 @@
+{
+ "slug": "buffalo-bills-josh-allen-blue-jersey",
+ "name": "Buffalo Bills Josh Allen Blue Jersey",
+ "team": "Buffalo Bills",
+ "player": "Josh Allen",
+ "colourway": "blue",
+ "league": "NFL",
+ "sport": "football",
+ "description": "Josh Allen on the back, Buffalo Bills on the front — a blue jersey made for game day. The kind of piece that earns a spot in the rotation rather than the back of a drawer. Available in unisex S–3XL.",
+ "seo_title": "Josh Allen Buffalo Bills blue jersey",
+ "price_cents": 6599,
+ "variants": [
+  {
+   "sku": "AJ-M09FD-S",
+   "size": "S",
+   "fit": "unisex",
+   "pos": 1
+  },
+  {
+   "sku": "AJ-M09FD-M",
+   "size": "M",
+   "fit": "unisex",
+   "pos": 2
+  },
+  {
+   "sku": "AJ-M09FD-L",
+   "size": "L",
+   "fit": "unisex",
+   "pos": 3
+  },
+  {
+   "sku": "AJ-M09FD-XL",
+   "size": "XL",
+   "fit": "unisex",
+   "pos": 4
+  },
+  {
+   "sku": "AJ-M09FD-2XL",
+   "size": "2XL",
+   "fit": "unisex",
+   "pos": 5
+  },
+  {
+   "sku": "AJ-M09FD-3XL",
+   "size": "3XL",
+   "fit": "unisex",
+   "pos": 6
+  }
+ ],
+ "images": [
+  {
+   "key": "originals/1a35fae64f4d564cc7d0b941e7cddde1509d3c205623fee46dcb125f282c2668.jpg",
+   "sha": "1a35fae64f4d564cc7d0b941e7cddde1509d3c205623fee46dcb125f282c2668",
+   "w": "1600",
+   "h": "900"
+  }
+ ]
+}

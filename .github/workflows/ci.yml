@@ -1,0 +1,145 @@
+name: CI
+
+# Every suite that ./test.sh runs locally, on the same versions, so "works on my machine"
+# and "works in CI" cannot diverge quietly.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tools:
+    name: tools — python unittest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      # No dependencies on purpose: the parsing tests use only the standard library, so
+      # this job cannot break because of a package upgrade.
+      - run: python3 -m unittest discover -s tools/tests -t .
+
+      # Two static audits that need neither a browser nor a running server.
+      - name: contrast — WCAG AA over the colour tokens
+        run: python3 spike/contrast_check.py
+      - name: accessibility — prove the checks can fail
+        # A check that cannot fail passes whether the thing it guards works or not.
+        run: python3 spike/a11y_selftest.py
+
+  backend-unit:
+    name: backend — jest (unit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Medusa supports 20/22 LTS only.
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: spike/backend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: spike/backend
+      - run: npx tsc --noEmit
+        working-directory: spike/backend
+      - run: npm run test:unit
+        working-directory: spike/backend
+
+  backend-integration:
+    name: backend — jest (integration, real database)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: aj
+          POSTGRES_PASSWORD: aj_dev
+          POSTGRES_DB: aj_store_test
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U aj"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+      redis:
+        image: redis:7
+        ports: ["6380:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: spike/backend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: spike/backend
+      - name: write .env.test
+        working-directory: spike/backend
+        # The runner reads DB_* — not DATABASE_URL — to create its throwaway database.
+        # Setting only the latter makes it try localhost:5432 and fail with a bare
+        # AggregateError.
+        run: |
+          cat > .env.test <<'ENV'
+          DB_HOST=localhost
+          DB_PORT=5433
+          DB_USERNAME=aj
+          DB_PASSWORD=aj_dev
+          DATABASE_URL=postgres://aj:aj_dev@localhost:5433/aj_store_test
+          REDIS_URL=redis://localhost:6380
+          JWT_SECRET=test
+          COOKIE_SECRET=test
+          STORE_CORS=http://localhost:3000
+          ADMIN_CORS=http://localhost:9000
+          AUTH_CORS=http://localhost:9000,http://localhost:3000
+          STRIPE_API_KEY=
+          STRIPE_WEBHOOK_SECRET=
+          RESEND_API_KEY=
+          RESEND_FROM=test@example.invalid
+          ENV
+      # NODE_ENV is 'test' here. The integration keys are deliberately empty and the
+      # guards must not fire — they check for production, not "not development".
+      - run: npm run test:integration:http
+        working-directory: spike/backend
+        env: { LOG_LEVEL: error }
+
+  storefront:
+    name: storefront — vitest + typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: spike/storefront/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: spike/storefront
+      - run: npm run typecheck
+        working-directory: spike/storefront
+      - run: npm test
+        working-directory: spike/storefront
+
+  images:
+    name: images build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: spike/backend
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: storefront image
+        uses: docker/build-push-action@v6
+        with:
+          context: spike/storefront
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

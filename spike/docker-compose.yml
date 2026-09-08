@@ -1,0 +1,90 @@
+# Local production-shaped stack.
+#
+#   cp .env.deploy.template .env.deploy   # fill in what you have
+#   docker compose --env-file .env.deploy up --build
+#
+# This is not a production deployment. It is the same *shape* as one — built images, a real
+# Postgres, a real Redis, health checks, no bind mounts — so the difference between "runs
+# on my laptop" and "runs on a server" stops being a mystery.
+name: anyjersey
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:-aj}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-aj_dev}
+      POSTGRES_DB: ${DB_NAME:-aj_store}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-aj}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "${DB_PORT:-5433}:5432"
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${DB_USER:-aj}:${DB_PASSWORD:-aj_dev}@postgres:5432/${DB_NAME:-aj_store}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      COOKIE_SECRET: ${COOKIE_SECRET:?set COOKIE_SECRET}
+      STORE_CORS: ${STORE_CORS:-http://localhost:3000}
+      ADMIN_CORS: ${ADMIN_CORS:-http://localhost:9000}
+      AUTH_CORS: ${AUTH_CORS:-http://localhost:9000,http://localhost:3000}
+      # Critical integrations. Empty values make the container refuse to start, which is
+      # the intended behaviour in production — see src/integrations.ts.
+      STRIPE_API_KEY: ${STRIPE_API_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_TAX_ENABLED: ${STRIPE_TAX_ENABLED:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM: ${RESEND_FROM:-orders@example.invalid}
+      RESEND_REDIRECT_TO: ${RESEND_REDIRECT_TO:-}
+      SHIPPO_API_KEY: ${SHIPPO_API_KEY:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      TYPESENSE_HOST: ${TYPESENSE_HOST:-}
+      TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:-}
+      POSTHOG_API_KEY: ${POSTHOG_API_KEY:-}
+      MEDIA_BACKEND: ${MEDIA_BACKEND:-db}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET: ${R2_BUCKET:-}
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    ports:
+      - "9000:9000"
+
+  storefront:
+    build:
+      context: ./storefront
+      args:
+        NEXT_PUBLIC_MEDUSA_URL: ${NEXT_PUBLIC_MEDUSA_URL:-http://localhost:9000}
+        NEXT_PUBLIC_MEDUSA_PK: ${NEXT_PUBLIC_MEDUSA_PK:-}
+        NEXT_PUBLIC_REGION_ID: ${NEXT_PUBLIC_REGION_ID:-}
+        NEXT_PUBLIC_STRIPE_PK: ${NEXT_PUBLIC_STRIPE_PK:-}
+    depends_on:
+      backend: { condition: service_started }
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
+  redisdata:
