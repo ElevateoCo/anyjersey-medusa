@@ -57,6 +57,11 @@ jobs:
           cache-dependency-path: spike/backend/package-lock.json
       - run: npm ci --no-audit --no-fund
         working-directory: spike/backend
+      # seed.ts imports Medusa's generated query-entry-point types. A clean runner does
+      # not have .medusa/types until Medusa has built once, unlike a developer checkout.
+      - name: generate Medusa types
+        run: ADMIN_DISABLED=true npx medusa build
+        working-directory: spike/backend
       - run: npx tsc --noEmit
         working-directory: spike/backend
       - run: npm run test:unit
@@ -156,5 +161,12 @@ jobs:
         with:
           context: spike/storefront
           push: false
+          # NEXT_PUBLIC_* values are compiled into the image. Use inert absolute URLs
+          # so the container build exercises metadata and API configuration without
+          # needing deployment secrets.
+          build-args: |
+            NEXT_PUBLIC_MEDUSA_URL=http://localhost:9000
+            NEXT_PUBLIC_SITE_URL=http://localhost:3000
+            NEXT_PUBLIC_ALLOW_INDEXING=false
           cache-from: type=gha
           cache-to: type=gha,mode=max
