@@ -1,0 +1,194 @@
+name: ${COMPOSE_PROJECT_NAME:?set COMPOSE_PROJECT_NAME to an environment-specific name}
+
+x-backend-build: &backend-build
+  context: ../spike/backend
+  dockerfile: Dockerfile
+  args:
+    BUILD_ADMIN: "true"
+
+x-backend-environment: &backend-environment
+  NODE_ENV: production
+  DATABASE_URL: postgres://${DB_USER:-anyjersey}:${DB_PASSWORD:?set DB_PASSWORD}@postgres:5432/${DB_NAME:-anyjersey}
+  REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379
+  JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+  COOKIE_SECRET: ${COOKIE_SECRET:?set COOKIE_SECRET}
+  STORE_CORS: ${STORE_CORS:?set STORE_CORS}
+  ADMIN_CORS: ${ADMIN_CORS:?set ADMIN_CORS}
+  AUTH_CORS: ${AUTH_CORS:?set AUTH_CORS}
+  STOREFRONT_URL: ${STOREFRONT_URL:?set STOREFRONT_URL}
+  GIT_SHA: ${GIT_SHA:?set GIT_SHA to the immutable release commit}
+  STRIPE_API_KEY: ${STRIPE_API_KEY:?set STRIPE_API_KEY}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:?set STRIPE_WEBHOOK_SECRET}
+  STRIPE_TAX_ENABLED: ${STRIPE_TAX_ENABLED:?set STRIPE_TAX_ENABLED explicitly}
+  US_NEXUS_STATES: ${US_NEXUS_STATES:-}
+  US_HOME_STATE: ${US_HOME_STATE:-}
+  STRIPE_TAX_CODE_APPAREL: ${STRIPE_TAX_CODE_APPAREL:-}
+  RESEND_API_KEY: ${RESEND_API_KEY:?set RESEND_API_KEY}
+  RESEND_FROM: ${RESEND_FROM:?set RESEND_FROM}
+  RESEND_REPLY_TO: ${RESEND_REPLY_TO:-}
+  RESEND_REDIRECT_TO: ${RESEND_REDIRECT_TO:-}
+  SHIPPO_API_KEY: ${SHIPPO_API_KEY:?set SHIPPO_API_KEY}
+  SHIP_FROM_NAME: ${SHIP_FROM_NAME:-}
+  SHIP_FROM_STREET: ${SHIP_FROM_STREET:-}
+  SHIP_FROM_CITY: ${SHIP_FROM_CITY:-}
+  SHIP_FROM_STATE: ${SHIP_FROM_STATE:-}
+  SHIP_FROM_ZIP: ${SHIP_FROM_ZIP:-}
+  SHIP_FROM_COUNTRY: ${SHIP_FROM_COUNTRY:-US}
+  SHIP_FROM_PHONE: ${SHIP_FROM_PHONE:-}
+  ITEM_WEIGHT_GRAMS: ${ITEM_WEIGHT_GRAMS:-200}
+  CUSTOMS_HS_CODE: ${CUSTOMS_HS_CODE:-}
+  CUSTOMS_ORIGIN_COUNTRY: ${CUSTOMS_ORIGIN_COUNTRY:-}
+  MEDIA_BACKEND: ${MEDIA_BACKEND:-r2}
+  R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:?set R2_ACCOUNT_ID}
+  R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:?set R2_ACCESS_KEY_ID}
+  R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:?set R2_SECRET_ACCESS_KEY}
+  R2_BUCKET: ${R2_BUCKET:?set R2_BUCKET}
+  R2_PUBLIC_BASE: ${R2_PUBLIC_BASE:-}
+  MEDIA_MAX_WIDTH: ${MEDIA_MAX_WIDTH:-1400}
+  MEDIA_QUALITY: ${MEDIA_QUALITY:-78}
+  MEDIA_MAX_UPLOAD_BYTES: ${MEDIA_MAX_UPLOAD_BYTES:-15728640}
+  MEDUSA_FF_RBAC: ${MEDUSA_FF_RBAC:-true}
+  PERSONALISATION_PRODUCT_ID: ${PERSONALISATION_PRODUCT_ID:-}
+  SENTRY_DSN: ${SENTRY_DSN:-}
+  OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+  OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-findanyjersey-backend}
+  TYPESENSE_HOST: ${TYPESENSE_HOST:-}
+  TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:-}
+  POSTHOG_API_KEY: ${POSTHOG_API_KEY:-}
+  POSTHOG_HOST: ${POSTHOG_HOST:-}
+  OMNISEND_API_KEY: ${OMNISEND_API_KEY:-}
+  PRIVACY_RETENTION_APPLY: ${PRIVACY_RETENTION_APPLY:-false}
+  MEDUSA_ADMIN_URL: ${MEDUSA_ADMIN_URL:?set MEDUSA_ADMIN_URL}
+  SHOP_POSTAL_ADDRESS: ${SHOP_POSTAL_ADDRESS:-}
+  UNSUBSCRIBE_SECRET: ${UNSUBSCRIBE_SECRET:-}
+  TRUST_PROXY: ${TRUST_PROXY:?set TRUST_PROXY explicitly}
+  INTERNAL_API_SECRET: ${INTERNAL_API_SECRET:?set INTERNAL_API_SECRET}
+
+x-storefront-public: &storefront-public
+  NEXT_PUBLIC_MEDUSA_URL: ${NEXT_PUBLIC_MEDUSA_URL:?set NEXT_PUBLIC_MEDUSA_URL}
+  NEXT_PUBLIC_MEDUSA_PK: ${NEXT_PUBLIC_MEDUSA_PK:?set NEXT_PUBLIC_MEDUSA_PK}
+  NEXT_PUBLIC_REGION_ID: ${NEXT_PUBLIC_REGION_ID:?set NEXT_PUBLIC_REGION_ID}
+  NEXT_PUBLIC_STRIPE_PK: ${NEXT_PUBLIC_STRIPE_PK:?set NEXT_PUBLIC_STRIPE_PK}
+  NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?set NEXT_PUBLIC_SITE_URL}
+  NEXT_PUBLIC_ALLOW_INDEXING: ${NEXT_PUBLIC_ALLOW_INDEXING:-false}
+  NEXT_PUBLIC_LEGAL_NAME: ${NEXT_PUBLIC_LEGAL_NAME:?set NEXT_PUBLIC_LEGAL_NAME}
+  NEXT_PUBLIC_LEGAL_ADDRESS: ${NEXT_PUBLIC_LEGAL_ADDRESS:-}
+  NEXT_PUBLIC_SUPPORT_EMAIL: ${NEXT_PUBLIC_SUPPORT_EMAIL:-}
+  NEXT_PUBLIC_SUPPORT_PHONE: ${NEXT_PUBLIC_SUPPORT_PHONE:-}
+  NEXT_PUBLIC_PRIVACY_EMAIL: ${NEXT_PUBLIC_PRIVACY_EMAIL:-}
+  NEXT_PUBLIC_EU_REPRESENTATIVE: ${NEXT_PUBLIC_EU_REPRESENTATIVE:-}
+  NEXT_PUBLIC_GPSR_RESPONSIBLE_PERSON: ${NEXT_PUBLIC_GPSR_RESPONSIBLE_PERSON:-}
+  NEXT_PUBLIC_IOSS_NUMBER: ${NEXT_PUBLIC_IOSS_NUMBER:-}
+  NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY:-}
+  NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST:-}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-anyjersey}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-anyjersey}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - stack
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-anyjersey} -d ${DB_NAME:-anyjersey}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD}
+    command: ["sh", "-c", "exec redis-server --appendonly yes --requirepass \"$$REDIS_PASSWORD\""]
+    volumes:
+      - redis-data:/data
+    networks:
+      - stack
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  backend:
+    image: ${COMPOSE_PROJECT_NAME:?set COMPOSE_PROJECT_NAME}-backend:${GIT_SHA:?set GIT_SHA}
+    build: *backend-build
+    restart: unless-stopped
+    environment:
+      <<: *backend-environment
+      MEDUSA_WORKER_MODE: server
+      ADMIN_DISABLED: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - stack
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/health/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  worker:
+    image: ${COMPOSE_PROJECT_NAME:?set COMPOSE_PROJECT_NAME}-backend:${GIT_SHA:?set GIT_SHA}
+    build: *backend-build
+    restart: unless-stopped
+    environment:
+      <<: *backend-environment
+      MEDUSA_WORKER_MODE: worker
+      ADMIN_DISABLED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - stack
+    healthcheck:
+      test: ["CMD-SHELL", "test -r /proc/1/cmdline && tr '\\000' ' ' < /proc/1/cmdline | grep -q 'npm run start'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+
+  storefront:
+    image: ${COMPOSE_PROJECT_NAME:?set COMPOSE_PROJECT_NAME}-storefront:${GIT_SHA:?set GIT_SHA}
+    build:
+      context: ../spike/storefront
+      dockerfile: Dockerfile
+      args: *storefront-public
+    restart: unless-stopped
+    environment:
+      <<: *storefront-public
+      PERSONALISATION_PRODUCT_ID: ${PERSONALISATION_PRODUCT_ID:-}
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET:?set INTERNAL_API_SECRET}
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - stack
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  stack:
+    driver: bridge
