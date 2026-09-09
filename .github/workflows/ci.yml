@@ -115,6 +115,7 @@ jobs:
           ADMIN_CORS=http://localhost:9000
           AUTH_CORS=http://localhost:9000,http://localhost:3000
           STOREFRONT_URL=http://localhost:3000
+          INTERNAL_API_SECRET=test-internal-secret
           STRIPE_API_KEY=
           STRIPE_WEBHOOK_SECRET=
           RESEND_API_KEY=
