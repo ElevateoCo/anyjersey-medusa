@@ -28,8 +28,19 @@ import { __resetCache as resetStoreReviewCache } from '../api/store/store-review
  *
  * Idempotent through a fingerprint over the source row, so a second run inserts nothing.
  */
-const DEFAULT_JSON =
-  '/Users/emil/Downloads/Anyjersey backup/Backup/theme/store_reviews.metafield.json'
+/**
+ * The reviews export, from the environment.
+ *
+ * Same reasoning as `ingest-media.ts`: `~/Downloads` is privacy-gated on macOS and a path
+ * into it is a dependency on one machine's permissions. This one never blocked a build —
+ * it is a string in a script, inert until the script runs — but it fails the same way for
+ * the next person, and the fix is one variable.
+ *
+ * The 84 reviews it imported are already in the database. Set `REVIEWS_JSON` to re-run
+ * it; unset, the read below fails with the path it was given, which is an empty string and
+ * reads as such.
+ */
+const DEFAULT_JSON = ''
 
 type SourceReview = {
   name: string

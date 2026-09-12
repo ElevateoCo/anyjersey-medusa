@@ -9,6 +9,48 @@ turned off* — read it before wondering why something that exists is not happen
 
 ---
 
+## 2026-09-12 — `medusa build` no longer touches ~/Downloads
+
+**Status: fixed, and not the way the 2026-09-10 entry expected.**
+
+Two findings, and the order matters.
+
+**It had already stopped hanging.** Full Disk Access has been granted to the terminal at
+some point since, so the build completed in 55 seconds with the symlink still in place, and
+`ls` on the archive returns its 6,632 files. That is fix #1 from the 2026-09-10 entry,
+applied by hand.
+
+**That fixes one machine, which is not the same as fixing it.** A colleague's laptop and any
+CI runner have no such grant, and the failure there is the one that cost a day: not an
+error, not a timeout, a process sitting inside `open()` at 1.5 seconds of CPU. So fix #2 was
+done as well and the dependency is gone.
+
+### What changed
+
+- `static/media` — the symlink into `~/Downloads` — **deleted**. `medusa build` scans
+  `static/`, and that is the only reason it ever went near the archive.
+- `ingest-media.ts` reads `MEDIA_ARCHIVE_DIR` and `MEDIA_SERVING_DIR` instead of a hardcoded
+  path and the symlink. Unset, it refuses with an explanation rather than reporting nothing
+  to do — which is indistinguishable from a completed run.
+- `import-catalog.ts`, `apply-dedupe.ts`, `reimport-changed.ts` read `MEDIA_HTTP_BASE`
+  instead of `http://localhost:9000/static/media`.
+- `import-reviews.ts` reads `REVIEWS_JSON` instead of a hardcoded path. That one never
+  blocked a build — a string in a script is inert until the script runs — but it fails the
+  same way for the next person.
+
+**Nothing in normal operation was using any of it.** All 6,673 image rows point at
+`/media/<sha>`, served out of Postgres; zero point at `/static/media`. Verified after the
+change: the build passes in 45s, a product image still serves 106KB of WebP, 459 backend
+unit tests and the 20 media integration tests pass.
+
+### If you ever re-import
+
+Point `MEDIA_ARCHIVE_DIR` at the archive. **Do not symlink it back into the project tree.**
+A variable that is unset fails loudly; a symlink into a privacy-gated folder hangs, and
+gives you no way to tell which of those two things is happening.
+
+---
+
 ## 2026-09-12 — a register of what is switched off
 
 `SWITCHED-OFF.md`. Six entries, and one of them is time-sensitive.
@@ -411,7 +453,9 @@ looks exactly like a broken endpoint; I went as far as ruling out an inner join 
 The comment in `customers.spec.ts` claiming the runner keeps data across a file is misleading.
 Its own tests are all self-sufficient, which is why they pass.
 
-### Still blocked, and not on code: `medusa build`
+### `medusa build` — RESOLVED 2026-09-12, see that entry
+
+*Left as written, because the diagnosis is the useful part and it took a day to get.*
 
 `npx medusa build` **hangs**, and it is an operating-system permission rather than a defect.
 

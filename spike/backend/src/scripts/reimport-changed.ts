@@ -14,7 +14,20 @@ import { createProductsWorkflow, deleteProductsWorkflow } from '@medusajs/medusa
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-const STATIC = 'http://localhost:9000/static/media'
+/**
+ * Where the importer can reach the archive's images over HTTP.
+ *
+ * Was `http://localhost:9000/static/media`, served through a symlink from `static/media`
+ * into `~/Downloads`. That symlink is gone — macOS gates that folder behind a privacy
+ * prompt, and `medusa build` scanning `static/` blocked inside `open()` rather than
+ * failing (`hist.md`, 2026-09-10).
+ *
+ * Only a fresh import needs this. Every live image already lives in Postgres and is served
+ * from `/media/<sha>`, so nothing in normal operation reads it. Set `MEDIA_HTTP_BASE` and
+ * serve the archive from somewhere — anywhere but a symlink into a privacy-gated folder
+ * inside the project tree.
+ */
+const STATIC = process.env.MEDIA_HTTP_BASE ?? 'http://localhost:9000/static/media'
 
 export default async function reimport({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)

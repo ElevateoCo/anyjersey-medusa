@@ -38,6 +38,7 @@ Four things, built in order:
 | **46** | Campaign banner | ✅ full-bleed 8:3 video or still, pause control, reduced-motion, dev-only placeholder |
 | **47** | EU/UK gate, switchable for development | ✅ named flag, compiled out of production, says so on the page |
 | **48** | Shipping charged on every order · one catalogue price | ✅ no free-shipping thresholds, $65.99 across 28,998 prices |
+| **49** | `medusa build` unblocked for good | ✅ symlink dropped, archive paths env-driven, 45s build |
 
 **Tests now: 459 backend unit, 385 backend integration against a real database, 107
 storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
@@ -3690,3 +3691,34 @@ threshold that disagrees with what checkout actually charges" — the hour was a
 underneath that sentence, and it was observed rather than theorised. The card is five rows
 and changes about twice a year, so the hour bought nothing measurable and cost the guarantee
 the module is named for. Now 60 seconds.
+
+## Step 49 — `medusa build` stops depending on one machine's permissions
+
+`hist.md` had carried this as blocked since 2026-09-10: `npx medusa build` hung, because
+`static/media` was a symlink into `~/Downloads`, macOS gates that folder behind a privacy
+prompt, and a prompt nobody can answer **blocks the syscall rather than failing it**. Not an
+error, not a timeout — a process at 1.5 seconds of CPU for twenty minutes.
+
+**It had already stopped hanging.** Full Disk Access has been granted since, so the build
+completed with the symlink in place. That is the first of the two fixes that entry proposed,
+applied by hand — and it fixes one machine, which is not the same as fixing it. A
+colleague's laptop and any CI runner have no such grant.
+
+So the second fix was done too and the dependency is gone:
+
+| | Was | Now |
+|---|---|---|
+| `static/media` | symlink into `~/Downloads` | **deleted** |
+| `ingest-media.ts` | hardcoded archive path + the symlink | `MEDIA_ARCHIVE_DIR`, `MEDIA_SERVING_DIR` |
+| `import-catalog.ts`, `apply-dedupe.ts`, `reimport-changed.ts` | `http://localhost:9000/static/media` | `MEDIA_HTTP_BASE` |
+| `import-reviews.ts` | hardcoded JSON path | `REVIEWS_JSON` |
+
+**Nothing in normal operation was using any of it.** All 6,673 image rows point at
+`/media/<sha>` and are served out of Postgres; zero point at `/static/media`. The archive is
+needed only to re-run an ingest.
+
+Unset, `ingest-media.ts` now refuses with an explanation rather than reporting nothing to
+do — those two outcomes look identical in a log and mean opposite things.
+
+Verified after: build 45s, a product image still serves 106KB of WebP, 459 backend unit
+tests and 20 media integration tests green.
