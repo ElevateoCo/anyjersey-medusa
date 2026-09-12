@@ -142,3 +142,33 @@ resting state, not an oversight — an unfinished campaign slot must not reach a
 video is served from anywhere other than `public/`, check `media-src` in
 `storefront/next.config.ts` first: a blocked `<video>` produces no error a customer can see,
 it simply never plays.
+
+
+---
+
+## 7. Two known catalogue states, accepted
+
+Neither is a defect to be fixed later. Both were looked at, decided, and are recorded here so
+they stop being re-raised as open work.
+
+**"Rolex Watches" stays published and unclassified.** Handle `rolex-watches-jersey`, flagged
+`needs_review`, and it is the one product in 4,323 with no `sport`. It is not a jersey. It
+was left on sale rather than unpublished because whether it belongs in the catalogue is a
+merchandising decision, and that decision is: leave it. The `needs_review` flag stays so it
+is visible in the admin queue rather than invisible.
+
+The consequence is small and worth knowing: `lib/nav.ts` drops the unsported bucket from the
+Shop by Athlete panel, so this product is reachable by search and by its own URL but not from
+the sport navigation. That rule earns its keep as a guard for anything that fails
+classification in future, not as a workaround for this one row.
+
+**Two products are missing from the catalogue and will stay missing.** Both are still live on
+cruxchristi.com:
+
+- `los-angeles-chargers-derwin-james-jr-baby-blue-jersey`
+- `ronaldo-manchester-united-2008-world-cup-champions-league-patch-retro-jersey`
+
+That is 0.05% of the catalogue. Importing them needs the two-stage pipeline
+(`sync_live_catalog.py`, then `import-catalog.ts --stage products` and `--stage details`)
+plus a media ingest, which is not worth running for two rows. They come in free with the next
+full re-sync.

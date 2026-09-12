@@ -19,15 +19,17 @@ it correctly — not to look up a roster.** Where a title names no team, `team` 
 Super Bowl 51 was the Patriots; the listing does not say so, and a wrong team is worse than
 a missing one.
 
-**One product is deliberately unclassified.** "Rolex Watches" is published, is not a jersey,
-and is flagged `needs_review`. Whether it belongs in the catalogue is a merchandising call.
+**One product is deliberately unclassified and that is now settled.** "Rolex Watches" is
+published, is not a jersey, is flagged `needs_review`, and **stays**. Likewise the two
+handles below: accepted, not outstanding. Both are in `SWITCHED-OFF.md` §7 so they stop
+appearing in status reports as open work.
 
 **Two numbers in the status report were stale, not open.** "111 shorts missing" and "122
 unresolved Best Sellers handles" came from `layout-plan.md` §3b, measured against the
 3,155-product catalogue that **Step 26 replaced**. Re-measured: 417 of 417 Best Sellers
 resolve, every shorts collection resolves in full, shorts went 70 → 177. Two handles are
-genuinely absent and both are still live on cruxchristi.com — a two-stage import, not a
-one-off.
+genuinely absent and both are still live on cruxchristi.com. They come in free with the
+next full re-sync and are not being chased before then.
 
 **Team tiles are photographs.** `/store/facets` returns one image per team (first
 photo-bearing product, catalogue order — deterministic, so the rail cannot reshuffle between

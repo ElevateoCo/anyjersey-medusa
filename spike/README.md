@@ -3768,9 +3768,8 @@ Two entries were not derivable from the title and were checked rather than assum
 | basketball | 477 | 502 |
 
 The one holdout is **"Rolex Watches"** — published, handled `rolex-watches-jersey`, and not a
-jersey. Whether it belongs in a jersey catalogue is a merchandising decision and not one to
-take from a script, so it is flagged `needs_review` and stays on sale until somebody who owns
-the catalogue sees it.
+jersey. It is flagged `needs_review` and **stays**, which is the decision rather than a
+pending one. See `SWITCHED-OFF.md` §7.
 
 ### Team tiles are photographs now
 
@@ -3804,7 +3803,6 @@ Shorts in the catalogue went from 70 to **177**. The re-sync imported them and t
 numbers were never updated, so they were being reported as open work eleven steps after they
 were closed.
 
-**Two handles are genuinely missing**, both still live on the store:
-`los-angeles-chargers-derwin-james-jr-baby-blue-jersey` and
-`ronaldo-manchester-united-2008-world-cup-champions-league-patch-retro-jersey`. That is
-0.05% of the catalogue, and it needs the two-stage import rather than a one-off.
+**Two handles are genuinely missing**, both still live on the store. That is 0.05% of the
+catalogue, it needs the two-stage import rather than a one-off, and it is **accepted rather
+than outstanding** — they come in free with the next full re-sync. See `SWITCHED-OFF.md` §7.
