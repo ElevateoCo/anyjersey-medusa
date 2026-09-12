@@ -9,7 +9,15 @@ export type Facet = { value: string; count: number }
  * than mapped by hand. The navigation needs both and they are not the same grouping:
  * Barcelona is league CLUB and sport soccer, England is league SOCCER and sport soccer.
  */
-export type TeamFacet = Facet & { league: string | null; sport: string | null }
+export type TeamFacet = Facet & {
+  league: string | null
+  sport: string | null
+  /**
+   * A photograph of that team's own stock, for the navigation tile. Null when every
+   * product for the team is unphotographed, which `Rail` falls back from.
+   */
+  image: string | null
+}
 /**
  * Athletes, bucketed by sport and capped per bucket by the endpoint.
  *

@@ -1,13 +1,22 @@
 import { teamColour, readableInk, hasTeamColour } from '@/lib/team-colors'
+import { mediaUrl } from '@/lib/medusa'
 
 /**
  * Band D — the "who" rail.
  *
- * One component, one data shape, four fillings. The reference puts official club crests
- * here; §7 rules those out, so the disc carries the team's **colours** with its initials
- * over them. A colour pair is not a mark — every scoreboard and newspaper denotes a club
- * this way — and it gives the row the same instant scan without claiming a licence we do
- * not hold.
+ * One component, one data shape, four fillings.
+ *
+ * **The tile is a photograph of our own stock, cropped to a circle.** That is what
+ * `layout-plan.md` §5 band D asked for and it was blocked until `/store/facets` started
+ * returning one image per team — the plan's §8 item 5. nflshop.com puts official club
+ * crests here and we licence none of them (§7); a picture of goods we hold is not a mark,
+ * it is what every reseller shows.
+ *
+ * **The colour disc is still here, as the fallback.** A team whose every product is
+ * unphotographed gets its colours and initials rather than a grey box, and the ring around
+ * every tile is the team's secondary colour either way — so a rail of photographs still
+ * reads as a rail of teams rather than as a row of shirts. `DEFERRED.md` §6 is why the
+ * fallback is not hypothetical: two products in three have exactly one photograph.
  *
  * The rail is context-dependent by design, which is what stops this becoming four
  * components: the homepage fills it with the biggest teams across every sport, a sport
@@ -15,7 +24,13 @@ import { teamColour, readableInk, hasTeamColour } from '@/lib/team-colors'
  * only fighters — fills it with athletes. `kind` only changes the fallback colour and the
  * label wording; the markup is identical.
  */
-export type RailItem = { label: string; href: string; count?: number }
+export type RailItem = {
+  label: string
+  href: string
+  count?: number
+  /** A photograph of that team's own stock. Falls back to the colour disc when absent. */
+  image?: string | null
+}
 
 /**
  * "Team Netherlands" and "Team USA" are how the catalogue names international sides, and
@@ -60,17 +75,21 @@ export default function Rail({ title, seeAll, items, kind = 'team' }: {
                   data-known={kind === 'team' && hasTeamColour(it.label) ? 'yes' : 'no'}
                 >
                   <span
-                    className="raildisc"
+                    className={it.image ? 'raildisc photo' : 'raildisc'}
                     aria-hidden="true"
                     style={{
                       background: c.primary,
                       color: ink,
                       // The secondary is the ring, not the fill: two flat colours in one
-                      // 78px circle read as a pie chart rather than as a club.
+                      // 78px circle read as a pie chart rather than as a club. It stays on
+                      // the photo tiles too, which is what keeps the rail reading as teams.
                       boxShadow: `inset 0 0 0 3px ${c.secondary}`,
                     }}
                   >
-                    {initials(it.label)}
+                    {it.image
+                      ? <img src={mediaUrl(it.image, 200) ?? undefined} alt=""
+                             loading="lazy" decoding="async" />
+                      : initials(it.label)}
                   </span>
                   <span className="raillabel">{it.label}</span>
                   {it.count !== undefined && (

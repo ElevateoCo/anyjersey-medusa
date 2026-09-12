@@ -13,11 +13,11 @@ const facets = (over: Partial<Facets> = {}): Facets => ({
     { value: 'NHL', count: 16 },
   ],
   teams: [
-    { value: 'Dallas Cowboys', count: 146, league: 'NFL', sport: 'football' },
-    { value: 'Los Angeles Dodgers', count: 98, league: 'MLB', sport: 'baseball' },
-    { value: 'Team Argentina', count: 62, league: 'SOCCER', sport: 'soccer' },
-    { value: 'Barcelona', count: 15, league: 'CLUB', sport: 'soccer' },
-    { value: 'Florida Panthers', count: 4, league: 'NHL', sport: 'hockey' },
+    { value: 'Dallas Cowboys', count: 146, league: 'NFL', sport: 'football', image: null },
+    { value: 'Los Angeles Dodgers', count: 98, league: 'MLB', sport: 'baseball', image: null },
+    { value: 'Team Argentina', count: 62, league: 'SOCCER', sport: 'soccer', image: null },
+    { value: 'Barcelona', count: 15, league: 'CLUB', sport: 'soccer', image: null },
+    { value: 'Florida Panthers', count: 4, league: 'NHL', sport: 'hockey', image: null },
   ],
   sports: [
     { value: 'football', count: 2406 }, { value: 'soccer', count: 542 },

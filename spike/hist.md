@@ -9,6 +9,33 @@ turned off* — read it before wondering why something that exists is not happen
 
 ---
 
+## 2026-09-12 — taxonomy gaps closed, team tiles are photographs
+
+**4,322 of 4,323 products now carry a sport**, up from 4,250.
+`backend/src/scripts/fix-taxonomy-gaps.ts` holds the table; it is explicit and re-runnable.
+
+**The rule it follows, if you extend it: the title names the team, and the job is to spell
+it correctly — not to look up a roster.** Where a title names no team, `team` stays null.
+Super Bowl 51 was the Patriots; the listing does not say so, and a wrong team is worse than
+a missing one.
+
+**One product is deliberately unclassified.** "Rolex Watches" is published, is not a jersey,
+and is flagged `needs_review`. Whether it belongs in the catalogue is a merchandising call.
+
+**Two numbers in the status report were stale, not open.** "111 shorts missing" and "122
+unresolved Best Sellers handles" came from `layout-plan.md` §3b, measured against the
+3,155-product catalogue that **Step 26 replaced**. Re-measured: 417 of 417 Best Sellers
+resolve, every shorts collection resolves in full, shorts went 70 → 177. Two handles are
+genuinely absent and both are still live on cruxchristi.com — a two-stage import, not a
+one-off.
+
+**Team tiles are photographs.** `/store/facets` returns one image per team (first
+photo-bearing product, catalogue order — deterministic, so the rail cannot reshuffle between
+loads). `lib/team-colors.ts` did not become dead: the ring is still the team's secondary
+colour, and an unphotographed team still falls back to colours and initials.
+
+---
+
 ## 2026-09-12 — `medusa build` no longer touches ~/Downloads
 
 **Status: fixed, and not the way the 2026-09-10 entry expected.**

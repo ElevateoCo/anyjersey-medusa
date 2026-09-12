@@ -102,13 +102,19 @@ function teamColumns(facets: Facets): NavColumn[] {
 /**
  * Athletes grouped by sport.
  *
- * **The unsported bucket is deliberately dropped.** It is not a sport we have yet to name:
- * it is the wreckage `layout-plan.md` §8 item 1 describes — misspelled team names sitting
- * in the `player` column ("Detriot Lions", "Philidelphia 76ers", "Memphis Grizzles") and
- * title fragments ("Wyoming Cowboys Josh Allen"). Rendering it would put a misspelled team
- * into the navigation under the heading "Athletes". The MMA fighters that used to be
- * stranded in there now have `sport = 'mma'` and their own column, which was the whole
- * reason this panel exists — see `backend/src/scripts/classify-mma.ts`.
+ * **The unsported bucket is deliberately dropped, and the reason has changed.**
+ *
+ * It used to be wreckage: misspelled team names sitting in the `player` column ("Detriot
+ * Lions", "Philidelphia 76ers", "Memphis Grizzles") and title fragments ("Wyoming Cowboys
+ * Josh Allen"), because the parser leaves the whole phrase in `player` when it cannot find
+ * a team. `backend/src/scripts/fix-taxonomy-gaps.ts` classified all 72 of those, and
+ * `classify-mma.ts` did the fighters before them — 4,322 of 4,323 products now carry a
+ * sport.
+ *
+ * The bucket is still dropped because what is left in it is one product called "Rolex
+ * Watches", which is not an athlete and is flagged for review. The rule earns its keep as a
+ * guard rather than as a cleanup: anything that fails classification in future lands here,
+ * and the Athletes panel is the last place it should surface.
  */
 function athleteColumns(facets: Facets): NavColumn[] {
   return (facets.players ?? [])

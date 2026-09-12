@@ -1,4 +1,5 @@
 import type { MedusaRequest, MedusaResponse } from '@medusajs/framework/http'
+import { ContainerRegistrationKeys } from '@medusajs/framework/utils'
 import { CATALOG_MODULE } from '../../../modules/catalog'
 import { cacheKey, serveCached } from '../../../cache'
 import { limited } from '../../../rate-limit'
@@ -32,7 +33,7 @@ const TTL_SECONDS = 5 * 60
  * the deploy, and the storefront reading the new fields would render an empty navigation
  * with no error anywhere. Bump it whenever the body below changes.
  */
-const KEY = cacheKey('facets', 'v3')
+const KEY = cacheKey('facets', 'v4')
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   // Aggregation over the catalogue, cached both here and at the storefront. Same caveat as
@@ -50,6 +51,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
 async function build(req: MedusaRequest) {
   const catalog: any = req.scope.resolve(CATALOG_MODULE)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const details = await catalog.listJerseyDetails(
     {},
     {
@@ -97,6 +99,36 @@ async function build(req: MedusaRequest) {
 
   const teamLeague = pairedWith('team', 'league')
   const teamSport = pairedWith('team', 'sport')
+
+  /**
+   * One photograph per team, for the navigation tiles.
+   *
+   * `layout-plan.md` §5 band D wants the team rail to carry a tight crop of that team's
+   * best product photo, and §7 is why: nflshop.com puts official club crests here and we
+   * licence none of them. A photograph of our own stock is not a mark — it is a picture of
+   * goods we hold, which is what every reseller shows.
+   *
+   * **The first photo-bearing product per team, in catalogue order.** Not the most
+   * expensive, not the most recent, not a curated pick — there is no field that would
+   * support any of those and inventing a ranking would be a merchandising decision taken
+   * by a tally function. Deterministic is the property that matters: the rail must not
+   * reshuffle between two page loads.
+   *
+   * Costs one query over the same rows the tally above already walks, cached for the same
+   * five minutes, and adds roughly 12KB to a response the whole storefront shares.
+   */
+  const { data: withPhotos } = await query.graph({
+    entity: 'product',
+    fields: ['thumbnail', 'jersey_detail.team'],
+    filters: { status: 'published' } as any,
+    pagination: { take: 100000, skip: 0 } as any,
+  })
+  const teamImage = new Map<string, string>()
+  for (const p of withPhotos as any[]) {
+    const t = p.jersey_detail?.team
+    if (!t || !p.thumbnail || teamImage.has(t)) continue
+    teamImage.set(t, p.thumbnail)
+  }
   const playerSport = pairedWith('player', 'sport')
   const playerTeam = pairedWith('player', 'team')
 
@@ -136,6 +168,9 @@ async function build(req: MedusaRequest) {
       ...t,
       league: teamLeague.get(t.value) ?? null,
       sport: teamSport.get(t.value) ?? null,
+      // Null for a team whose every product is unphotographed. The rail falls back to the
+      // team's colours rather than to a grey box — see storefront/components/Rail.tsx.
+      image: teamImage.get(t.value) ?? null,
     })),
     players: [...playersBySport.entries()]
       .map(([sport, players]) => ({ sport: sport || null, players }))

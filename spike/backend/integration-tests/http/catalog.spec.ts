@@ -156,7 +156,14 @@ medusaIntegrationTestRunner({
       it('pairs each team with its league and its sport', async () => {
         const res = await api.get('/store/facets', storeHeaders(w))
         expect(res.data.teams).toEqual([
-          { value: 'Buffalo Bills', count: 1, league: 'NFL', sport: 'football' },
+          {
+            value: 'Buffalo Bills', count: 1, league: 'NFL', sport: 'football',
+            // A photograph of that team's own stock, for the navigation tile. The fixture
+            // product has no image, and null is the value the rail falls back from — so
+            // the assertion covers the absent case, which is the one `DEFERRED.md` §6 says
+            // is common.
+            image: null,
+          },
         ])
       })
 
@@ -205,7 +212,9 @@ medusaIntegrationTestRunner({
         expect(res.data.zones.length).toBeGreaterThanOrEqual(5)
         const us = res.data.zones.find((z: any) => z.name === 'United States')
         expect(us.rate).toBe(4.99)
-        expect(us.freeOver).toBe(75)
+        // Shipping is charged on every order, in every zone — `freeOver: 0` is "no
+        // threshold" and every consumer guards on `> 0`. See shipping-zones.unit.spec.ts.
+        expect(us.freeOver).toBe(0)
       })
 
       it('resolves the zone for a region', async () => {

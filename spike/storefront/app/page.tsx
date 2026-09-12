@@ -194,6 +194,7 @@ export default async function Home() {
           label: t.value,
           href: `/jerseys?team=${encodeURIComponent(t.value)}`,
           count: t.count,
+          image: t.image,
         }))}
       />
 

@@ -39,6 +39,7 @@ Four things, built in order:
 | **47** | EU/UK gate, switchable for development | ✅ named flag, compiled out of production, says so on the page |
 | **48** | Shipping charged on every order · one catalogue price | ✅ no free-shipping thresholds, $65.99 across 28,998 prices |
 | **49** | `medusa build` unblocked for good | ✅ symlink dropped, archive paths env-driven, 45s build |
+| **50** | The taxonomy gaps closed | ✅ 4,322 of 4,323 have a sport · team tiles are photographs |
 
 **Tests now: 459 backend unit, 385 backend integration against a real database, 107
 storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
@@ -3722,3 +3723,88 @@ do — those two outcomes look identical in a log and mean opposite things.
 
 Verified after: build 45s, a product image still serves 106KB of WebP, 459 backend unit
 tests and 20 media integration tests green.
+
+## Step 50 — the products no navigation could reach
+
+`layout-plan.md` §8 item 1, and the three numbers next to it in the status report. Two of the
+three turned out to be **stale rather than open**, which is worth recording as carefully as
+the work.
+
+### 73 products had no sport. Now one does not.
+
+A product with no `sport` is unreachable from the category bar, from every sport rail and
+from the facet sidebar. The store held them and no navigation led anywhere near them. The
+same rows are why the Shop by Athlete panel had to drop its unsported bucket: when the title
+parser fails to find a team it leaves the whole phrase in `player`, so **"Detriot Lions" and
+"Philidelphia 76ers" were sitting in the column the athlete navigation reads**.
+
+`backend/src/scripts/fix-taxonomy-gaps.ts` classifies 72 of them from an explicit table.
+
+**The rule the table follows: the title names the team, and the job is to spell it correctly
+— not to look up a roster.** "Las Vegas Ashton Jeanty Black Jersey" is a Raiders shirt
+because the title says Las Vegas, not because of anything known about the 2025 draft. That
+keeps every correction checkable by reading it against the title.
+
+Where a title names **no** team — "Tom Brady Super Bowl 51 Jersey", "Zach Thomas Vintage
+Jersey" — `team` stays null and only `sport`, `league` and `player` are filled in. Super Bowl
+51 was the Patriots and Zach Thomas was a Dolphin; the listing does not say so. A wrong team
+is worse than a missing one, which is already why 34 city-named basketball shirts fell
+through to `needs_review` in Step 26 rather than being guessed at.
+
+Two entries were not derivable from the title and were checked rather than assumed:
+
+- **Utah Mammoth** is a real NHL team, not a typo. The Arizona Coyotes' assets moved to Salt
+  Lake City, played 2024–25 as Utah Hockey Club, and the permanent name was announced on
+  7 May 2025. Clayton Keller is the captain.
+- **Bryan Adrian** played *basketball* for Davidson in the early 1970s — which is what makes
+  "Davidson Wildcats Bryan Adrian Red Vintage Jersey" a basketball shirt rather than a
+  football one. Davidson fields both.
+
+| | Before | After |
+|---|---|---|
+| Products with a sport | 4,250 of 4,323 | **4,322 of 4,323** |
+| Teams in the facet | 173 | **186** |
+| hockey | 16 | 24 |
+| basketball | 477 | 502 |
+
+The one holdout is **"Rolex Watches"** — published, handled `rolex-watches-jersey`, and not a
+jersey. Whether it belongs in a jersey catalogue is a merchandising decision and not one to
+take from a script, so it is flagged `needs_review` and stays on sale until somebody who owns
+the catalogue sees it.
+
+### Team tiles are photographs now
+
+§8 item 5 was the last thing keeping band D on coloured discs. `/store/facets` returns one
+image per team — the first photo-bearing product for that team, in catalogue order.
+
+**Deterministic, not curated.** Not the most expensive, not the most recent: no field would
+support either, and inventing a ranking would be a merchandising decision taken by a tally
+function. What matters is that the rail does not reshuffle between two page loads.
+
+All 186 teams have one. `lib/team-colors.ts` is not redundant — the ring around every tile is
+still the team's secondary colour, which is what keeps a rail of product shots reading as a
+rail of *teams*, and a team whose every product is unphotographed still falls back to its
+colours and initials rather than to a grey box. `DEFERRED.md` §6 is why that fallback is not
+hypothetical.
+
+### The other two numbers were already fixed
+
+The status report said "111 shorts missing from the import" and "122 unresolved Best Sellers
+handles". Both came from `layout-plan.md` §3b, which was measured against the **3,155-product
+catalogue that Step 26 replaced.** Measured again against what is actually in the database:
+
+| Collection | Listed | Resolving | Members |
+|---|---|---|---|
+| best-sellers | 417 | **417** | 415 |
+| basketball-shorts | 75 | **75** | 75 |
+| baseball-shorts | 54 | **54** | 52 |
+| football-shorts | 46 | **46** | 43 |
+
+Shorts in the catalogue went from 70 to **177**. The re-sync imported them and the plan's
+numbers were never updated, so they were being reported as open work eleven steps after they
+were closed.
+
+**Two handles are genuinely missing**, both still live on the store:
+`los-angeles-chargers-derwin-james-jr-baby-blue-jersey` and
+`ronaldo-manchester-united-2008-world-cup-champions-league-patch-retro-jersey`. That is
+0.05% of the catalogue, and it needs the two-stage import rather than a one-off.
