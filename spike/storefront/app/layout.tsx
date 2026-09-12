@@ -184,7 +184,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
             <div className="hsearch">
               <Suspense fallback={<div className="searchwrap" />}>
-                <SearchBox id="q-header" />
+                <SearchBox id="q-header" landmark />
               </Suspense>
             </div>
 

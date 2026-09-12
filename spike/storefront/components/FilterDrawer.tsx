@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useDialogFocus } from '@/lib/use-dialog-focus'
 
 /**
  * Mobile filter drawer.
@@ -14,6 +15,7 @@ import { useEffect, useState } from 'react'
 export default function FilterDrawer({ activeCount, resultCount, children }:
   { activeCount: number; resultCount: number; children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
+  const dialog = useDialogFocus(open)
 
   // Escape closes; body scroll locks while open.
   useEffect(() => {
@@ -36,7 +38,8 @@ export default function FilterDrawer({ activeCount, resultCount, children }:
       {open && (
         <>
           <div className="drawer-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
-          <div className="drawer" id="filter-drawer" role="dialog" aria-modal="true"
+          <div ref={dialog} tabIndex={-1}
+               className="drawer" id="filter-drawer" role="dialog" aria-modal="true"
                aria-label="Filter jerseys">
             <div className="drawer-head">
               <strong>Filters</strong>

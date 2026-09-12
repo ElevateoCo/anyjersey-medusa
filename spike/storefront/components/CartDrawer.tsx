@@ -3,6 +3,7 @@ import { groupLines } from '@/lib/line-groups'
 import { useEffect, useState, useTransition } from 'react'
 import { setQtyAction, removeLineAction } from '@/app/actions'
 import { mediaUrl } from '@/lib/medusa'
+import { useDialogFocus } from '@/lib/use-dialog-focus'
 
 /**
  * Cart drawer.
@@ -28,6 +29,8 @@ type Data = {
 export default function CartDrawer({ open, onClose, data }:
   { open: boolean; onClose: () => void; data: Data }) {
   const [pending, start] = useTransition()
+  // Moves focus in, traps Tab, hands focus back to the bag button on close.
+  const dialog = useDialogFocus(open)
 
   useEffect(() => {
     const key = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
@@ -50,7 +53,9 @@ export default function CartDrawer({ open, onClose, data }:
   return (
     <>
       <div className="drawer-scrim" onClick={onClose} aria-hidden="true" />
-      <div className="drawer cart-drawer" role="dialog" aria-modal="true" aria-label="Your bag">
+      <div ref={dialog} tabIndex={-1}
+           className="drawer cart-drawer" role="dialog" aria-modal="true"
+           aria-label="Your bag">
         <div className="drawer-head">
           <strong>Your bag{data.items.length ? ` (${data.items.length})` : ''}</strong>
           <button onClick={onClose} aria-label="Close bag">✕</button>

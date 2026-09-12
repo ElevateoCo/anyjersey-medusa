@@ -49,7 +49,7 @@ export default function Newsletter() {
       {state === 'ok' ? (
         <p className="note" role="status">{msg}</p>
       ) : (
-        <form onSubmit={submit}>
+        <form onSubmit={submit} aria-label="Sign up for offers">
           <label htmlFor="nl-email">Email</label>
           <div className="nlrow">
             <input id="nl-email" type="email" required value={email}

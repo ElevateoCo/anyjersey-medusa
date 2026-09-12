@@ -39,7 +39,7 @@ export default function RequestForm({ source = 'homepage', prefill = '' }:
   }
 
   return (
-    <form className="rform" onSubmit={submit}>
+    <form className="rform" onSubmit={submit} aria-label="Request a jersey">
       <input required type="text" value={what} onChange={(e) => setWhat(e.target.value)}
              placeholder="Which jersey? e.g. 1998 Vikings Randy Moss, XL"
              aria-label="Which jersey are you looking for" />

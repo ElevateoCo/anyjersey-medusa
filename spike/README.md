@@ -41,6 +41,7 @@ Four things, built in order:
 | **49** | `medusa build` unblocked for good | ✅ symlink dropped, archive paths env-driven, 45s build |
 | **50** | The taxonomy gaps closed | ✅ 4,322 of 4,323 have a sport · team tiles are photographs |
 | **51** | Shop identity in the environment | ✅ name, accent, tagline, domain — and no personal contact details in source |
+| **52** | Keyboard and screen-reader audit, automated | ✅ 9 real defects found and fixed · `keyboard_check.mjs` |
 
 **Tests now: 459 backend unit, 385 backend integration against a real database, 107
 storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
@@ -3863,3 +3864,81 @@ empty *and* still carrying "using the support mailbox" — so the page would hav
 "Not yet appointed" beside a note claiming a fallback to a mailbox that does not exist. An
 empty field is a gap, not a derivation, and the two must not be able to describe the same
 row. Three states now, and a test for each.
+
+## Step 52 — the "not automatable" pass, automated
+
+Every status report in this file has carried the same line: *a screen-reader pass and a
+keyboard traversal are not automatable and have to be done by hand.* That was true of the
+**judgement** and wrong about everything around it.
+
+**A screen reader reads the accessibility tree, and Chrome will hand it over.** Every rule
+below about names and roles checks the same structure VoiceOver announces — not a proxy for
+it. Tab order is observable: press Tab, ask what has focus, repeat. Dialog behaviour is
+observable: open it, check focus moved inside, press Escape, check focus came back.
+
+`spike/keyboard_check.mjs`. It found **nine defects on its first run**, none of which the
+static checker could see, because none of them are in the markup.
+
+### What it found
+
+**Four dialogs declared `aria-modal="true"` and did none of what that obliges.** Opening the
+cart drawer left focus on the page behind it — a keyboard user clicked Bag, a drawer covered
+the page, and their next Tab continued through the catalogue underneath. `aria-modal` tells
+a screen reader the rest of the page is inert; if Tab walks out of the dialog that statement
+is simply false.
+
+`lib/use-dialog-focus.ts` now does the three things the role promises: move focus in, keep it
+in, put it back. One detail worth keeping — it deliberately skips the close button when
+choosing where to land, because "first focusable" in all three of these is ✕, and opening a
+drawer onto its own dismiss control makes the easiest available action *undo what you just
+did*.
+
+**Two unnamed `search` landmarks on the listing page**, announced "search, search" with no
+way to tell them apart — the same defect `a11y_check.py` already guards against for two
+unnamed `<nav>` elements. A page gets one search landmark; `SearchBox` takes a `landmark`
+prop that defaults to **false**, so a third instance cannot recreate the problem by accident.
+Two anonymous `form` landmarks were named at the same time.
+
+### Three rounds of the harness being wrong before the site was
+
+Worth recording, because each one produced a confident false report:
+
+| Symptom | Cause |
+|---|---|
+| Product page: "only 2 elements reachable" | Next's dev overlay is a focusable custom element that swallowed the traversal |
+| "filter drawer: focus does not return" | Tested at 1440px, where the trigger is `display:none` — focus cannot return to something not displayed |
+| "filter drawer: focus does not return" *again* | A timed-out CDP call returning `undefined`, read as "no" |
+
+The last one matters most. A trace showed focus landing back on `BUTTON.filterbtn` exactly
+as it should while the checker called it a defect. **A harness that turns its own flakiness
+into a bug report is worse than one that misses things**, because somebody goes and "fixes"
+working code. Unknown is now distinct from failed and is reported as an incomplete run.
+
+### It has to be fast, and it has to be able to fail
+
+The first version took **over twenty minutes** across six pages and then hung indefinitely.
+Two causes: every CDP call was unbounded, so a lost reply waited forever; and it ran against
+the **dev server**, where each Tab focuses a link, Next prefetches that route, and the server
+compiles it — forty tab stops meant forty route compilations.
+
+Against a production build: **54 seconds**, which is a check somebody will actually run. Every
+call is bounded at 8s and timeouts are counted and reported rather than swallowed.
+
+Proven able to fail, the same way `a11y_selftest.py` proves its rules: disabling the cart
+drawer's focus management and rebuilding produced exactly the original finding.
+
+```
+OK   /                                            40 tab stops
+OK   /jerseys                                     40 tab stops
+OK   /jerseys/dallas-cowboys-custom-blue-jersey   40 tab stops
+OK   /request                                     40 tab stops
+dialogs exercised: cart drawer, menu drawer, filter drawer
+0 keyboard or screen-reader-tree issues.
+```
+
+### What is still genuinely manual
+
+Whether an announcement is *understandable*. "Button, Bag, 2 items" satisfies every rule here
+and a human decides whether it is the right sentence. That is the part that stays a person's
+job — and it is a much smaller part than "a screen-reader pass and a keyboard traversal"
+implied.

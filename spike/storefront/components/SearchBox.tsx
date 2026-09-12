@@ -21,7 +21,7 @@ type Row =
   | { kind: 'product'; label: string; href: string }
   | { kind: 'all'; label: string; href: string }
 
-export default function SearchBox({ compact = false, id: idProp }: {
+export default function SearchBox({ compact = false, id: idProp, landmark = false }: {
   compact?: boolean
   /**
    * The id the field and its listbox are built from. It has to be unique *per page*, not
@@ -30,6 +30,19 @@ export default function SearchBox({ compact = false, id: idProp }: {
    * listing page — a duplicate id, and an `aria-controls` that could resolve to either.
    */
   id?: string
+  /**
+   * Whether this instance is the page's **search landmark**.
+   *
+   * A page may have one. The listing page renders a second, identical search control under
+   * the heading, and with `role="search"` on both a screen reader announced "search,
+   * search" with no way to tell them apart — the same defect `a11y_check.py` already guards
+   * against for two unnamed `<nav>` elements.
+   *
+   * Defaults to **false**, so a third instance added later cannot create the problem again
+   * by accident. `app/layout.tsx` opts the masthead in, because the site-wide search is the
+   * one that belongs in the landmark list.
+   */
+  landmark?: boolean
 }) {
   const params = useSearchParams()
   const router = useRouter()
@@ -106,7 +119,11 @@ export default function SearchBox({ compact = false, id: idProp }: {
 
   return (
     <div className={compact ? 'searchwrap compact' : 'searchwrap'} ref={box}>
-      <form className="search" role="search" onSubmit={submit}>
+      {/* `role="search"` only on the landmark instance — see the `landmark` prop. The
+          label on the field below names the control either way, so the non-landmark copy
+          is still announced properly, just not as a second landmark. */}
+      <form className="search" role={landmark ? 'search' : undefined}
+            aria-label={landmark ? 'Search jerseys' : undefined} onSubmit={submit}>
         <label htmlFor={id} className="visually-hidden">
           Search jerseys by player, team or colour
         </label>

@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useDialogFocus } from '@/lib/use-dialog-focus'
 import SearchBox from './SearchBox'
 
 /**
@@ -16,6 +17,7 @@ import SearchBox from './SearchBox'
  */
 export default function SearchSheet() {
   const [open, setOpen] = useState(false)
+  const dialog = useDialogFocus(open)
 
   useEffect(() => {
     if (!open) return
@@ -42,7 +44,8 @@ export default function SearchSheet() {
       </button>
 
       {open && (
-        <div className="searchsheet" role="dialog" aria-modal="true" aria-label="Search">
+        <div ref={dialog} tabIndex={-1}
+             className="searchsheet" role="dialog" aria-modal="true" aria-label="Search">
           <div className="searchsheet-head">
             <SearchBox id="q-sheet" />
             <button onClick={() => setOpen(false)} aria-label="Close search">Cancel</button>

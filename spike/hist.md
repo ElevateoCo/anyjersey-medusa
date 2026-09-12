@@ -9,6 +9,28 @@ turned off* — read it before wondering why something that exists is not happen
 
 ---
 
+## 2026-09-12 — the keyboard and screen-reader pass is automated
+
+`spike/keyboard_check.mjs`, run against a **production build** (`next start`), not the dev
+server. Found nine real defects on its first run; all fixed.
+
+**Run it against :3001 with a production build.** Against `next dev` it takes twenty minutes
+— each Tab focuses a link, Next prefetches the route, the server compiles it. Against a
+build it is 54 seconds.
+
+**The big finding:** four dialogs declared `aria-modal="true"` and none of them moved focus
+in, trapped it, or gave it back. `lib/use-dialog-focus.ts` does all three now.
+
+**Three times the harness was wrong before the site was** — the Next dev overlay swallowing
+the traversal, a dialog tested at a width where its trigger is `display:none`, and a
+timed-out CDP call read as a failed assertion. That last one reported working code as broken.
+Unknown and failed are now different things in the output; keep them that way.
+
+Still manual: whether an announcement is *understandable*. Everything mechanical around it
+is not.
+
+---
+
 ## 2026-09-12 — shop identity moved into the environment
 
 `NEXT_PUBLIC_SITE_NAME`, `NEXT_PUBLIC_SITE_NAME_ACCENT`, `NEXT_PUBLIC_SITE_TAGLINE`, and

@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useDialogFocus } from '@/lib/use-dialog-focus'
 
 /**
  * The phone header's menu button and the drawer it opens.
@@ -17,6 +18,7 @@ import { useEffect, useState } from 'react'
  */
 export default function MobileNav({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
+  const dialog = useDialogFocus(open)
 
   useEffect(() => {
     const key = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
@@ -41,7 +43,8 @@ export default function MobileNav({ children }: { children: React.ReactNode }) {
       {open && (
         <>
           <div className="drawer-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
-          <div className="drawer menu-drawer" id="site-menu" role="dialog" aria-modal="true"
+          <div ref={dialog} tabIndex={-1}
+               className="drawer menu-drawer" id="site-menu" role="dialog" aria-modal="true"
                aria-label="Menu">
             <div className="drawer-head">
               <strong>Menu</strong>
