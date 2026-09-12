@@ -4,7 +4,29 @@ A running note of the most recent piece of work, what state it is in, and what h
 next. Written for whoever picks this up cold, including me after a break.
 
 `README.md` is the record of *what was built and why*. This file is the record of *what is
-half-finished right now*.
+half-finished right now*. `SWITCHED-OFF.md` is the record of *what is built and currently
+turned off* — read it before wondering why something that exists is not happening.
+
+---
+
+## 2026-09-12 — a register of what is switched off
+
+`SWITCHED-OFF.md`. Six entries, and one of them is time-sensitive.
+
+**The homepage personaliser is not in git.** It was built and deleted inside the same
+uncommitted window, so it never reached a commit and there is no revert —
+`git log --all --diff-filter=A -- '*Maker.tsx'` returns nothing. The removal was the right
+call and is not being argued with; what the note records is that rebuilding it means
+rebuilding it, and which parts survived (`lib/team-colors.ts` and `readableInk()`, which are
+the expensive bits).
+
+The other five: the EU/UK gate is lifted, free shipping is off with the mechanic left
+dormant, the custom line has lost its $89.99 premium, the `.todo` notes are hidden, and the
+campaign banner has no asset.
+
+The reason this is its own file rather than a section of `DEFERRED.md`: deferred work is
+missing and obvious, and switched-off work looks finished while behaving as though it is
+not. That is how a compliance gate stays lifted for a year.
 
 ---
 

@@ -43,6 +43,17 @@ Four things, built in order:
 storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
 self-test proving the accessibility checks can actually fail.
 
+## Switched off
+
+Six things exist and are not running — the EU/UK sales gate is lifted, free shipping is off,
+the custom line has no premium, the `.todo` notes are hidden, the campaign banner has no
+asset, and the homepage personaliser was deleted without ever reaching a commit.
+
+**[SWITCHED-OFF.md](SWITCHED-OFF.md)** is the register: what each one is hiding, and what it
+takes to reverse it. Kept separate from `DEFERRED.md`, which is about work not built —
+something deferred is missing and obvious, where something switched off looks finished and
+behaves as though it is not.
+
 ## What is running
 
 | | |
