@@ -11,7 +11,9 @@ half-finished right now*.
 ## 2026-09-12 — no free shipping, one catalogue price
 
 Every zone's `freeOver` is now `0`; rates unchanged ($4.99 US, $19.99 CA, $24.99 UK/EU,
-$29.99 APAC). All 28,998 catalogue prices are $64.99, custom jerseys included.
+$29.99 APAC). All 28,998 catalogue prices are **$65.99**, custom jerseys included. (It went
+to $64.99 first and back on the next instruction — the script takes the figure as an
+argument, so a reprice is one command and not an edit.)
 
 **If you reprice, use `backend/src/scripts/set-catalog-price.ts` and not a bare UPDATE.**
 Shipping rates and the personalisation add-on's variants live in the same `price` table; the
@@ -21,8 +23,8 @@ reports. A blanket update sets shipping to the price of a shirt.
 **The custom line is no longer a premium product.** It was $89.99 with printing included and
 is now $64.99, the same as a blank. No customer-facing copy names a figure so nothing reads
 as false, but the margin story is gone until somebody puts it back:
-`npx medusa exec ./src/scripts/set-catalog-price.ts write 89.99` would hit everything, so
-restoring it is a narrower job than the script currently does.
+the script sets one figure across everything, so restoring it is a narrower job than the
+script currently does.
 
 **A rate change takes a minute to appear, not an hour.** `getZones()` cached for 3600s and
 the shipping page published the old thresholds until it expired — under a module whose whole

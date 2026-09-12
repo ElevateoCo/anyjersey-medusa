@@ -37,7 +37,7 @@ Four things, built in order:
 | **45** | The rest of the policy follows the visitor | ✅ rights · deadlines · DSAR routes · the retention row that is not ours to set |
 | **46** | Campaign banner | ✅ full-bleed 8:3 video or still, pause control, reduced-motion, dev-only placeholder |
 | **47** | EU/UK gate, switchable for development | ✅ named flag, compiled out of production, says so on the page |
-| **48** | Shipping charged on every order · one catalogue price | ✅ no free-shipping thresholds, $64.99 across 28,998 prices |
+| **48** | Shipping charged on every order · one catalogue price | ✅ no free-shipping thresholds, $65.99 across 28,998 prices |
 
 **Tests now: 459 backend unit, 385 backend integration against a real database, 107
 storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
@@ -3647,8 +3647,10 @@ test that cannot distinguish the two outcomes passes whether the code works or n
 
 ### One catalogue price
 
-`backend/src/scripts/set-catalog-price.ts`. **28,998 prices to $64.99** — 28,221 that were
-$65.99 and 777 custom jerseys that were $89.99. Dry by default.
+`backend/src/scripts/set-catalog-price.ts`, which takes the figure as an argument. **28,998
+prices, now $65.99** — 28,221 that were already there and 777 custom jerseys that were
+$89.99. It went to $64.99 first and back to $65.99 on the next instruction, which is the
+argument for it being a re-runnable script rather than a one-off statement. Dry by default.
 
 The reason it is a script with a join rather than `UPDATE price SET amount = 64.99` is that
 two sets of rows live in the same table and neither is a product:
@@ -3663,10 +3665,11 @@ two sets of rows live in the same table and neither is a product:
 The run reports what it protected rather than leaving it to be inferred: 4 add-on prices and
 12 shipping rates untouched, verified in the database afterwards.
 
-**The custom line lost its premium.** It was $89.99 against a $64.99 base and is now the
+**The custom line lost its premium.** It was $89.99 against a $65.99 base and is now the
 same price as a blank shirt while the printing is still included. Nothing in the
 customer-facing copy names a figure, so nothing reads as false — but the margin story is
-gone until the price is put back, which is one command.
+gone until the price is put back. The script sets one figure across everything, so restoring
+it is a narrower job than the script currently does.
 
 ### The rate card was an hour stale
 
