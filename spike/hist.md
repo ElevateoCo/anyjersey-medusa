@@ -9,6 +9,29 @@ turned off* — read it before wondering why something that exists is not happen
 
 ---
 
+## 2026-09-12 — shop identity moved into the environment
+
+`NEXT_PUBLIC_SITE_NAME`, `NEXT_PUBLIC_SITE_NAME_ACCENT`, `NEXT_PUBLIC_SITE_TAGLINE`, and
+`SHOP_NAME` on the backend. **Keep the storefront name and `SHOP_NAME` in step** — the emails
+use the backend one, and an email signing itself with a different name from the site it links
+to reads as phishing.
+
+The accent is separate because the logo is `Find <em>Any</em> Jersey` and no rule infers
+which word gets the yellow. `siteNameParts()` never drops a character of the name whatever
+the accent is set to; that is the invariant the tests hold.
+
+**Personal contact details are out of the source.** The Gmail address and the phone number
+were defaults in `lib/site.ts`; they are in `.env.local` now. A test asserts the source
+hardcodes no address and no phone-length digit run, so they cannot drift back. Unset, the
+contact fields render as outstanding rather than falling back to somebody's inbox — which
+is what a fresh clone should show.
+
+That change surfaced a real bug: with no support address either, `privacy_email` was empty
+while still claiming to be "using the support mailbox". An empty field is a gap, not a
+derivation.
+
+---
+
 ## 2026-09-12 — taxonomy gaps closed, team tiles are photographs
 
 **4,322 of 4,323 products now carry a sport**, up from 4,250.

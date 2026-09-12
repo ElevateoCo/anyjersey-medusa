@@ -55,7 +55,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       verified_purchase: !!r.verified_purchase,
       fit_feedback: r.fit_feedback,
       created_at: r.created_at,
-      source: 'Find Any Jersey',
+      // The shop's own name, from the environment like everywhere else — a review left
+      // here is sourced from *this* store, and the store is renameable.
+      source: process.env.SHOP_NAME || 'Find Any Jersey',
       first_party: true,
     })),
     ...(imported as any[]).map((r) => ({

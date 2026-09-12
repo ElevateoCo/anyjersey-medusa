@@ -1,6 +1,9 @@
 import { readFileSync } from 'fs'
 import { describe, it, expect } from 'vitest'
-import { ENTITY, entityValue, euBlocked, euGateLifted, euGatesOutstanding, EU_GATES } from './site'
+import {
+  ENTITY, entityValue, euBlocked, euGateLifted, euGatesOutstanding, siteNameParts,
+  SITE_NAME, EU_GATES,
+} from './site'
 
 /**
  * The trader disclosures, and which of them code is allowed to fill in.
@@ -11,20 +14,50 @@ import { ENTITY, entityValue, euBlocked, euGateLifted, euGatesOutstanding, EU_GA
  * nowhere to send it.
  */
 describe('the data-subject request channel', () => {
-  it('is always published, because every one of these laws requires one', () => {
-    // GDPR Art. 15–22, the US state laws, the LGPD and Law 25 all require a contactable
-    // channel. None of them requires a *dedicated* address, which is what makes the
-    // fallback lawful rather than a fudge.
-    expect(entityValue('privacy_email')).not.toBe('')
+  /**
+   * The rule, and note what it is *not*.
+   *
+   * It used to assert the channel is never empty — which held only because a personal Gmail
+   * was hardcoded as the support default. That address is out of the source now, so an
+   * unconfigured environment genuinely has no channel and the policy pages say so through
+   * `pendingEntityFields()`. Asserting non-empty would be asserting that the default is
+   * back.
+   *
+   * What has to stay true is the *relationship*: with no dedicated address configured, the
+   * channel is the support mailbox. Every one of GDPR Art. 15–22, the US state laws, the
+   * LGPD and Law 25 requires a contactable channel and none requires a dedicated one, which
+   * is what makes that lawful rather than a fudge.
+   */
+  it('falls back to the support mailbox when no dedicated address is set', () => {
+    if (process.env.NEXT_PUBLIC_PRIVACY_EMAIL) return
+    expect(entityValue('privacy_email')).toBe(entityValue('support_email'))
   })
 
-  it('says when it is standing in for the support mailbox', () => {
+  it('says when it is standing in, rather than looking appointed', () => {
     const row = ENTITY.find((e) => e.key === 'privacy_email')!
-    if (!process.env.NEXT_PUBLIC_PRIVACY_EMAIL) {
-      expect(row.value).toBe(entityValue('support_email'))
-      // A field that fell back is not a field somebody filled in, and the page says which.
-      expect(row.derived).toBeTruthy()
-    }
+    // Three states, and only the middle one is a derivation:
+    //   dedicated address set   -> its own value, no note
+    //   only a support address  -> the support value, with a note
+    //   neither                 -> empty, and a gap rather than a note
+    if (process.env.NEXT_PUBLIC_PRIVACY_EMAIL) expect(row.derived).toBeUndefined()
+    else if (entityValue('support_email')) expect(row.derived).toBeTruthy()
+    else expect(row.derived).toBeUndefined()
+  })
+
+  /**
+   * The property the last change established, pinned so it cannot quietly regress.
+   *
+   * A contact address committed to a repository is published to everyone who can read the
+   * repository, forever, and independently of whether the shop still uses it. These belong
+   * in `.env.local`, which is gitignored.
+   */
+  it('hardcodes no contact address or phone number in the source', () => {
+    const src = readFileSync(new URL('./site.ts', import.meta.url), 'utf8')
+    // Any `key: value` pair that looks like an address or a run of digits long enough to
+    // be a phone number, outside a comment.
+    const code = src.split('\n').filter((l) => !/^\s*(\*|\/\/)/.test(l)).join('\n')
+    expect(code).not.toMatch(/['"][^'"]*@[^'"]+\.[a-z]{2,}['"]/i)
+    expect(code).not.toMatch(/['"]\d{7,}['"]/)
   })
 })
 
@@ -113,5 +146,94 @@ describe('lifting the EU gate', () => {
     expect(src).toMatch(
       /NODE_ENV !== 'production'\s*&&\s*process\.env\.NEXT_PUBLIC_LIFT_EU_GATE/
     )
+  })
+})
+
+
+/**
+ * The wordmark.
+ *
+ * Worth pinning because it renders in the header of every page, and every failure mode here
+ * is a header that is wrong or missing rather than a page that errors — which is the kind
+ * of thing that ships. The rule is that the shop's name always appears in full, however
+ * the accent is configured.
+ */
+describe('siteNameParts', () => {
+  const whole = (p: ReturnType<typeof siteNameParts>) => p.before + p.accent + p.after
+
+  it('splits the name around its accented word', () => {
+    const p = siteNameParts()
+    expect(whole(p)).toBe(SITE_NAME)
+  })
+
+  it('always renders the whole name, whatever the accent is', () => {
+    // The one invariant that matters: no configuration may drop a character of the name.
+    expect(whole(siteNameParts())).toBe(SITE_NAME)
+  })
+})
+
+/**
+ * The split itself, exercised directly rather than through the module's own environment.
+ *
+ * `siteNameParts()` reads `SITE_NAME` and `SITE_NAME_ACCENT`, which are resolved once at
+ * import — so the cases below re-implement the same rule against explicit inputs. That is a
+ * duplicate of four lines, and the alternative is a test that can only ever check whatever
+ * happens to be in `.env.local`, which is one case out of six.
+ */
+function split(name: string, accent: string) {
+  const a = accent.trim()
+  if (!a) return { before: name, accent: '', after: '' }
+  const at = name.toLowerCase().indexOf(a.toLowerCase())
+  if (at === -1) return { before: name, accent: '', after: '' }
+  const before = name.slice(0, at)
+  const matched = name.slice(at, at + a.length)
+  const after = name.slice(at + a.length)
+  if (!before && !after) return { before: name, accent: '', after: '' }
+  return { before, accent: matched, after }
+}
+
+describe('the accent rule', () => {
+  const whole = (p: { before: string; accent: string; after: string }) =>
+    p.before + p.accent + p.after
+
+  it('highlights the word, keeping the spaces around it', () => {
+    expect(split('Find Any Jersey', 'Any'))
+      .toEqual({ before: 'Find ', accent: 'Any', after: ' Jersey' })
+  })
+
+  it('matches case-insensitively but keeps the name’s own casing', () => {
+    // Configuring `any` must still highlight the `Any` the name actually spells.
+    expect(split('Find Any Jersey', 'any').accent).toBe('Any')
+  })
+
+  it('renders plain when there is no accent configured', () => {
+    expect(split('Everything Jersey', '')).toEqual(
+      { before: 'Everything Jersey', accent: '', after: '' })
+    expect(split('Everything Jersey', '   ').accent).toBe('')
+  })
+
+  it('renders plain rather than breaking when the accent is not in the name', () => {
+    // A rename that forgets to update the accent must not empty the header.
+    const p = split('Everything Jersey', 'Any')
+    expect(p.accent).toBe('')
+    expect(whole(p)).toBe('Everything Jersey')
+  })
+
+  it('renders plain when the accent is the whole name', () => {
+    // Highlighting everything is the same as highlighting nothing, and looks like a bug.
+    expect(split('Jerseys', 'Jerseys').accent).toBe('')
+  })
+
+  it('highlights the first occurrence only', () => {
+    expect(split('Jersey Any Jersey', 'Jersey'))
+      .toEqual({ before: '', accent: 'Jersey', after: ' Any Jersey' })
+  })
+
+  it('never drops a character of the name, in any configuration', () => {
+    for (const name of ['Find Any Jersey', 'Everything Jersey', 'Jerseys', 'A']) {
+      for (const accent of ['', ' ', 'Any', 'any', name, 'nope', 'Jersey']) {
+        expect(whole(split(name, accent))).toBe(name)
+      }
+    }
   })
 })

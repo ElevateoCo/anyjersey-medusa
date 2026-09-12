@@ -25,6 +25,15 @@ export type Rendered = {
   headers?: Record<string, string>
 }
 
+/**
+ * The shop's own name, for the email chrome.
+ *
+ * Same variable the storefront reads as `NEXT_PUBLIC_SITE_NAME` and the reviews endpoint
+ * reads as the review source — an email that signs itself with a different name from the
+ * site it links to is the kind of detail that reads as a phishing attempt.
+ */
+const SHOP_NAME = process.env.SHOP_NAME || 'Find Any Jersey'
+
 const money = (cents: number, currency = 'USD') =>
   `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`
 
@@ -503,7 +512,7 @@ const opsShell = (title: string, body: string) => `
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border:1px solid #e4e4e1">
         <tr><td style="background:#121212;padding:12px 20px">
-          <span style="font-family:'Arial Narrow',Impact,sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#F9E806">Find Any Jersey — admin</span>
+          <span style="font-family:'Arial Narrow',Impact,sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#F9E806">${SHOP_NAME} — admin</span>
         </td></tr>
         <tr><td style="padding:20px">
           <h1 style="margin:0 0 14px;font-family:'Arial Narrow',Impact,sans-serif;font-size:19px;text-transform:uppercase">${title}</h1>

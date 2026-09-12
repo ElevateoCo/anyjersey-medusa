@@ -8,7 +8,9 @@ import { getVisitorGeo } from '@/lib/geo'
 import { getCustomer } from '@/lib/account'
 import { CONTENT_PAGES, LEGAL_PAGES } from '@/lib/content'
 import { POLICIES } from '@/lib/policies'
-import { INDEXABLE, SITE_NAME, SITE_TAGLINE, SITE_URL, euBlocked } from '@/lib/site'
+import {
+  INDEXABLE, SITE_NAME, SITE_TAGLINE, SITE_URL, euBlocked, siteNameParts,
+} from '@/lib/site'
 import { organisation, website } from '@/lib/seo'
 import CartButton from '@/components/CartButton'
 import SiteNav, { NavAccordion } from '@/components/SiteNav'
@@ -81,6 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   ])
 
   const nav = buildNav(facets, collections)
+  const logo = siteNameParts()
 
   const count = (cart?.items ?? []).reduce((n, l) => n + l.quantity, 0)
   const cartData = {
@@ -170,7 +173,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </ul>
             </MobileNav>
 
-            <a href="/" className="logo">Find <em>Any</em> Jersey</a>
+            {/* The wordmark, from `NEXT_PUBLIC_SITE_NAME` and its accent word. `<em>` is
+                the yellow highlight; when there is nothing to accent the name renders
+                plain rather than the component guessing which word to pick. */}
+            <a href="/" className="logo">
+              {logo.before}
+              {logo.accent && <em>{logo.accent}</em>}
+              {logo.after}
+            </a>
 
             <div className="hsearch">
               <Suspense fallback={<div className="searchwrap" />}>

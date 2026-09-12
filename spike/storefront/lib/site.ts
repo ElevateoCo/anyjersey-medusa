@@ -20,8 +20,52 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 ).replace(/\/$/, '')
 
-export const SITE_NAME = 'Find Any Jersey'
-export const SITE_TAGLINE = 'Hard-to-find jerseys shipped on-demand'
+/**
+ * The shop's own name, and the word in it the logo highlights.
+ *
+ * Both from the environment, alongside `SITE_URL` above, so renaming the shop or pointing
+ * it at a different domain is a deploy setting rather than a search-and-replace. The
+ * `everything-jersey-migration` work is a second storefront over the same codebase, which
+ * is the concrete reason: two shops, two names, one set of components.
+ *
+ * **The accent is a separate variable because the logo is not plain text.** It renders as
+ * `Find <em>Any</em> Jersey` — one word on the brand yellow — and there is no way to infer
+ * *which* word that should be from the name alone. Naming it explicitly also means a shop
+ * whose name has no natural accent can leave it empty and get a plain wordmark, rather
+ * than the component guessing at the middle word.
+ */
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Find Any Jersey'
+export const SITE_NAME_ACCENT = process.env.NEXT_PUBLIC_SITE_NAME_ACCENT ?? 'Any'
+export const SITE_TAGLINE =
+  process.env.NEXT_PUBLIC_SITE_TAGLINE || 'Hard-to-find jerseys shipped on-demand'
+
+/**
+ * The name split around its accented word, for the logo.
+ *
+ * Returns the whole name as `before` when there is nothing to accent — an empty accent, an
+ * accent the name does not contain, or an accent that *is* the whole name. A logo that
+ * renders the shop's name unhighlighted is a styling loss; one that renders it empty, or
+ * throws, is an outage on every page.
+ *
+ * Matching is case-insensitive but the **name's own casing is preserved**, so an accent of
+ * `any` still highlights the `Any` the name actually spells.
+ */
+export function siteNameParts(): { before: string; accent: string; after: string } {
+  const name = SITE_NAME
+  const accent = SITE_NAME_ACCENT.trim()
+  if (!accent) return { before: name, accent: '', after: '' }
+
+  const at = name.toLowerCase().indexOf(accent.toLowerCase())
+  if (at === -1) return { before: name, accent: '', after: '' }
+
+  const before = name.slice(0, at)
+  const matched = name.slice(at, at + accent.length)
+  const after = name.slice(at + accent.length)
+  // Highlighting the entire wordmark is the same as highlighting none of it, and it looks
+  // like a bug rather than a choice.
+  if (!before && !after) return { before: name, accent: '', after: '' }
+  return { before, accent: matched, after }
+}
 
 /** Absolute URL for a site-relative path. Trailing-slash safe on both halves. */
 export const abs = (path: string) =>
@@ -57,7 +101,21 @@ export type EntityField = {
  * Taken from the live store's own contact-information policy, like the trader name and the
  * phone number beside it.
  */
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'scholarlove77@gmail.com'
+/**
+ * No default, deliberately.
+ *
+ * This was a personal Gmail address written into the source. It is the address the live
+ * store publishes, so it was not a secret — but a personal address committed to a
+ * repository is published to everyone who can read the repository, forever and
+ * independently of whether the shop still uses it. It is also, since the privacy work
+ * below, the fallback channel for data-subject requests, which is not a mailbox to inherit
+ * by accident.
+ *
+ * It lives in `.env.local` now, which is gitignored. Unset, the contact fields render as
+ * outstanding through the same `pendingEntityFields()` mechanism as the registered address
+ * — which is the correct state for a fresh clone, and visible rather than silent.
+ */
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? ''
 
 /**
  * The trader identity that consumer and product law requires on a storefront.
@@ -92,7 +150,8 @@ export const ENTITY: EntityField[] = [
   {
     key: 'phone',
     label: 'Phone number',
-    value: process.env.NEXT_PUBLIC_SUPPORT_PHONE ?? '9566226490',
+    // A personal number, out of the source for the same reason as the address above.
+    value: process.env.NEXT_PUBLIC_SUPPORT_PHONE ?? '',
     why: 'Published on the live store\u2019s contact-information policy.',
   },
   {
@@ -118,9 +177,18 @@ export const ENTITY: EntityField[] = [
     label: 'Privacy / data-subject requests',
     value: process.env.NEXT_PUBLIC_PRIVACY_EMAIL || SUPPORT_EMAIL,
     why: 'GDPR Art. 15–22 and the US state laws all require a request channel.',
-    derived: process.env.NEXT_PUBLIC_PRIVACY_EMAIL
-      ? undefined
-      : 'Using the support mailbox until a dedicated address is set.',
+    /**
+     * Only when the fallback actually produced something.
+     *
+     * With no support address configured either, the value is empty *and* was carrying
+     * "using the support mailbox" — so the page would have rendered "Not yet appointed"
+     * next to a note claiming it had fallen back to a mailbox that does not exist. An empty
+     * field is a gap, not a derivation, and the two must not be able to describe the same
+     * row.
+     */
+    derived: !process.env.NEXT_PUBLIC_PRIVACY_EMAIL && SUPPORT_EMAIL
+      ? 'Using the support mailbox until a dedicated address is set.'
+      : undefined,
   },
   {
     key: 'eu_representative',

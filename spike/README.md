@@ -40,6 +40,7 @@ Four things, built in order:
 | **48** | Shipping charged on every order · one catalogue price | ✅ no free-shipping thresholds, $65.99 across 28,998 prices |
 | **49** | `medusa build` unblocked for good | ✅ symlink dropped, archive paths env-driven, 45s build |
 | **50** | The taxonomy gaps closed | ✅ 4,322 of 4,323 have a sport · team tiles are photographs |
+| **51** | Shop identity in the environment | ✅ name, accent, tagline, domain — and no personal contact details in source |
 
 **Tests now: 459 backend unit, 385 backend integration against a real database, 107
 storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
@@ -2910,7 +2911,7 @@ retrospectively.
 
 ### Worth flagging
 
-- **The support address is a personal Gmail** (`scholarlove77@gmail.com`) and the trade name is
+- **The support address is a personal Gmail** and the trade name is
   **Crux Christi** while the storefront trades as *Find Any Jersey*. Both are now published
   because consumer law requires the trader to be identified; neither is a good long-term
   answer, and a domain mailbox is a twenty-minute job.
@@ -3806,3 +3807,59 @@ were closed.
 **Two handles are genuinely missing**, both still live on the store. That is 0.05% of the
 catalogue, it needs the two-stage import rather than a one-off, and it is **accepted rather
 than outstanding** — they come in free with the next full re-sync. See `SWITCHED-OFF.md` §7.
+
+## Step 51 — the shop's name is a setting, not a string
+
+Renaming the shop, or standing a second storefront over this codebase, was a search and
+replace. It is now three variables:
+
+```
+NEXT_PUBLIC_SITE_NAME=Find Any Jersey
+NEXT_PUBLIC_SITE_NAME_ACCENT=Any
+NEXT_PUBLIC_SITE_TAGLINE=Hard-to-find jerseys shipped on-demand
+```
+
+alongside `NEXT_PUBLIC_SITE_URL`, which was already one. The backend reads `SHOP_NAME` for
+the email chrome and the review source — keep the two in step, because an email that signs
+itself with a different name from the site it links to reads as a phishing attempt.
+
+`everything-jersey-migration` is the concrete reason: a second shop over the same code.
+
+### The accent is its own variable
+
+The logo is not plain text. It renders as `Find <em>Any</em> Jersey` — one word on the brand
+yellow — and **which** word cannot be inferred from the name. Naming it explicitly also lets
+a shop with no natural accent leave it empty and get a plain wordmark rather than the
+component guessing at the middle word.
+
+`siteNameParts()` is written so that the name always renders in full, whatever the accent is
+set to. An accent the name does not contain, an accent that *is* the whole name, an empty
+accent — each falls back to a plain wordmark. A logo that loses its highlight is a styling
+loss; one that renders empty is an outage on every page. Seven cases are pinned, including
+one that asserts no configuration can drop a character of the name.
+
+Verified by renaming the shop to "Everything Jersey" from the environment alone: the logo,
+the `<title>` template, the web manifest and the footer's trading line all followed, then
+reverted.
+
+### The personal contact details left the source
+
+`lib/site.ts` carried a personal Gmail address and a phone number as defaults. Neither was a
+secret — the live store publishes both — but **a contact address committed to a repository
+is published to everyone who can read the repository, forever, and independently of whether
+the shop still uses it.** The address had also become the fallback channel for data-subject
+requests, which is not a mailbox to inherit by accident.
+
+They are in `.env.local` now, which is gitignored. Unset, the contact fields render as
+outstanding through the same `pendingEntityFields()` mechanism as the registered address —
+visible rather than silent, which is the right state for a fresh clone. A test asserts the
+source hardcodes no address and no run of digits long enough to be a phone number.
+
+`app/icon.svg` named the shop in its `aria-label`; it is a favicon, so the label is not in
+the accessibility tree and could only ever go stale on a rename. It says "Shop logo" now.
+
+**One bug this surfaced.** With no support address configured either, `privacy_email` was
+empty *and* still carrying "using the support mailbox" — so the page would have rendered
+"Not yet appointed" beside a note claiming a fallback to a mailbox that does not exist. An
+empty field is a gap, not a derivation, and the two must not be able to describe the same
+row. Three states now, and a test for each.

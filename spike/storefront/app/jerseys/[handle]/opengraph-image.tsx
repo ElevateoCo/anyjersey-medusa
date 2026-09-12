@@ -48,7 +48,7 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
             {title}
           </div>
           <div style={{ marginTop: 32, fontSize: 26, color: '#D6D6D2' }}>
-            Sourced to order at Find Any Jersey
+            Sourced to order at {SITE_NAME}
           </div>
         </div>
       </div>
