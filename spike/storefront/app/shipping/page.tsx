@@ -1,6 +1,6 @@
 import { getZones, money } from '@/lib/medusa'
 import RequestBlock from '@/components/RequestBlock'
-import { abs, euBlocked } from '@/lib/site'
+import { abs, euBlocked, euGateLifted, euGatesOutstanding } from '@/lib/site'
 
 export const revalidate = 3600
 
@@ -34,6 +34,9 @@ const COUNTRY_NAMES: Record<string, string> = {
 export default async function ShippingPage() {
   const zones = await getZones()
   const gates = euBlocked()
+  // What is still unappointed, whether or not the gate is currently enforcing it.
+  const outstanding = euGatesOutstanding()
+  const lifted = euGateLifted() && outstanding.length > 0
   const euZone = zones.find((z) => z.name === 'Europe')
 
   return (
@@ -45,6 +48,22 @@ export default async function ShippingPage() {
           <p className="standfirst">
             Where we ship, what it costs, how long it takes, and who pays the duty.
           </p>
+
+          {/* Development only — `euGateLifted()` is compiled out of a production build.
+              Said on the page rather than left to a variable somebody has to remember,
+              because a storefront that looks compliant while the appointments are
+              outstanding is the failure this whole gate exists to prevent. */}
+          {lifted && (
+            <div className="todo">
+              <b>EU/UK gate lifted &mdash; development only</b>
+              <code>NEXT_PUBLIC_LIFT_EU_GATE</code> is set, so EU and UK regions are
+              selectable here even though{' '}
+              {outstanding.map((g) => g.label).join(', ')}{' '}
+              {outstanding.length === 1 ? 'is' : 'are'} still outstanding. This flag has no
+              effect in a production build. Nothing below is a statement about what may
+              lawfully be sold into the EU.
+            </div>
+          )}
 
           <div className="psec">
             <h2>Rates and lead times</h2>

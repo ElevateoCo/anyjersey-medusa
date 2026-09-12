@@ -36,6 +36,7 @@ Four things, built in order:
 | **44** | Consent by jurisdiction | ✅ opt-in where the law asks, notice where it tells — California included |
 | **45** | The rest of the policy follows the visitor | ✅ rights · deadlines · DSAR routes · the retention row that is not ours to set |
 | **46** | Campaign banner | ✅ full-bleed 8:3 video or still, pause control, reduced-motion, dev-only placeholder |
+| **47** | EU/UK gate, switchable for development | ✅ named flag, compiled out of production, says so on the page |
 
 **Tests now: 459 backend unit, 385 backend integration against a real database, 107
 storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
@@ -3576,3 +3577,36 @@ resume          paused:false  label → "Pause the banner video"
 reduced motion  paused:true   currentTime:0   play button still offered
 band            1440 × 540 — exactly 8:3       CSP/media errors: none
 ```
+
+## Step 47 — the EU/UK gate, as a switch rather than a comment
+
+The gate blocks EU and UK regions while three appointments are outstanding: a GPSR
+responsible person, a GDPR Article 27 representative, and an IOSS registration. In a spike
+that takes no real orders it also blocks exercising the EU flow, which is a fair reason to
+turn it off.
+
+**Written as a named flag rather than a commented-out block.** `NEXT_PUBLIC_LIFT_EU_GATE`.
+A commented-out line is invisible to the type checker, invisible to `grep` six months later,
+and is exactly the thing that gets committed and then shipped. A flag can be searched for,
+tested, and refused where it matters.
+
+**It cannot take effect in a production build.** `NODE_ENV` is baked in at build time, so a
+production bundle has the override compiled out however the variable is set on the host.
+Proven end to end rather than asserted — built with the flag set to `true`, served, and the
+region picker still renders Europe and the United Kingdom disabled with their reason:
+
+| | Europe / UK rendered | blocked reason shown |
+|---|---|---|
+| Development, flag on | yes | **no** — selectable |
+| Production, flag still `true` | yes | **yes** — blocked |
+
+**`euBlocked()` and `euGatesOutstanding()` are now different questions.** The first is what
+the UI enforces and the flag empties it; the second is what is genuinely still unappointed
+and nothing empties that. The shipping page reads the second and says out loud that the gate
+is lifted, because a storefront that looks compliant while the appointments are outstanding
+is the failure the gate exists to prevent.
+
+None of this makes the underlying position better: without a GPSR responsible person apparel
+may not lawfully be placed on the EU market at all, without an Article 27 representative
+there is nobody in the Union to receive a data-subject request, and without IOSS the import
+VAT lands on the customer at the door. The flag only stops this storefront saying so.

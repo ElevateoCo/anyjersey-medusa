@@ -155,7 +155,48 @@ export const pendingEntityFields = () => ENTITY.filter((e) => !e.value)
  * compliance gap on any market, while these three block EU orders outright.
  */
 export const EU_GATES = ['eu_representative', 'gpsr_responsible_person', 'ioss'] as const
+
+/**
+ * Lift the EU/UK gate while the appointments are outstanding.
+ *
+ * **This is a development switch, and it is written as one rather than as a commented-out
+ * line.** The gate gets in the way of exercising the EU flow in a spike that takes no real
+ * orders, which is a fair reason to turn it off — but a commented-out block is invisible to
+ * the type checker, invisible to `grep` six months later, and is exactly the kind of thing
+ * that gets committed and then shipped. A named flag can be searched for, tested, and
+ * refused where it matters.
+ *
+ * **It cannot take effect in a production build.** `NODE_ENV` is baked in at build time, so
+ * a production bundle has the override compiled out however the variable is set on the
+ * host. That is the whole reason to write it this way: the convenience is available to
+ * whoever is working on the thing, and there is no sequence of environment settings that
+ * puts an ungated EU checkout in front of a customer.
+ *
+ * What the gate is actually holding back is not a formality. Without a GPSR responsible
+ * person, apparel may not lawfully be placed on the EU market at all; without an Article 27
+ * representative there is no one in the Union to receive a data-subject request; without an
+ * IOSS registration the import VAT lands on the customer at the door. None of those become
+ * true because a flag is set — the flag only stops this storefront saying so.
+ */
+const EU_GATE_LIFTED =
+  process.env.NODE_ENV !== 'production' &&
+  process.env.NEXT_PUBLIC_LIFT_EU_GATE === 'true'
+
+/** True when the gate is off, so the UI can say so rather than looking compliant. */
+export const euGateLifted = () => EU_GATE_LIFTED
+
+/**
+ * The appointments still outstanding, or an empty list when the gate is lifted.
+ *
+ * Returning empty rather than adding a branch at each call site keeps `regionBlocked` and
+ * the shipping page reading the way they did; `euGateLifted()` is what a caller uses when
+ * it needs to say *why* the list is empty.
+ */
 export const euBlocked = () =>
-  EU_GATES.filter((k) => !entityValue(k)).map(
-    (k) => ENTITY.find((e) => e.key === k)!
-  )
+  EU_GATE_LIFTED
+    ? []
+    : EU_GATES.filter((k) => !entityValue(k)).map((k) => ENTITY.find((e) => e.key === k)!)
+
+/** The appointments, regardless of the flag — what is genuinely still missing. */
+export const euGatesOutstanding = () =>
+  EU_GATES.filter((k) => !entityValue(k)).map((k) => ENTITY.find((e) => e.key === k)!)

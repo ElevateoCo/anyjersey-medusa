@@ -1,5 +1,6 @@
+import { readFileSync } from 'fs'
 import { describe, it, expect } from 'vitest'
-import { ENTITY, entityValue, euBlocked, EU_GATES } from './site'
+import { ENTITY, entityValue, euBlocked, euGateLifted, euGatesOutstanding, EU_GATES } from './site'
 
 /**
  * The trader disclosures, and which of them code is allowed to fill in.
@@ -62,5 +63,55 @@ describe('what an unmade appointment blocks', () => {
    */
   it('does not let the fallback unblock EU sales', () => {
     expect(EU_GATES).not.toContain('privacy_email')
+  })
+})
+
+/**
+ * The development override.
+ *
+ * `NEXT_PUBLIC_LIFT_EU_GATE` makes EU and UK regions selectable while the appointments are
+ * outstanding, which is reasonable in a spike that takes no real orders. What these pin is
+ * that it stays a *development* convenience.
+ */
+describe('lifting the EU gate', () => {
+  it('never hides what is actually still unappointed', () => {
+    // `euBlocked()` is what the UI enforces and the flag empties it. `euGatesOutstanding()`
+    // is the truth, and nothing may empty that — it is what the shipping page says out loud
+    // when the gate is off, so a storefront cannot look compliant while it is not.
+    const outstanding = euGatesOutstanding().map((e) => e.key)
+    for (const k of EU_GATES) {
+      if (!entityValue(k)) expect(outstanding).toContain(k)
+    }
+  })
+
+  it('agrees with itself: lifted means enforced-empty but still outstanding', () => {
+    if (euGateLifted()) {
+      expect(euBlocked()).toHaveLength(0)
+      // Lifting it cannot be what *makes* the list empty in a way that reads as compliance.
+      expect(euGatesOutstanding().length).toBeGreaterThan(0)
+    } else {
+      expect(euBlocked().map((e) => e.key)).toEqual(euGatesOutstanding().map((e) => e.key))
+    }
+  })
+
+  /**
+   * The assertion that matters most, and the reason this is a flag rather than a
+   * commented-out block. `NODE_ENV` is baked in at build time, so there is no sequence of
+   * environment settings on a host that puts an ungated EU checkout in front of a customer.
+   * Verified end to end as well: a production build with the flag set to `true` still
+   * renders the EU and UK options disabled.
+   */
+  it('cannot be switched on in a production build', () => {
+    // Read as source rather than exercised, deliberately. Re-importing the module would
+    // re-evaluate the guard under the test runner's own NODE_ENV and prove nothing about a
+    // build; what needs pinning is that the guard is *there*, because `NODE_ENV` is baked
+    // in at build time and that is what makes the override unshippable.
+    //
+    // Verified end to end as well: a production build with the flag set to `true` still
+    // renders the EU and UK options disabled.
+    const src = readFileSync(new URL('./site.ts', import.meta.url), 'utf8')
+    expect(src).toMatch(
+      /NODE_ENV !== 'production'\s*&&\s*process\.env\.NEXT_PUBLIC_LIFT_EU_GATE/
+    )
   })
 })

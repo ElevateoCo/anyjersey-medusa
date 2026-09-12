@@ -8,6 +8,23 @@ half-finished right now*.
 
 ---
 
+## 2026-09-12 — EU/UK gate made switchable
+
+`NEXT_PUBLIC_LIFT_EU_GATE=true` is set in `.env.local`, so EU and UK regions are selectable
+locally. **The three appointments are still unmade** — GPSR responsible person, Article 27
+representative, IOSS. The flag only stops the storefront saying so, and the shipping page
+prints a development notice naming what is outstanding whenever it is on.
+
+Written as a flag rather than a commented-out block on purpose: a comment is invisible to
+the type checker and to `grep`, and is what gets shipped by accident. `NODE_ENV` is read at
+build time so a production bundle compiles the override out — verified by building with the
+flag set and confirming the region picker still disables Europe and the UK.
+
+`euBlocked()` is what the UI enforces; `euGatesOutstanding()` is the truth. Do not collapse
+them.
+
+---
+
 ## 2026-09-12 (later still) — campaign banner
 
 A full-bleed 8:3 hero for a video or still, `NEXT_PUBLIC_HERO_VIDEO` / `_IMAGE`. **With
