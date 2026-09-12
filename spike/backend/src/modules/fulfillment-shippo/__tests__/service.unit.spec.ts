@@ -44,37 +44,51 @@ describe('options come from the rate card', () => {
   })
 })
 
-describe('the free-shipping threshold', () => {
+describe('what shipping costs', () => {
   const p = make()
   const us = ZONES.find((z) => z.name === 'United States')!
 
-  it('charges the flat rate below the threshold', async () => {
+  it('charges the US flat rate', async () => {
     const r = await p.calculatePrice({ zone_name: 'United States' }, {}, { item_total: 64.99 })
+    expect(r.calculated_amount).toBe(4.99)
     expect(r.calculated_amount).toBe(us.rate)
   })
 
-  it('is free exactly at the threshold, not just above it', async () => {
-    const r = await p.calculatePrice({ zone_name: 'United States' }, {}, { item_total: us.freeOver })
-    expect(r.calculated_amount).toBe(0)
-  })
-
-  it('applies each zone its own threshold', async () => {
+  /**
+   * Every zone, every order value.
+   *
+   * Three tests here used to assert free shipping at a threshold, which is the right thing
+   * to check for a rate card that offers one and meaningless for this one. They are
+   * replaced rather than deleted, because "shipping is always charged" is itself a claim
+   * worth pinning — the provider still contains the `freeOver > 0` branch, and nothing
+   * should be able to take that path by accident.
+   */
+  it('charges the zone rate at every order value, in every zone', async () => {
     for (const z of ZONES) {
-      const below = await p.calculatePrice({ zone_name: z.name }, {}, { item_total: z.freeOver - 0.01 })
-      const at = await p.calculatePrice({ zone_name: z.name }, {}, { item_total: z.freeOver })
-      expect(below.calculated_amount).toBe(z.rate)
-      expect(at.calculated_amount).toBe(0)
+      for (const itemTotal of [0, 0.01, 64.99, 75, 200, 5000]) {
+        const r = await p.calculatePrice({ zone_name: z.name }, {}, { item_total: itemTotal })
+        expect(r.calculated_amount).toBe(z.rate)
+      }
     }
   })
 
-  it('reads item_total, not total — the threshold is on merchandise', async () => {
-    // $71 of jerseys plus $4.99 shipping is $75.99 of `total` but only $71 of goods, so
-    // it must NOT qualify. Reading `total` here would give away shipping at $70.01.
-    const r = await p.calculatePrice(
-      { zone_name: 'United States' }, {}, { item_total: 71, total: 75.99 }
-    )
-    expect(r.calculated_amount).toBe(us.rate)
+  it('never flat-rates international at the domestic price', async () => {
+    for (const z of ZONES.filter((x) => x.zone > 1)) {
+      const r = await p.calculatePrice({ zone_name: z.name }, {}, { item_total: 64.99 })
+      expect(r.calculated_amount).toBeGreaterThan(us.rate)
+    }
   })
+
+  /**
+   * The threshold branch is dormant, not removed — `freeOver > 0` still guards it, and
+   * `research.md` §9.1 argues for bringing the mechanic back over percentage discounts.
+   *
+   * **It is deliberately not tested here.** `calculatePrice` resolves its zone by name out
+   * of `ZONES`, so with every threshold at zero there is no way to reach the branch through
+   * the public API, and a test that cannot distinguish the two outcomes is worse than none —
+   * it passes whether the code works or not. `shipping-zones.unit.spec.ts` pins the values
+   * instead; restoring a threshold means restoring a test that can actually fail.
+   */
 
   it('never quotes shipping as tax-inclusive', async () => {
     const r = await p.calculatePrice({ zone_name: 'Europe' }, {}, { item_total: 10 })

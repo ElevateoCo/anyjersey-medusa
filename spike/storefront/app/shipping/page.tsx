@@ -36,6 +36,8 @@ export default async function ShippingPage() {
   const gates = euBlocked()
   // What is still unappointed, whether or not the gate is currently enforcing it.
   const outstanding = euGatesOutstanding()
+  // Shipping is charged on every order today, so the rate card has no threshold column.
+  const anyFree = zones.some((z) => z.freeOver > 0)
   const lifted = euGateLifted() && outstanding.length > 0
   const euZone = zones.find((z) => z.name === 'Europe')
 
@@ -82,7 +84,10 @@ export default async function ShippingPage() {
                   <tr>
                     <th scope="col">Zone</th>
                     <th scope="col">Rate</th>
-                    <th scope="col">Free over</th>
+                    {/* The column appears only if some zone actually offers a threshold.
+                        A "Free over" column of dashes advertises a mechanic this shop does
+                        not have, on the page a customer quotes back at you. */}
+                    {anyFree && <th scope="col">Free over</th>}
                     <th scope="col">Delivery</th>
                   </tr>
                 </thead>
@@ -91,7 +96,9 @@ export default async function ShippingPage() {
                     <tr key={`${z.zone}-${z.name}`}>
                       <th scope="row">{z.name}</th>
                       <td>{money(z.rate)}</td>
-                      <td>{money(z.freeOver)}</td>
+                      {anyFree && (
+                        <td>{z.freeOver > 0 ? money(z.freeOver) : '—'}</td>
+                      )}
                       <td>{z.leadTime}</td>
                     </tr>
                   ))}

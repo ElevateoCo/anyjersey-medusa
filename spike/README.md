@@ -37,6 +37,7 @@ Four things, built in order:
 | **45** | The rest of the policy follows the visitor | ✅ rights · deadlines · DSAR routes · the retention row that is not ours to set |
 | **46** | Campaign banner | ✅ full-bleed 8:3 video or still, pause control, reduced-motion, dev-only placeholder |
 | **47** | EU/UK gate, switchable for development | ✅ named flag, compiled out of production, says so on the page |
+| **48** | Shipping charged on every order · one catalogue price | ✅ no free-shipping thresholds, $64.99 across 28,998 prices |
 
 **Tests now: 459 backend unit, 385 backend integration against a real database, 107
 storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
@@ -3610,3 +3611,68 @@ None of this makes the underlying position better: without a GPSR responsible pe
 may not lawfully be placed on the EU market at all, without an Article 27 representative
 there is nobody in the Union to receive a data-subject request, and without IOSS the import
 VAT lands on the customer at the door. The flag only stops this storefront saying so.
+
+## Step 48 — shipping on every order, and one price
+
+Two merchandising changes, and a cache bug found on the way.
+
+### No free shipping
+
+Every zone's `freeOver` is `0`. The rates are unchanged and are what "calculated depending
+on the country" already meant here — the country picks the zone and the zone carries the
+price:
+
+| Zone | Rate |
+|---|---|
+| United States | $4.99 |
+| Canada | $19.99 |
+| United Kingdom · Europe | $24.99 |
+| Asia Pacific | $29.99 |
+
+`0` already read as "no threshold" in the provider, the cart, the cart drawer and the
+buybox, all of which guard on `> 0`. Two display sites did not and would have published
+**"free over $0.00"** — the checkout summary, and the rate table on `/shipping`. The
+checkout clause is omitted; the table drops the column entirely, because a column of dashes
+advertises a mechanic this shop does not have on the page a customer quotes back at you.
+
+**The field stays rather than being deleted.** A free-shipping threshold is a lever this
+shop may well want back — `research.md` §9.1 argues for it over percentage discount codes —
+and removing the mechanic to express "off" would mean rebuilding it to turn it on. Three
+unit tests that asserted thresholds rose with the rate were replaced, not deleted, so a
+threshold cannot creep back in unnoticed.
+
+One test came out with a note rather than being rewritten: with every threshold at zero
+there is no way to reach the provider's `freeOver > 0` branch through its public API, and a
+test that cannot distinguish the two outcomes passes whether the code works or not.
+
+### One catalogue price
+
+`backend/src/scripts/set-catalog-price.ts`. **28,998 prices to $64.99** — 28,221 that were
+$65.99 and 777 custom jerseys that were $89.99. Dry by default.
+
+The reason it is a script with a join rather than `UPDATE price SET amount = 64.99` is that
+two sets of rows live in the same table and neither is a product:
+
+- **Shipping rates.** $4.99, $19.99, $24.99, $29.99 — reached through
+  `shipping_option_price_set`. Repricing shipping to the price of a shirt is obvious in
+  hindsight and invisible in a diff.
+- **The personalisation add-on.** A real product with real variants — a name at $14.99, a
+  number at $9.99, both at $19.99 — so it is *inside* the variant join and has to be
+  excluded by id.
+
+The run reports what it protected rather than leaving it to be inferred: 4 add-on prices and
+12 shipping rates untouched, verified in the database afterwards.
+
+**The custom line lost its premium.** It was $89.99 against a $64.99 base and is now the
+same price as a blank shirt while the printing is still included. Nothing in the
+customer-facing copy names a figure, so nothing reads as false — but the margin story is
+gone until the price is put back, which is one command.
+
+### The rate card was an hour stale
+
+Changing the rates did not change the page. `getZones()` cached for **3600 seconds**, and
+`backend/src/shipping-zones.ts` exists precisely so the storefront "can never show a rate or
+threshold that disagrees with what checkout actually charges" — the hour was a window
+underneath that sentence, and it was observed rather than theorised. The card is five rows
+and changes about twice a year, so the hour bought nothing measurable and cost the guarantee
+the module is named for. Now 60 seconds.

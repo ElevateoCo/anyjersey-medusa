@@ -226,7 +226,18 @@ export type ZoneCard = {
  * on the side of the boundary anything can import.
  */
 export const getZones = () =>
-  get<{ zones: ZoneCard[] }>('/store/shipping-zones', 3600)
+  /**
+   * 60 seconds, not an hour.
+   *
+   * `backend/src/shipping-zones.ts` exists so the storefront "can never show a rate or
+   * threshold that disagrees with what checkout actually charges" — and a one-hour cache
+   * put a one-hour window under that sentence. Observed, not theorised: the rate card was
+   * changed and this page kept publishing the old thresholds until the entry expired.
+   *
+   * The card is five rows and changes about twice a year, so the hour was buying nothing
+   * measurable and costing the guarantee the module is named for.
+   */
+  get<{ zones: ZoneCard[] }>('/store/shipping-zones', 60)
     .then((r) => r.zones)
     .catch(() => [] as ZoneCard[])
 

@@ -1,10 +1,9 @@
-import { ZONES, zoneForRegionName } from '../shipping-zones'
+import { ZONES, anyFreeShipping, zoneForRegionName } from '../shipping-zones'
 
 describe('shipping zone rate card', () => {
   it('covers the US at $4.99', () => {
     const us = zoneForRegionName('United States')!
     expect(us.rate).toBe(4.99)
-    expect(us.freeOver).toBe(75)
   })
 
   it('never flat-rates international at the domestic price', () => {
@@ -14,17 +13,29 @@ describe('shipping zone rate card', () => {
     }
   })
 
-  it('raises the free-shipping threshold with the rate', () => {
-    // A $75 threshold makes sense at $5 shipping and gives away the order at $25.
-    const sorted = [...ZONES].sort((a, b) => a.rate - b.rate)
-    for (let i = 1; i < sorted.length; i++) {
-      expect(sorted[i].freeOver).toBeGreaterThanOrEqual(sorted[i - 1].freeOver)
-    }
+  /**
+   * Shipping is charged on every order, in every zone.
+   *
+   * The two tests that stood here checked that thresholds rose with the rate and stayed
+   * well above it — the right assertions for a rate card that offers free shipping, and
+   * meaningless for one that does not. They are replaced rather than deleted so the file
+   * still says something about `freeOver` and a threshold cannot creep back in unnoticed.
+   */
+  it('charges shipping on every order, in every zone', () => {
+    for (const z of ZONES) expect(z.freeOver).toBe(0)
+    expect(anyFreeShipping).toBe(false)
   })
 
-  it('keeps every threshold well above the rate it offsets', () => {
+  /**
+   * The guard the rest of the application relies on. `0` has to mean "no threshold"
+   * everywhere — the cart's progress bar, the buybox line, the checkout summary and the
+   * provider's own quote all test `freeOver > 0`. A negative or fractional value would
+   * satisfy none of them consistently.
+   */
+  it('expresses "no threshold" as exactly zero', () => {
     for (const z of ZONES) {
-      expect(z.freeOver).toBeGreaterThan(z.rate * 3)
+      expect(Number.isInteger(z.freeOver)).toBe(true)
+      expect(z.freeOver).toBeGreaterThanOrEqual(0)
     }
   })
 

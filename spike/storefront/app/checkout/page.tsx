@@ -119,7 +119,12 @@ export default async function Checkout({ searchParams }:
                 {options[0]
                   ? `${options[0].name} — ${money(options[0].amount)}`
                   : zone
-                    ? `${money(zone.rate)} to ${zone.name}, free over ${money(zone.freeOver)}`
+                    // `freeOver` is 0 on every zone — shipping is charged on every
+                    // order — so the clause is omitted rather than printing "free over
+                    // $0.00", which reads as a broken promise rather than as no promise.
+                    ? `${money(zone.rate)} to ${zone.name}${
+                        zone.freeOver > 0 ? `, free over ${money(zone.freeOver)}` : ''
+                      }`
                     : 'calculated next'}
                 .{' '}
                 {region
