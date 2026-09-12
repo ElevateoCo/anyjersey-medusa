@@ -92,6 +92,15 @@ const csp = [
   // Images come from our own API (bytes live in Postgres), plus data: for inline SVG and
   // blob: for the personalisation preview. Link serves its own assets.
   `img-src 'self' data: blob: ${API_ORIGIN} ${LINK.img.join(' ')}`,
+  /**
+   * Video and audio. There was no `media-src` at all, so media fell through to
+   * `default-src 'self'` — which happens to allow a file in `public/` and silently blocks
+   * one served from the API or a CDN. A blocked `<video>` produces no error a customer can
+   * see; it simply never plays, which is the same failure mode `DEFERRED.md` §1 records for
+   * the wallet buttons. Stated explicitly, and it includes the API because product media
+   * already lives behind it.
+   */
+  `media-src 'self' blob: ${API_ORIGIN}`,
   `connect-src 'self' ${API_ORIGIN} ${[...STRIPE.connect, ...LINK.connect].join(' ')}${POSTHOG_HOST ? ` ${POSTHOG_HOST}` : ''}`,
   // Stripe Elements, the wallet sheets and Link render in iframes; nothing else may.
   `frame-src ${[...STRIPE.frame, ...LINK.frame].join(' ')}`,

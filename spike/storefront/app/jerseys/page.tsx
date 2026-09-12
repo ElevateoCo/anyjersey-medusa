@@ -1,8 +1,9 @@
 import { getFacets, listJerseys } from '@/lib/medusa'
+import { display } from '@/lib/labels'
 import { abs } from '@/lib/site'
 import ProductCard from '@/components/ProductCard'
 import RequestBlock from '@/components/RequestBlock'
-import { buildQuery as qs } from '@/lib/query'
+import { buildQuery as qs, toggleQuery, valuesFor } from '@/lib/query'
 import SearchBox from '@/components/SearchBox'
 import SortSelect from '@/components/SortSelect'
 import FilterDrawer from '@/components/FilterDrawer'
@@ -10,7 +11,35 @@ import { Suspense } from 'react'
 
 export const revalidate = 120
 
-const FACET_KEYS = ['league', 'team', 'colourway', 'garment', 'season'] as const
+/**
+ * `sport` joined this list when the category bar became sport-first. It is the axis five of
+ * the twelve nav slots filter on ("Football", "Soccer", …), and while it was missing here
+ * every one of those links quietly rendered the entire catalogue: the parameter was in the
+ * URL, nothing read it, and the page looked like it had worked.
+ *
+ * `player` is handled but stays out of this list. It is a real filter — the Shop by Athlete
+ * panel links to it — but with ~3,000 values it is not a facet a sidebar can list, and
+ * counting it as an applied facet would make every athlete page `noindex`.
+ */
+const FACET_KEYS = ['league', 'team', 'sport', 'colourway', 'garment', 'season'] as const
+
+
+
+/**
+ * What to call a garment filter.
+ *
+ * The two garment slots on the category bar each carry two values, and neither pair has a
+ * name the data can supply: `shorts,set` is "Shorts & kits" to a shopper and
+ * `jersey,longsleeve-jersey` is just "Jerseys". Without this the two most prominent
+ * product-type links in the header both landed on a page headed "All jerseys".
+ */
+function garmentHeading(values: string[]): string | undefined {
+  if (!values.length) return undefined
+  const key = [...values].sort().join(',')
+  if (key === 'set,shorts') return 'Shorts & kits'
+  if (key === 'jersey,longsleeve-jersey') return 'Jerseys'
+  return values.map((v) => display(v.replace(/-/g, ' '))).join(' & ')
+}
 type Search = Record<string, string | string[] | undefined>
 
 /**
@@ -32,13 +61,21 @@ type Search = Record<string, string | string[] | undefined>
 export async function generateMetadata({ searchParams }: { searchParams: Promise<Search> }) {
   const sp = await searchParams
   const one = (k: string) => (typeof sp[k] === 'string' ? (sp[k] as string) : undefined)
+  const many = (k: string) => (Array.isArray(sp[k]) ? (sp[k] as string[]) : [])
 
   const applied = FACET_KEYS.map((k) => [k, one(k)] as const).filter(([, v]) => !!v)
   const q = one('q')
   const paged = Number(one('offset') ?? 0) > 0
   const custom = one('custom') === 'true'
+  // A facet carrying two values — `?garment=shorts&garment=set`, the "Shorts & Kits" slot
+  // — is a filter view, not a page. It gets the same `noindex, follow` as a two-facet
+  // view, and for the same reason: there is no single canonical URL it is the canonical
+  // form of. Without this branch it read as *zero* applied facets and claimed to be the
+  // indexable "All jerseys" page, competing with the real one.
+  const multi = [...FACET_KEYS, 'player'].some((k) => many(k).length > 1)
+  const player = one('player')
 
-  const indexable = applied.length <= 1 && !q && !paged
+  const indexable = applied.length <= 1 && !q && !paged && !multi && !player
 
   // The custom line is a page worth ranking in its own right — it is a different product at
   // a different price, not a filter of the main catalog — so it gets its own copy rather
@@ -58,13 +95,15 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     }
   }
 
-  const title = q
-    ? `Search: ${q}`
-    : applied.length === 0
-      ? 'All jerseys'
-      : applied.length === 1
-        ? `${applied[0][1]} jerseys`
-        : `${applied.map(([, v]) => v).join(' · ')} jerseys`
+  const title =
+    q ? `Search: ${q}`
+    : player ? `${player} jerseys`
+    : multi ? (garmentHeading(many('garment')) ?? 'Jerseys')
+    : applied.length === 0 ? 'All jerseys'
+    : applied.length === 1 && applied[0][0] === 'garment'
+      ? garmentHeading([applied[0][1]!])!
+    : applied.length === 1 ? `${display(applied[0][1]!)} jerseys`
+    : `${applied.map(([, v]) => display(v!)).join(' · ')} jerseys`
 
   const description = q
     ? `Jerseys matching “${q}”. Can't find it? Ask us to source it.`
@@ -93,22 +132,40 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 export default async function PLP({ searchParams }: { searchParams: Promise<Search> }) {
   const sp = await searchParams
   const get = (k: string) => (typeof sp[k] === 'string' ? (sp[k] as string) : undefined)
+  /**
+   * A filter the URL repeats — `?garment=shorts&garment=set` — arrives as an array, and
+   * `get` returns undefined for it. `all` is what the API call uses, so a one-value filter
+   * still goes out as a string and a two-value one goes out as both.
+   */
+  const all = (k: string): string | string[] | undefined => {
+    const v = sp[k]
+    if (Array.isArray(v)) return v.length > 1 ? v : v[0]
+    return typeof v === 'string' ? v : undefined
+  }
   const limit = 24
   const offset = Number(get('offset') ?? 0) || 0
 
   const [facets, res] = await Promise.all([
     getFacets(),
     listJerseys({
-      league: get('league'), team: get('team'), colourway: get('colourway'),
-      garment: get('garment'), season: get('season'), q: get('q'),
+      league: all('league'), team: all('team'), colourway: all('colourway'),
+      garment: all('garment'), season: all('season'), q: get('q'),
+      sport: all('sport'), player: all('player'),
       custom: get('custom'),
       sort: get('sort'), limit, offset,
     }),
   ])
 
   const isCustom = get('custom') === 'true'
-  const active = FACET_KEYS.map((k) => [k, get(k)] as const).filter(([, v]) => v)
+  // One chip per value, so a two-value filter can have either half removed.
+  const active: { key: string; value: string }[] = [...FACET_KEYS, 'player']
+    .flatMap((k) => {
+      const v = sp[k]
+      const values = Array.isArray(v) ? v : typeof v === 'string' ? [v] : []
+      return values.filter(Boolean).map((value) => ({ key: k, value }))
+    })
   const groups: { key: string; title: string; items: { value: string; count: number }[] }[] = [
+    { key: 'sport', title: 'Sport', items: facets.sports },
     { key: 'league', title: 'League', items: facets.leagues },
     { key: 'team', title: 'Team', items: facets.teams.slice(0, 60) },
     { key: 'colourway', title: 'Colour', items: facets.colourways },
@@ -147,14 +204,17 @@ export default async function PLP({ searchParams }: { searchParams: Promise<Sear
               <h3>{g.title}</h3>
               <ul>
                 {g.items.map((it) => {
-                  const on = get(g.key) === it.value
+                  const on = valuesFor(sp, g.key).includes(it.value)
                   return (
                     <li key={it.value}>
+                      {/* Multi-select. `buildQuery` would replace the key and drop whatever
+                          was already chosen — picking a second team should narrow to two
+                          teams, not swap one for the other. */}
                       <a className={on ? 'on' : undefined}
                          aria-current={on ? 'true' : undefined}
                          aria-label={on ? `Remove ${g.title} filter ${it.value}`
                                         : `Filter by ${g.title} ${it.value}, ${it.count} items`}
-                         href={qs(sp, { [g.key]: on ? undefined : it.value })}>
+                         href={toggleQuery(sp, g.key, it.value)}>
                         <span>{it.value}</span><span className="n">{it.count}</span>
                       </a>
                     </li>
@@ -166,10 +226,21 @@ export default async function PLP({ searchParams }: { searchParams: Promise<Sear
         </nav>
 
         <div>
+          {/* The heading names whichever axis the shopper actually arrived on. `sport`
+              and `player` are here because the category bar and the Shop by Athlete panel
+              link to them — without them a Football listing was headed "All jerseys". */}
           <h1>
-            {isCustom && !get('team') && !get('league')
+            {isCustom && !get('team') && !get('league') && !get('sport')
               ? 'Custom jerseys'
-              : get('team') ?? get('league') ?? (get('q') ? `“${get('q')}”` : 'All jerseys')}
+              : get('player')
+                ?? get('team')
+                ?? get('league')
+                ?? (get('sport') ? display(get('sport')!) : undefined)
+                ?? garmentHeading(
+                     Array.isArray(sp.garment) ? sp.garment
+                       : typeof sp.garment === 'string' ? [sp.garment] : []
+                   )
+                ?? (get('q') ? `“${get('q')}”` : 'All jerseys')}
           </h1>
 
           {/* What the customer is actually buying, stated once at the top. Without it a
@@ -195,12 +266,12 @@ export default async function PLP({ searchParams }: { searchParams: Promise<Sear
                     <h3>{g.title}</h3>
                     <ul>
                       {g.items.map((it) => {
-                        const on = get(g.key) === it.value
+                        const on = valuesFor(sp, g.key).includes(it.value)
                         return (
                           <li key={it.value}>
                             <a className={on ? 'on' : undefined}
                                aria-current={on ? 'true' : undefined}
-                               href={qs(sp, { [g.key]: on ? undefined : it.value })}>
+                               href={toggleQuery(sp, g.key, it.value)}>
                               <span>{it.value}</span><span className="n">{it.count}</span>
                             </a>
                           </li>
@@ -220,9 +291,12 @@ export default async function PLP({ searchParams }: { searchParams: Promise<Sear
 
           {active.length > 0 && (
             <div className="chips" style={{ marginTop: '1rem' }}>
-              {active.map(([k, v]) => (
-                <span key={k} className="chip">
-                  {k}: {v} <a href={qs(sp, { [k]: undefined })} aria-label={`Remove ${k} filter`}>×</a>
+              {active.map(({ key, value }) => (
+                <span key={`${key}-${value}`} className="chip">
+                  {key}: {value}{' '}
+                  {/* Removes this value only — the other values of the same filter stay. */}
+                  <a href={toggleQuery(sp, key, value)}
+                     aria-label={`Remove ${key} filter ${value}`}>×</a>
                 </span>
               ))}
               <a className="chip" href="/jerseys">Clear all</a>

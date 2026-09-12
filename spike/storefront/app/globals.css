@@ -20,6 +20,23 @@
   --field:#8C8C89;
   --sans:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
   --display:'Oswald','Arial Narrow',Impact,sans-serif;
+
+  /* ---- surface system ----
+     The flat, hard-edged treatment was right for a spike and reads as unfinished beside
+     nflshop.com. Radius, elevation and motion do the modernising. The brand pair (ink +
+     yellow), the type pairing and every measured contrast ratio above are untouched —
+     none of the tokens below carry text colour. */
+  --wash-2:#FBFBFA;
+  --radius-xs:6px;
+  --radius-sm:10px;
+  --radius:14px;
+  --radius-lg:22px;
+  --pill:999px;
+  --shadow-xs:0 1px 2px rgba(18,18,18,.05);
+  --shadow-sm:0 1px 3px rgba(18,18,18,.07),0 1px 2px rgba(18,18,18,.04);
+  --shadow-md:0 8px 20px -8px rgba(18,18,18,.16),0 2px 6px -2px rgba(18,18,18,.07);
+  --shadow-lg:0 20px 44px -18px rgba(18,18,18,.26);
+  --ease:cubic-bezier(.2,.7,.3,1);
 }
 
 *{box-sizing:border-box}
@@ -35,7 +52,7 @@ button{font:inherit; cursor:pointer}
 :focus-visible{outline:3px solid var(--teal); outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
-.wrap{max-width:1280px; margin:0 auto; padding:0 clamp(1rem,3vw,2rem)}
+.wrap{max-width:1320px; margin:0 auto; padding:0 clamp(1rem,3vw,2.25rem)}
 
 /* ---------------- display type ---------------- */
 h1,h2,h3,.display{
@@ -50,59 +67,263 @@ h3{font-size:1.05rem; letter-spacing:.04em}
   font-size:.75rem; color:var(--ink-3); font-weight:500;
 }
 
-/* ---------------- announcement + header ---------------- */
-.announce{
-  background:var(--ink); color:#fff; text-align:center;
-  font-size:.82rem; padding:.6rem 1rem;
-}
-.announce a{border-bottom:1px solid var(--yellow); padding-bottom:1px}
-.announce strong{color:var(--yellow); font-weight:600}
+/* ---------------- header stack ----------------
+   Four bands, in the order nflshop.com stacks them and for the same reasons: the secondary
+   links get out of the way of the shopping task, search takes the centre of the masthead,
+   the categories get a bar of their own, and the whole thing reads top-to-bottom as
+   promise → find → browse.
 
-header.site{border-bottom:1px solid var(--rule); background:var(--paper);
-  position:sticky; top:0; z-index:40}
-.hrow{display:flex; align-items:center; gap:1.5rem; height:66px}
-.logo{font-family:var(--display); font-weight:700; font-size:1.35rem;
-  text-transform:uppercase; letter-spacing:.02em; white-space:nowrap}
-.logo em{font-style:normal; background:var(--yellow); padding:0 .25rem}
-/* Nine items since the custom line was added, which wrapped "Bag" onto a second row at
-   1280px. Clamped rather than fixed so the gap tightens before anything wraps. */
-nav.main{display:flex; gap:clamp(.75rem,1.1vw,1.35rem); margin-left:auto; flex-wrap:wrap;
-  align-items:center}
-nav.main a{
-  font-family:var(--display); text-transform:uppercase; font-size:.85rem;
-  letter-spacing:.06em; font-weight:500; padding:.35rem 0;
-  border-bottom:2px solid transparent;
-}
-nav.main a:hover{border-bottom-color:var(--yellow)}
-@media (max-width:720px){.hrow{height:auto; padding:.8rem 0; flex-wrap:wrap; gap:.75rem}
-  nav.main{margin-left:0; width:100%; gap:1rem}}
+     A  utility    dark. the sourcing promise left, secondary links right. scrolls away
+     B  masthead   logo · search · account + bag   ┐ sticky together, so search and
+     C  catnav     categories, with mega-panels    ┘ categories stay reachable
 
-/* ---------------- hero ---------------- */
-.hero{
-  background:var(--ink); color:#fff;
-  padding:clamp(3rem,8vw,6rem) 0;
+   Two dark bands around a white masthead is the reference's own sandwich. It is what makes
+   the search field read as the centre of the page rather than as one more control.
+*/
+
+/* The height of the sticky part of the header, as a number everything else can read.
+   `.facets` used to be `top:80px` hard-coded against a 66px header — already wrong, and
+   about to be wrong twice more now that the header has a desktop and a phone shape. The
+   sticky rail, the skip link and the drawer offsets all read this instead. */
+:root{ --headerh:124px }
+@media (max-width:900px){ :root{ --headerh:56px } }
+
+.utility{background:var(--ink); color:#C9C9C4; font-size:.78rem}
+.utility .wrap{
+  display:flex; align-items:center; justify-content:space-between; gap:1.5rem;
+  min-height:38px; flex-wrap:wrap;
 }
-.hero h1{font-size:clamp(2.6rem,8vw,5.5rem); letter-spacing:-.005em}
-.hero h1 em{font-style:normal; color:var(--yellow)}
-.hero p{color:#D6D6D2; font-size:clamp(1rem,2vw,1.2rem); margin:.9rem 0 1.8rem; max-width:46ch}
+/* The proposition, in the slot the reference spends on a discount code. Sourcing a shirt
+   nobody else stocks is the thing no competitor's layout has a slot for. */
+.utility .upromise{margin:0; color:#C9C9C4}
+.utility .upromise a{
+  color:#fff; font-weight:600; border-bottom:2px solid var(--yellow); padding-bottom:1px;
+}
+.utility .upromise a:hover{background:var(--yellow); color:var(--ink); border-color:var(--yellow)}
+.ulinks{display:flex; align-items:center; gap:1.4rem}
+.ulinks a{color:#C9C9C4}
+.ulinks a:hover{color:#fff; text-decoration:underline}
+/* Below 720px band A is gone and every one of its links lives in the drawer instead. */
+@media (max-width:720px){.utility{display:none}}
+
+header.site{background:var(--paper); position:sticky; top:0; z-index:40;
+  box-shadow:var(--shadow-sm)}
+.hrow{display:flex; align-items:center; gap:clamp(.75rem,2.5vw,2rem); height:76px}
+.logo{font-family:var(--display); font-weight:700; font-size:1.4rem;
+  text-transform:uppercase; letter-spacing:.02em; white-space:nowrap; flex:none}
+.logo em{font-style:normal; background:var(--yellow); padding:0 .3rem;
+  border-radius:var(--radius-xs)}
+
+/* Band B's middle. 640px and centred, because for a 4,300-product catalogue across six
+   sports search *is* the primary navigation, and a 280px box in the corner said otherwise.
+   It is also the only control in the header that finds a fighter with no team. */
+.hsearch{flex:1 1 auto; max-width:640px; margin:0 auto; min-width:0}
+.hsearch .searchwrap{max-width:none}
+@media (max-width:900px){.hsearch{display:none}}
+
+/* Account and bag, as controls rather than as two more words in a link list. */
+.hactions{display:flex; align-items:center; gap:.35rem; margin-left:auto; flex:none}
+.haction{
+  display:inline-flex; align-items:center; gap:.45rem; padding:.55rem .8rem;
+  border-radius:var(--pill); font-size:.85rem; font-weight:500; color:var(--ink);
+  transition:background .18s var(--ease);
+}
+.haction:hover{background:var(--wash)}
+.haction svg{flex:none}
+@media (max-width:900px){.haction .lbl{display:none}}
+
+/* The phone header's two controls. 44px square — §6 item 6: `nav.main a` was 26px tall,
+   and a 26px tap target on the only route into the catalogue is not a target. */
+.hamburger,.searchbtn{
+  display:none; align-items:center; justify-content:center;
+  width:44px; height:44px; padding:0; flex:none;
+  background:none; border:0; border-radius:var(--pill); color:var(--ink);
+}
+.hamburger:hover,.searchbtn:hover{background:var(--wash)}
+@media (max-width:900px){
+  .hamburger,.searchbtn{display:inline-flex}
+  .hrow{height:56px; gap:.4rem}
+  .logo{font-size:1.15rem; margin:0 auto 0 .1rem}
+}
+
+/* ---------------- band C — the category bar ----------------
+   Twelve slots and an overflow, built from `lib/nav.ts` off the catalogue rather than
+   typed out. Counts live in the panels: "Hockey 16" on a dark nav bar reads as an apology.
+*/
+.catnav{background:var(--ink); position:relative}
+/* Thirteen items — twelve slots and the overflow — have to fit one row at the container's
+   full 1320px, and the labels are longer than the reference's because ours name an axis
+   ("Shop by Athlete") where theirs name a sport. They fit at this spacing with room to
+   spare; below 1100px the row wraps rather than clipping, and below 900px it is the drawer
+   instead. Wrapping is the failure `layout-plan.md` §4 records against the old header, so
+   it is worth stating what stops it: the gap, not the item count. */
+.catlist{
+  display:flex; align-items:stretch; gap:clamp(.35rem,1vw,1.05rem);
+  list-style:none; margin:0; padding:0; min-height:48px; flex-wrap:wrap;
+}
+.navitem{display:flex; align-items:stretch}
+.navitem > a{
+  display:inline-flex; align-items:center; gap:.3rem; white-space:nowrap;
+  font-family:var(--display); text-transform:uppercase; font-size:.82rem;
+  letter-spacing:.04em; font-weight:500; color:#fff; padding:.85rem 0 .7rem;
+  border-bottom:3px solid transparent;
+  transition:border-color .18s var(--ease), color .18s var(--ease);
+}
+.navitem > a:hover,.navitem.open > a{border-bottom-color:var(--yellow); color:var(--yellow)}
+.navcaret{opacity:.6; transition:transform .18s var(--ease)}
+.navitem.open .navcaret{transform:rotate(180deg)}
+/* One item may carry the flag. Two and neither of them is the emphasis. */
+.navflag{
+  font-family:var(--sans); font-size:.55rem; letter-spacing:.08em; font-weight:700;
+  text-transform:uppercase; background:var(--yellow); color:var(--ink);
+  padding:.08rem .3rem; border-radius:var(--radius-xs); vertical-align:.35em;
+}
+
+/* The mega-panel. Full-bleed white under the dark bar, with the columns held to the same
+   measure as the rest of the page. Its contents are server-rendered — `NavItem` owns the
+   boolean and nothing else. */
+.megapanel{
+  position:absolute; left:0; right:0; top:100%; z-index:50;
+  background:var(--paper); border-bottom:1px solid var(--rule);
+  box-shadow:var(--shadow-lg);
+}
+.megapanel[hidden]{display:none}
+.megainner{
+  display:grid; gap:1.25rem 2rem; padding:1.75rem 0 1.9rem;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  max-height:min(70vh,520px); overflow-y:auto;
+}
+.megacol > ul{list-style:none; margin:0; padding:0}
+.megahead{
+  font-family:var(--display); text-transform:uppercase; font-size:.8rem;
+  letter-spacing:.09em; color:var(--ink-3); margin:0 0 .6rem;
+  padding-bottom:.45rem; border-bottom:1px solid var(--rule);
+}
+.megahead a:hover{color:var(--ink); text-decoration:underline}
+.megacol li a{
+  display:flex; align-items:baseline; gap:.6rem; padding:.34rem 0;
+  font-size:.88rem; color:var(--ink);
+}
+.megacol li a:hover{color:var(--teal); text-decoration:underline}
+.megacol li .n{
+  margin-left:auto; font-size:.74rem; color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
+}
+.megafoot{grid-column:1/-1; margin:.25rem 0 0}
+.megafoot a{
+  font-family:var(--display); text-transform:uppercase; font-size:.82rem;
+  letter-spacing:.06em; border-bottom:2px solid var(--yellow); padding-bottom:2px;
+}
+/* The bar is replaced by the drawer on a phone. Keeping a horizontally scrolling strip of
+   twelve items *and* a drawer would be two navigations disagreeing about what is in the
+   shop. */
+@media (max-width:900px){.catnav{display:none}}
+
+/* ---------------- the menu drawer ----------------
+   `.drawer` / `.drawer-scrim` are shared with FilterDrawer and CartDrawer — three
+   slide-overs, one interaction vocabulary. The accordion inside is native `<details>`,
+   so it opens with no JavaScript and the keyboard behaviour is the browser's. */
+.menu-drawer{left:0; right:auto}
+.drawernav,.drawerlinks{list-style:none; margin:0; padding:0}
+.drawernav > li{border-bottom:1px solid var(--rule-2)}
+.drawernav summary,.drawertop{
+  display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+  /* 44px minimum, §6 item 6. */
+  min-height:44px; padding:.6rem .1rem; cursor:pointer;
+  font-family:var(--display); text-transform:uppercase; font-size:.95rem;
+  letter-spacing:.04em;
+}
+.drawernav summary::-webkit-details-marker{display:none}
+.drawernav summary svg{transition:transform .18s var(--ease); flex:none}
+.drawernav details[open] summary svg{transform:rotate(180deg)}
+.drawersub{padding:.2rem 0 .9rem}
+.drawersub h3{
+  font-family:var(--display); text-transform:uppercase; font-size:.76rem;
+  letter-spacing:.09em; color:var(--ink-3); margin:.8rem 0 .3rem;
+}
+.drawersub ul{list-style:none; margin:0; padding:0}
+.drawersub li a{
+  display:flex; align-items:center; gap:.6rem; min-height:44px; padding:.2rem .6rem;
+  font-size:.92rem;
+}
+.drawersub li .n{margin-left:auto; font-size:.76rem; color:var(--ink-3)}
+.drawerall a{
+  font-family:var(--display); text-transform:uppercase; font-size:.8rem;
+  letter-spacing:.06em; border-bottom:2px solid var(--yellow); padding-bottom:2px;
+}
+.drawerlinks{margin-top:1.25rem; border-top:1px solid var(--rule); padding-top:.5rem}
+.drawerlinks li a{display:flex; align-items:center; min-height:44px; font-size:.92rem}
+
+/* ---------------- the search sheet ----------------
+   §6 item 3. A 280px field with a dropdown under an open phone keyboard renders its first
+   suggestion beneath the shift key. On tap, search takes the whole screen instead. */
+.searchsheet{
+  position:fixed; inset:0; z-index:80; background:var(--paper);
+  padding:1rem clamp(1rem,4vw,1.5rem);
+}
+.searchsheet-head{display:flex; align-items:flex-start; gap:.75rem}
+.searchsheet-head .searchwrap{flex:1; max-width:none}
+.searchsheet-head > button{
+  background:none; border:0; padding:.7rem .25rem; font-size:.9rem; color:var(--ink-2);
+  min-height:44px; white-space:nowrap;
+}
+
+/* ---------------- band D — the who-rail ----------------
+   The reference's circular club crests, without the crests: §7 rules those out, so the
+   disc carries the team's colours with its initials over them. The colours are set inline
+   from `lib/team-colors.ts` because they are per-team data, not design tokens — and the
+   ink over them is computed there for the same reason.
+*/
+.railband{background:var(--wash-2)}
+ul.rail{
+  display:flex; gap:clamp(.75rem,1.6vw,1.5rem); list-style:none; margin:0;
+  padding:.25rem .25rem 1rem; overflow-x:auto;
+  scroll-snap-type:x proximity; scrollbar-width:thin;
+}
+ul.rail::-webkit-scrollbar{height:6px}
+ul.rail::-webkit-scrollbar-thumb{background:var(--rule); border-radius:var(--pill)}
+ul.rail > li{flex:none; scroll-snap-align:start}
+.railtile{display:block; width:106px; text-align:center}
+.raildisc{
+  display:grid; place-items:center; width:78px; height:78px; margin:0 auto .55rem;
+  border-radius:50%; font-family:var(--display); font-size:1.55rem; font-weight:600;
+  letter-spacing:.02em;
+  transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+}
+.railtile:hover .raildisc{transform:translateY(-3px)}
+/* Two lines, clamped. "Tampa Bay Buccaneers" wraps to three and "Chicago Bears" to one,
+   which left the counts on a ragged baseline across the rail. */
+.raillabel{
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; min-height:2.5em; font-size:.79rem; line-height:1.25; color:var(--ink);
+}
+.railn{display:block; font-size:.72rem; color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
 
 .btn{
-  display:inline-block; background:var(--yellow); color:var(--ink);
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  background:var(--yellow); color:var(--ink);
   font-family:var(--display); text-transform:uppercase; font-weight:600;
-  letter-spacing:.06em; padding:.9rem 1.6rem; font-size:.95rem;
-  border:2px solid var(--yellow);
+  letter-spacing:.06em; padding:.9rem 1.7rem; font-size:.95rem;
+  border:2px solid var(--yellow); border-radius:var(--pill);
+  transition:transform .18s var(--ease), box-shadow .18s var(--ease),
+    background .18s var(--ease), color .18s var(--ease);
 }
-.btn:hover{background:transparent; color:var(--yellow)}
-.btn.ghost{background:transparent; color:#fff; border-color:#fff}
-.btn.ghost:hover{background:#fff; color:var(--ink)}
-.btn.block{display:block; width:100%; text-align:center}
-.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn:hover{transform:translateY(-2px); box-shadow:var(--shadow-md)}
+.btn.ghost{background:transparent; color:#fff; border-color:rgba(255,255,255,.55)}
+.btn.ghost:hover{background:#fff; color:var(--ink); border-color:#fff}
+.btn.block{display:flex; width:100%; text-align:center}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none; box-shadow:none}
 
 /* ---------------- trust row ---------------- */
-.trust{border-bottom:1px solid var(--rule); background:var(--wash)}
+.trust{border-bottom:1px solid var(--rule-2); background:var(--paper)}
 .trust ul{
-  list-style:none; margin:0; padding:1.4rem 0; display:grid; gap:1.2rem;
-  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  list-style:none; margin:0; padding:1.5rem 0; display:grid; gap:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+}
+.trust li{
+  background:var(--wash-2); border:1px solid var(--rule-2);
+  border-radius:var(--radius-sm); padding:.9rem 1.1rem;
 }
 .trust li strong{
   display:block; font-family:var(--display); text-transform:uppercase;
@@ -117,17 +338,59 @@ section.band{padding:clamp(2.5rem,5vw,4rem) 0; border-bottom:1px solid var(--rul
 
 /* ---------------- product grid ---------------- */
 .grid{display:grid; gap:1.5rem 1.25rem;
-  grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
-.card figure{margin:0; background:var(--wash); aspect-ratio:1/1; overflow:hidden}
-.card figure img{width:100%; height:100%; object-fit:cover; transition:transform .35s ease}
-.card:hover figure img{transform:scale(1.035)}
-.card .meta{padding:.7rem 0}
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+
+/* The homepage rails ask for exactly six products, so the column count has to divide six
+   or the last row is an orphan — `auto-fill` resolved to five at 1440px and left a single
+   card sitting alone under a row of five. Six, three, two: every one of them divides. The
+   listing grid keeps `auto-fill`, because there the row length is whatever the page has. */
+.grid.six{grid-template-columns:repeat(6,minmax(0,1fr))}
+@media (max-width:1240px){.grid.six{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* On a phone these rails **scroll sideways** rather than stacking.
+   Measured, not assumed: with eight six-product grids stacked two-up, the homepage came
+   to 13,595 CSS pixels at 390px wide — about sixteen screens of product grid between the
+   mosaic and the reviews, and the shorts rail at the bottom of it was unreachable in
+   practice. Swiping a rail is also what the reference does here, and what the team rail
+   directly above already does, so it is one gesture on the page rather than two.
+   The cards keep a peek of the next one, which is what tells a thumb there is more. */
+@media (max-width:700px){
+  .grid.six{
+    display:flex; grid-template-columns:none; gap:.8rem;
+    overflow-x:auto; scroll-snap-type:x proximity;
+    padding-bottom:.5rem; scrollbar-width:thin;
+    /* Bleed to the edges so the rail reads as continuing off-screen, while the first card
+       still lines up with the heading above it. */
+    margin-inline:calc(clamp(1rem,3vw,2.25rem) * -1);
+    padding-inline:clamp(1rem,3vw,2.25rem);
+  }
+  .grid.six::-webkit-scrollbar{height:6px}
+  .grid.six::-webkit-scrollbar-thumb{background:var(--rule); border-radius:var(--pill)}
+  .grid.six > *{flex:none; width:min(46vw,190px); scroll-snap-align:start}
+}
+
+/* A card, rather than an image with text under it. The border and the lift on hover are
+   what make a grid of 4,000 photographs read as a catalogue of buyable things. */
+.card{
+  display:flex; flex-direction:column; background:var(--surface,#fff);
+  border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden;
+  transition:transform .22s var(--ease), box-shadow .22s var(--ease),
+    border-color .22s var(--ease);
+}
+.card:hover{transform:translateY(-4px); box-shadow:var(--shadow-md);
+  border-color:var(--rule)}
+.card figure{margin:0; background:var(--wash); aspect-ratio:1/1; overflow:hidden;
+  position:relative}
+.card figure img{width:100%; height:100%; object-fit:cover; transition:transform .4s var(--ease)}
+.card:hover figure img{transform:scale(1.045)}
+.card .meta{padding:.85rem .9rem 1rem; display:flex; flex-direction:column; flex:1}
 .card .t{
-  font-family:var(--display); text-transform:uppercase; font-size:.92rem;
+  font-family:var(--display); text-transform:uppercase; font-size:.95rem;
   line-height:1.2; letter-spacing:.01em; margin:0 0 .3rem;
 }
-.card .sub{font-size:.78rem; color:var(--ink-3); margin:0 0 .35rem}
-.card .p{font-weight:600; font-size:.9rem; font-variant-numeric:tabular-nums}
+.card .sub{font-size:.78rem; color:var(--ink-3); margin:0 0 .6rem}
+.card .p{font-weight:700; font-size:1rem; font-variant-numeric:tabular-nums;
+  margin-top:auto}
 .card .noimg{display:grid; place-items:center; height:100%; color:var(--ink-3);
   font-family:var(--display); font-size:.8rem; letter-spacing:.1em}
 
@@ -135,37 +398,52 @@ section.band{padding:clamp(2.5rem,5vw,4rem) 0; border-bottom:1px solid var(--rul
 .plp{display:grid; grid-template-columns:230px minmax(0,1fr); gap:clamp(1.5rem,3vw,3rem);
   align-items:start; padding:2rem 0}
 @media (max-width:860px){.plp{grid-template-columns:1fr}}
-.facets{position:sticky; top:80px}
+/* Against a header whose height changes twice, `top:80px` was a number that was already
+   wrong — the header it was written for was 66px tall. §6 item 7. */
+.facets{position:sticky; top:calc(var(--headerh) + 1rem)}
 .facets section{margin-bottom:1.6rem}
 .facets h3{margin-bottom:.6rem; color:var(--ink-2)}
 .facets ul{list-style:none; margin:0; padding:0; max-height:270px; overflow-y:auto}
 .facets li a{
-  display:flex; justify-content:space-between; gap:.5rem; padding:.28rem 0;
+  display:flex; justify-content:space-between; gap:.5rem;
+  padding:.35rem .55rem; margin:0 -.55rem; border-radius:var(--radius-xs);
   font-size:.85rem; color:var(--ink-2);
+  transition:background .15s var(--ease), color .15s var(--ease);
 }
-.facets li a:hover{color:var(--ink)}
-.facets li a.on{color:var(--ink); font-weight:600}
+.facets li a:hover{color:var(--ink); background:var(--wash)}
+.facets li a.on{color:var(--ink); font-weight:600; background:var(--wash)}
 .facets li a.on::before{content:'× '; color:var(--teal)}
 .facets .n{color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:.78rem}
 
 .chips{display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1.2rem}
 .chip{
   display:inline-flex; gap:.4rem; align-items:center; background:var(--wash);
-  border:1px solid var(--rule); padding:.3rem .6rem; font-size:.8rem;
+  border:1px solid var(--rule); padding:.45rem .9rem; font-size:.85rem;
+  border-radius:var(--pill);
+  transition:background .18s var(--ease), border-color .18s var(--ease),
+    transform .18s var(--ease);
 }
+a.chip:hover{background:var(--ink); color:#fff; border-color:var(--ink);
+  transform:translateY(-1px)}
+a.chip:hover .n{color:rgba(255,255,255,.7)}
+.chip .n{color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:.78rem}
 .chip a{color:var(--teal); font-weight:600}
 
 .pager{display:flex; gap:.75rem; align-items:center; margin-top:2rem;
   padding-top:1.5rem; border-top:1px solid var(--rule)}
-.pager a{border:1px solid var(--ink); padding:.5rem 1rem; font-size:.85rem;
-  font-family:var(--display); text-transform:uppercase; letter-spacing:.05em}
+.pager a{border:1px solid var(--rule); border-radius:var(--pill); padding:.55rem 1.1rem;
+  font-size:.85rem; font-family:var(--display); text-transform:uppercase;
+  letter-spacing:.05em; transition:background .18s var(--ease), color .18s var(--ease),
+  border-color .18s var(--ease)}
+.pager a:hover{background:var(--ink); color:#fff; border-color:var(--ink)}
 .pager span{color:var(--ink-3); font-size:.85rem; margin-left:auto}
 
 /* ---------------- PDP ---------------- */
 .pdp{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,460px);
   gap:clamp(1.5rem,4vw,3.5rem); padding:2rem 0}
 @media (max-width:900px){.pdp{grid-template-columns:1fr}}
-.gallery{background:var(--wash); position:relative}
+.gallery{background:var(--wash); position:relative; border-radius:var(--radius);
+  overflow:hidden}
 .gallery img{width:100%; aspect-ratio:1/1; object-fit:cover}
 .onlyone{
   position:absolute; bottom:0; left:0; right:0; background:rgba(18,18,18,.82);
@@ -179,10 +457,14 @@ section.band{padding:clamp(2.5rem,5vw,4rem) 0; border-bottom:1px solid var(--rul
   text-transform:none; letter-spacing:0; margin-left:.5rem}
 .sizes{display:flex; flex-wrap:wrap; gap:.5rem; margin:.75rem 0 1.25rem}
 .sizes button{
-  min-width:52px; padding:.6rem .55rem; background:#fff; border:1px solid var(--ink);
+  min-width:56px; padding:.65rem .6rem; background:#fff; border:1px solid var(--ink);
+  border-radius:var(--radius-sm);
   font-family:var(--display); text-transform:uppercase; letter-spacing:.04em;
   font-size:.85rem;
+  transition:background .15s var(--ease), color .15s var(--ease),
+    transform .15s var(--ease);
 }
+.sizes button:not(:disabled):hover{transform:translateY(-2px)}
 .sizes button[aria-pressed="true"]{background:var(--ink); color:#fff}
 /* Disabled sizes must still be legible — a struck-through label at 1.5:1 tells a
    sighted user nothing and a screen-reader user gets no reason either, hence the
@@ -192,7 +474,7 @@ section.band{padding:clamp(2.5rem,5vw,4rem) 0; border-bottom:1px solid var(--rul
   text-decoration:line-through; cursor:not-allowed;
 }
 .promise{border:1px solid var(--rule); background:var(--wash);
-  padding:.85rem 1rem; font-size:.85rem; margin:1rem 0 0}
+  border-radius:var(--radius-sm); padding:.95rem 1.1rem; font-size:.85rem; margin:1rem 0 0}
 .promise b{font-family:var(--display); text-transform:uppercase; letter-spacing:.04em;
   font-size:.8rem; display:block; margin-bottom:.2rem}
 .pdp .desc{margin:1.25rem 0; font-size:.95rem; color:var(--ink-2); max-width:62ch}
@@ -203,8 +485,8 @@ section.band{padding:clamp(2.5rem,5vw,4rem) 0; border-bottom:1px solid var(--rul
 
 /* things that are deliberately not built yet — visible, not hidden */
 .todo{
-  border:1px dashed var(--rule); background:#fff; padding:.9rem 1rem;
-  font-size:.83rem; color:var(--ink-2); margin:1rem 0;
+  border:1px dashed var(--rule); background:#fff; border-radius:var(--radius-sm);
+  padding:.95rem 1.1rem; font-size:.83rem; color:var(--ink-2); margin:1rem 0;
 }
 .todo b{font-family:var(--display); text-transform:uppercase; letter-spacing:.05em;
   font-size:.76rem; color:var(--teal); display:block; margin-bottom:.25rem}
@@ -297,7 +579,8 @@ footer.site .trader .pending abbr{border-bottom:1px dotted var(--field);
 .skip:focus{left:0}
 
 /* ---------------- cart ---------------- */
-.freeship{border:1px solid var(--rule); background:var(--wash); padding:.9rem 1rem; margin:1.5rem 0}
+.freeship{border:1px solid var(--rule); border-radius:var(--radius-sm);
+  background:var(--wash); padding:.95rem 1.1rem; margin:1.5rem 0}
 .freeship p{margin:0 0 .5rem; font-size:.88rem}
 .freeship .bar{height:6px; background:var(--rule); overflow:hidden}
 .freeship .bar span{display:block; height:100%; background:var(--teal); transition:width .3s ease}
@@ -338,12 +621,13 @@ table.cart .sub{font-size:.78rem; color:var(--ink-3)}
 .cform p{margin:0 0 .9rem}
 .cform .two{display:grid; grid-template-columns:1fr 1fr; gap:.9rem}
 .cform label{display:block; font-size:.78rem; color:var(--ink-2); margin-bottom:.25rem}
-.cform input,.cform select,.cform textarea{width:100%; padding:.7rem .8rem;
-  border:1px solid var(--field);
+.cform input,.cform select,.cform textarea{width:100%; padding:.75rem .9rem;
+  border:1px solid var(--field); border-radius:var(--radius-sm);
   font:inherit; font-size:.92rem; background:#fff}
 .cform input:focus,.cform select:focus,.cform textarea:focus{border-color:var(--ink)}
 .cform .note{font-size:.8rem; color:var(--ink-3)}
-.summary{border:1px solid var(--rule); padding:1.1rem; background:var(--wash)}
+.summary{border:1px solid var(--rule); border-radius:var(--radius); padding:1.2rem;
+  background:var(--wash)}
 .summary h2{font-size:1rem; margin-bottom:.75rem}
 .summary ul{list-style:none; margin:0 0 1rem; padding:0}
 .summary li{display:flex; justify-content:space-between; gap:.75rem; font-size:.84rem;
@@ -352,23 +636,30 @@ table.cart .sub{font-size:.78rem; color:var(--ink-3)}
 .note code{background:var(--wash); padding:.1em .3em; font-size:.9em}
 
 /* ---------------- search ---------------- */
-.search{display:flex; gap:0; max-width:520px; margin:0}
-.search input{
-  flex:1; min-width:0; padding:.85rem 1rem; border:2px solid var(--ink);
-  font:inherit; font-size:.95rem; background:#fff; color:var(--ink);
+/* One pill, not an input welded to a button. The 2px ink edge is kept — it is what
+   satisfies 1.4.11 on the control boundary — and the keyboard ring is drawn inset on the
+   input so it stays visible inside the rounded shell. */
+.search{
+  display:flex; align-items:center; max-width:560px; margin:0;
+  background:#fff; border:2px solid var(--ink); border-radius:var(--pill);
+  padding:.22rem .22rem .22rem .35rem;
+  transition:box-shadow .2s var(--ease);
 }
+.search:focus-within{box-shadow:0 0 0 4px rgba(16,132,116,.22)}
+.search input{
+  flex:1; min-width:0; padding:.68rem .85rem; border:0;
+  font:inherit; font-size:.95rem; background:transparent; color:var(--ink);
+}
+.search input:focus-visible{outline-offset:-3px}
 .search input::placeholder{color:var(--ink-3)}
 .search button{
-  padding:.85rem 1.3rem; border:2px solid var(--ink); border-left:0;
+  padding:.62rem 1.35rem; border:0; border-radius:var(--pill);
   background:var(--yellow); color:var(--ink);
   font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
-  font-size:.9rem; font-weight:600; white-space:nowrap;
+  font-size:.85rem; font-weight:600; white-space:nowrap;
+  transition:background .18s var(--ease), color .18s var(--ease);
 }
 .search button:hover{background:var(--ink); color:var(--yellow)}
-.search.compact{max-width:280px; margin-left:auto}
-.search.compact input{padding:.5rem .7rem; font-size:.85rem; border-width:1px}
-.search.compact button{padding:.5rem .8rem; font-size:.75rem; border-width:1px}
-@media (max-width:900px){.search.compact{order:3; max-width:none; width:100%; margin-left:0}}
 
 .plphead{
   display:flex; gap:1rem; align-items:center; flex-wrap:wrap;
@@ -381,8 +672,8 @@ table.cart .sub{font-size:.78rem; color:var(--ink-3)}
   letter-spacing:.08em; color:var(--ink-3);
 }
 .sortwrap select{
-  padding:.55rem .6rem; border:1px solid var(--field); background:#fff;
-  font:inherit; font-size:.85rem;
+  padding:.6rem .8rem; border:1px solid var(--field); border-radius:var(--pill);
+  background:#fff; font:inherit; font-size:.85rem;
 }
 
 /* numbered pagination */
@@ -390,27 +681,27 @@ table.cart .sub{font-size:.78rem; color:var(--ink-3)}
 .pager .pagegroup{display:inline-flex; align-items:center; gap:.4rem}
 .pager b{
   border:1px solid var(--ink); background:var(--ink); color:#fff;
-  padding:.5rem .85rem; font-family:var(--display); font-size:.85rem;
-  letter-spacing:.05em;
+  padding:.55rem .95rem; border-radius:var(--pill); font-family:var(--display);
+  font-size:.85rem; letter-spacing:.05em;
 }
 .pager .gap{color:var(--ink-3); padding:0 .2rem}
 .pager .count{margin-left:auto; color:var(--ink-3); font-size:.85rem}
 
 /* ---------------- autocomplete ---------------- */
-.searchwrap{position:relative; max-width:520px; width:100%}
-.searchwrap.compact{max-width:280px; margin-left:auto}
-@media (max-width:900px){.searchwrap.compact{order:3; max-width:none; margin-left:0}}
+.searchwrap{position:relative; max-width:560px; width:100%}
+/* The masthead search sizes itself through `.hsearch`; the wrapper stays neutral so the
+   same component works in the masthead, on the listing page and inside the phone sheet. */
 .searchwrap .search{max-width:none}
 
 ul.suggest{
-  position:absolute; z-index:60; top:calc(100% + 4px); left:0; right:0;
-  list-style:none; margin:0; padding:.25rem; background:#fff;
-  border:2px solid var(--ink); max-height:340px; overflow-y:auto;
-  box-shadow:0 12px 28px -12px rgba(18,18,18,.35);
+  position:absolute; z-index:60; top:calc(100% + 6px); left:0; right:0;
+  list-style:none; margin:0; padding:.35rem; background:#fff;
+  border:1px solid var(--rule); border-radius:var(--radius); max-height:340px;
+  overflow-y:auto; box-shadow:var(--shadow-lg);
 }
 ul.suggest li{
-  display:flex; align-items:baseline; gap:.6rem; padding:.5rem .6rem;
-  cursor:pointer; font-size:.88rem;
+  display:flex; align-items:baseline; gap:.6rem; padding:.55rem .7rem;
+  cursor:pointer; font-size:.88rem; border-radius:var(--radius-xs);
 }
 ul.suggest li.on{background:var(--yellow)}
 ul.suggest li .kind{
@@ -537,8 +828,17 @@ ul.reviewlist li{padding:1rem 0; border-bottom:1px solid var(--rule-2)}
 .rf-row{display:grid; grid-template-columns:1fr 1fr; gap:.9rem}
 @media (max-width:600px){.rf-row{grid-template-columns:1fr}}
 .reviewform .btn{margin-top:.9rem}
-.btn.ghost.dark{background:transparent; color:var(--ink); border-color:var(--ink); margin-top:1rem}
+/* The dark-on-paper ghost button. **Appearance only — no spacing.**
+   It carried `margin-top:1rem`, which was the gap the reviews block wanted below its list
+   and which travelled with the class into every other use of it. In the consent dialog
+   that put "Essential only" 8px below "Accept all" and made the row of actions 60px tall
+   for a 44px button: `align-items:center` centres the *margin* box, so a top margin on one
+   flex item offsets it by half. Spacing belongs to the thing being spaced, not to the
+   button — see `.reviews .btn.ghost.dark` below. */
+.btn.ghost.dark{background:transparent; color:var(--ink); border-color:var(--ink)}
 .btn.ghost.dark:hover{background:var(--ink); color:#fff}
+/* The gap the reviews list actually wanted, scoped to where it is wanted. */
+.reviews .btn.ghost.dark{margin-top:1rem}
 a.rating{border-bottom:1px solid var(--rule); font-size:.85rem; color:var(--ink-2)}
 
 /* ---------------- cart drawer ---------------- */
@@ -582,7 +882,7 @@ button.cartlink{background:none; border:0; cursor:pointer}
   max-width:1280px; margin:0 auto; padding:1rem clamp(1rem,3vw,2rem);
   display:flex; gap:1rem 1.5rem; align-items:center; flex-wrap:wrap;
 }
-.consent p{margin:0; font-size:.86rem; color:#D6D6D2; max-width:62ch}
+.consent p{margin:0; font-size:.86rem; color:#D6D6D2; max-width:62ch; min-width:0}
 .consent p strong{color:#fff}
 .consent-actions{display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; margin-left:auto}
 .consent .btn{padding:.6rem 1.1rem; font-size:.82rem}
@@ -604,7 +904,7 @@ button.cartlink{background:none; border:0; cursor:pointer}
 .pers-open{
   width:100%; display:flex; align-items:center; justify-content:space-between;
   gap:1rem; padding:.9rem 1rem; background:transparent; cursor:pointer;
-  border:1px solid var(--ink); border-radius:2px; text-align:left; font:inherit;
+  border:1px solid var(--ink); border-radius:var(--radius-sm); text-align:left; font:inherit;
   transition:background .12s ease, color .12s ease;
 }
 .pers-open:hover{background:var(--ink); color:#fff}
@@ -612,7 +912,7 @@ button.cartlink{background:none; border:0; cursor:pointer}
 .pers-open small{display:block; font-size:.8rem; opacity:.7; margin-top:.15rem}
 .pers-chev{font-size:1.3rem; line-height:1; font-weight:300}
 
-.pers-panel{border:1px solid var(--ink); border-radius:2px; padding:1rem}
+.pers-panel{border:1px solid var(--ink); border-radius:var(--radius-sm); padding:1.1rem}
 .pers-head{display:flex; align-items:baseline; justify-content:space-between; gap:1rem}
 .pers-head h3{font-size:.95rem; margin:0}
 .pers-close{
@@ -711,14 +1011,40 @@ button.cartlink{background:none; border:0; cursor:pointer}
 .crumbs [aria-current="page"]{color:var(--ink-2)}
 
 /* ================================================================= region picker */
-.regionpick{display:flex; align-items:center; gap:.5rem; flex-wrap:wrap}
+.regionpick{display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+  min-width:0; max-width:100%}
 .regionpick label{font-size:.8rem; color:var(--ink-2)}
 .regionpick select{
   font:inherit; font-size:.85rem; padding:.35rem .5rem;
-  border:1px solid var(--field); background:var(--paper); color:var(--ink);
+  border:1px solid var(--field); border-radius:var(--radius-xs);
+  background:var(--paper); color:var(--ink);
+  /* A <select> is sized by its widest option and will not shrink below it, so on a
+     430px screen the longest region name pushed the whole document to 552px wide and
+     gave every page a horizontal scrollbar. Pre-dates the 2026 restyle. */
+  max-width:100%;
 }
 .regionpick select:disabled{opacity:.6}
 .regionpick.compact label{font-size:.75rem}
+
+/* In band A the picker sits on ink, next to three plain links, and it is the only control
+   up there. Left with its default form-control treatment it rendered as a 450px white
+   field — wider than the three links put together, and reading as the most important thing
+   in the header. It keeps its real `<select>` (native picker on a phone, keyboard-correct
+   for free) and loses the box. */
+.utility .regionpick{gap:.35rem; flex-wrap:nowrap}
+.utility .regionpick label{color:#9E9E99}
+.utility .regionpick select{
+  border:0; background:transparent; color:#fff; padding:.15rem 1.1rem .15rem .2rem;
+  font-size:.78rem; max-width:11rem;
+  /* `appearance:none` removes the platform chrome, so the caret is drawn here — otherwise
+     macOS paints a white rounded button around it on a dark ground. */
+  appearance:none; -webkit-appearance:none; cursor:pointer;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right .2rem center;
+  text-overflow:ellipsis;
+}
+.utility .regionpick select:hover{color:var(--yellow)}
+.utility .regionpick option{color:var(--ink); background:var(--paper)}
 
 /* ==================================================================== promo code
    Collapsed by default. An open, empty discount field tells every customer a better price
@@ -834,14 +1160,13 @@ button.cartlink{background:none; border:0; cursor:pointer}
 /* ================================================================== custom line
    A different product at a different price, so it is marked rather than left to look like
    an ordinary jersey that costs $25 more for no stated reason. */
-/* Inline, not absolutely positioned. The first version sat at `top:-.35rem` and overlapped
-   the announcement bar above the header — and pushed the nav onto two rows below 1200px. */
-.navcustom::after{
-  content:'NEW'; margin-left:.3rem; vertical-align:.35em;
-  font-size:.55rem; letter-spacing:.08em; background:var(--yellow); color:var(--ink);
-  padding:.05rem .25rem; font-weight:700;
-}
+/* The dark band the custom range sits in. Cards inside it get their own surface so the
+   grid does not dissolve into the background. */
 .customband{background:var(--ink); color:#fff}
+.customband .card{background:#1C1C1A; border-color:#2E2E2B}
+.customband .card:hover{border-color:#4A4A46}
+.customband .card figure{background:#232320}
+.customband .card .sub{color:#A6A6A1}
 .customband .sechead h2{color:#fff}
 .customband .sechead a{color:var(--yellow); border-bottom:1px solid var(--yellow)}
 .customlede{color:#D6D6D2; margin:.25rem 0 1.5rem; font-size:1.05rem}
@@ -856,9 +1181,9 @@ button.cartlink{background:none; border:0; cursor:pointer}
 
 /* The badge on a product card. */
 .custombadge{
-  display:inline-block; font-family:var(--display); text-transform:uppercase;
+  align-self:flex-start; font-family:var(--display); text-transform:uppercase;
   letter-spacing:.06em; font-size:.62rem; background:var(--yellow); color:var(--ink);
-  padding:.1rem .35rem; margin-bottom:.3rem;
+  padding:.18rem .5rem; margin-bottom:.45rem; border-radius:var(--pill);
 }
 
 /* The opt-out control on Your Privacy Choices. */
@@ -878,3 +1203,303 @@ button.cartlink{background:none; border:0; cursor:pointer}
 .nlrow .btn{white-space:nowrap}
 .newsletter .note{margin-top:.5rem}
 .newsletter .note a{border-bottom:1px solid var(--field)}
+
+
+/* The bag control sits in .hactions beside Sign in, so it takes the same pill shape as
+   .haction rather than looking like a stray word in the masthead.
+
+   The shop-by-team rail that used to live here is now `ul.rail` in the header-stack
+   section, next to the bands it belongs to. The league pills went with it: the sport rails
+   on the homepage and the mega-panels on the category bar both answer "shop by league",
+   and a third answer on the same page was a row of chips nobody needed. */
+.hactions .cartlink{
+  display:inline-flex; align-items:center; gap:.45rem; padding:.55rem .9rem;
+  border-radius:var(--pill); transition:background .18s var(--ease);
+}
+.hactions .cartlink:hover{background:var(--wash)}
+.hactions .cartlink b{
+  background:var(--yellow); border-radius:var(--pill); padding:.05rem .45rem;
+  margin-left:.35rem; font-size:.75rem; font-family:var(--sans); font-weight:700;
+}
+
+/* ============================================================================
+   Phone
+   ----------------------------------------------------------------------------
+   `layout-plan.md` §6. The header above already covers items 1–3 — the 56px row, the
+   drawer and the search sheet. These are the rest, and every one of them was a live
+   defect rather than a refinement.
+   ========================================================================= */
+
+/* §6 item 4 — the iOS input-zoom bug.
+   Safari zooms the whole page when a form control smaller than 16px takes focus, and then
+   leaves it zoomed. Ten controls in this file were between 13.6px and 15.2px, including
+   the search field, the checkout form and the personalisation inputs — so a customer
+   typing their address watched the page jump on every field.
+
+   One rule rather than ten edits, and `!important` deliberately: it has to beat the class
+   selectors those declarations already carry, and the whole point is that a future input
+   added with a small font-size is covered without anybody remembering this. Desktop
+   typography is untouched. */
+@media (max-width:900px){
+  input,select,textarea{font-size:16px !important}
+}
+
+/* §6 item 5 — two-up on a phone.
+   `minmax(220px,1fr)` resolves to a **single** column on a 390px screen: 358px of content
+   cannot hold two 220px tracks plus a gutter. Every product page was one card per screen,
+   which is roughly ten screens of scrolling to reach the tenth product. */
+@media (max-width:640px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1.1rem .8rem}
+  .card .t{font-size:.85rem}
+  .card .meta{padding:.7rem .7rem .85rem}
+}
+
+/* §6 item 6 — tap targets.
+   Chips and size buttons are the two remaining controls under 44px. */
+@media (max-width:900px){
+  .chip{min-height:44px; display:inline-flex; align-items:center}
+  .sizes button{min-height:44px}
+}
+
+/* §6 item 8 — the add-to-bag docks to the bottom of the screen.
+   On a six-inch screen the buybox scrolls away above the description, the size guide, the
+   spec table and the reviews, so the decision and the button are never on screen together.
+   `safe-area-inset-bottom` keeps it clear of the home indicator; `dvh` rather than `vh`
+   because `vh` on iOS measures the viewport with the address bar collapsed and puts the
+   bottom of a full-height element underneath it. */
+@media (max-width:900px){
+  /* `fixed`, not `sticky`.
+     Sticky was the first attempt and it does not work here: a sticky element is confined
+     to its own parent's box, and this button's parent is the size picker — a few hundred
+     pixels tall. It pinned for that much of the scroll and then left with it, so it was
+     gone by the description, which is exactly the stretch it exists for. Fixed pins it to
+     the viewport for the whole page. */
+  .bagdock{
+    position:fixed; left:0; right:0; bottom:0; z-index:30;
+    padding:.6rem clamp(1rem,4vw,1.5rem) calc(.6rem + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--paper) 94%,transparent);
+    backdrop-filter:blur(8px);
+    border-top:1px solid var(--rule);
+    box-shadow:0 -6px 18px -12px rgba(18,18,18,.35);
+  }
+  /* Only the pages that actually have a dock pay for the space it covers. Without the
+     `:has()` this is 88px of dead air at the bottom of every page on the site. */
+  body:has(.bagdock) main{padding-bottom:5.5rem}
+}
+/* Both slide-overs are full-height by inset rather than by a height, so they are already
+   correct — but the sheet is not, and `100vh` there would sit under the iOS address bar. */
+.searchsheet{min-height:100dvh}
+
+/* §6 item 9 — the rail can run to 173 tiles.
+   Nothing in it is above the fold on a phone beyond the first three, and the discs are
+   drawn in CSS rather than fetched, so the cost is layout rather than bandwidth. Narrower
+   tiles put four on screen instead of three. */
+@media (max-width:520px){
+  .railtile{width:88px}
+  .raildisc{width:64px; height:64px; font-size:1.3rem}
+}
+
+/* The homepage lede.
+   What is left of the hero: the store's one-sentence claim and its `<h1>`, held to a
+   readable measure on paper. The slab it replaces was 60vh of ink whose right two-thirds
+   were empty and whose main job was a second search box. */
+.lede{padding:clamp(1.75rem,4vw,2.75rem) 0 clamp(1.25rem,3vw,2rem)}
+.lede h1{font-size:clamp(2rem,5.5vw,3.6rem); letter-spacing:-.005em}
+.lede h1 em{font-style:normal; background:var(--yellow); padding:0 .35rem;
+  border-radius:var(--radius-xs)}
+.lede p{margin:.7rem 0 0; max-width:54ch; color:var(--ink-2);
+  font-size:clamp(.95rem,1.6vw,1.1rem)}
+.lede p a{border-bottom:2px solid var(--yellow); color:var(--ink); font-weight:500}
+.lede p a:hover{background:var(--yellow)}
+
+/* ============================================================================
+   Band E as a rail, the personaliser band, recently viewed
+   ----------------------------------------------------------------------------
+   Ported from the `anyjersey_files/demo` concept. Where that demo had to invent a value —
+   a shirt colour sampled from a photograph, a count typed into a constant — this reads the
+   real one, so the notes below are mostly about what changed on contact with real data.
+   ========================================================================= */
+
+/* The band itself. On paper now rather than full-bleed ink, because the captions live on
+   the page ground with the rest of the type. */
+.mosaic{padding:clamp(1.25rem,3vw,2rem) 0 clamp(2rem,4vw,3rem)}
+
+/* ---- the sport rail -------------------------------------------------------
+   Square photographs with the caption underneath, on the page ground. The earlier version
+   bled them edge to edge and set the label over the image under a scrim; the label is ink
+   on paper now, which is a pair the contrast audit can measure rather than a judgement made
+   in a comment. See components/Mosaic.tsx.
+
+   The rail aligns its first tile to the page gutter and bleeds off the right, so the row
+   reads as continuing rather than as a grid that happens to be cut. */
+.tilerail{position:relative}
+.tilescroll{
+  display:flex; gap:clamp(.9rem,1.8vw,1.5rem); overflow-x:auto;
+  scroll-snap-type:x proximity; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  padding-bottom:.25rem;
+}
+.tilescroll::-webkit-scrollbar{display:none}
+.tile{
+  display:block; flex:none; scroll-snap-align:start;
+  width:clamp(220px,24vw,330px); color:var(--ink);
+}
+@media (max-width:700px){.tile{width:62vw}}
+.tile figure{
+  margin:0 0 .75rem; aspect-ratio:1/1; overflow:hidden; background:var(--wash);
+  border-radius:var(--radius-sm);
+}
+.tile img{width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease)}
+.tile:hover img{transform:scale(1.04)}
+.tiletext{display:block}
+.tiletext strong{
+  display:block; font-family:var(--display); text-transform:uppercase; font-weight:600;
+  font-size:clamp(1rem,1.5vw,1.2rem); line-height:1.1; letter-spacing:.02em;
+}
+.tile:hover .tiletext strong{text-decoration:underline; text-underline-offset:3px}
+.tiletext > span{
+  display:block; font-size:.82rem; color:var(--ink-2); margin-top:.25rem;
+}
+/* One tile may carry the yellow. More than one and none of them is the emphasis. */
+.tile.accent .tiletext strong::after{
+  content:'New'; margin-left:.45rem; vertical-align:.2em;
+  font-family:var(--sans); font-size:.58rem; letter-spacing:.08em; font-weight:700;
+  background:var(--yellow); color:var(--ink); padding:.1rem .32rem;
+  border-radius:var(--radius-xs);
+}
+.tile:focus-visible{outline-offset:3px}
+
+/* Arrows, because a row of 330px cards genuinely overflows on a desktop and a mouse has no
+   swipe. Ink rather than white: on a paper band a white circle is invisible until it
+   overlaps a photograph. Hidden where they are not needed — see TileRail. */
+.railarrow{
+  position:absolute; top:calc(50% - 1.6rem); transform:translateY(-50%); z-index:2;
+  width:40px; height:40px; display:grid; place-items:center;
+  border:0; border-radius:50%; background:var(--ink); color:#fff;
+  box-shadow:var(--shadow-md);
+  transition:opacity .18s var(--ease), transform .18s var(--ease);
+}
+.railarrow:hover{transform:translateY(-50%) scale(1.07)}
+.railarrow:disabled{opacity:0; pointer-events:none}
+.railarrow.left{left:-.75rem}
+.railarrow.right{right:-.75rem}
+/* On touch the gesture is the affordance and the arrows are two more things covering a
+   tile. Two guards: `hover:none` is the correct test and catches a touch laptop, but it is
+   the one rule here a headless render cannot confirm, so the width guard covers the phone
+   case in a way that can be measured. */
+@media (hover:none){.railarrow{display:none}}
+@media (max-width:700px){.railarrow{display:none}}
+
+/* ---- recently viewed ------------------------------------------------------ */
+.clearrecent{
+  margin-left:auto; font-size:.8rem; color:var(--ink-3);
+  border-bottom:1px solid var(--rule); background:none; border-width:0 0 1px; padding:0;
+}
+.clearrecent:hover{color:var(--ink); border-color:var(--ink)}
+
+/* The opt-out notice.
+   A strip, not a dialog. Where the law asks for notice rather than consent, a modal that
+   blocks the shop is friction bought for nothing — so this is quieter than the question:
+   no yellow ground, a hairline rule, and it does not sit on top of the page's own bottom
+   controls the way the consent dialog deliberately does. */
+.consent.notice{border-top-width:1px; border-top-color:var(--rule)}
+.consent.notice .consent-inner{padding-block:.7rem}
+.consent.notice p{font-size:.82rem}
+.consent.notice .btn{padding:.45rem 1rem; font-size:.78rem}
+
+/* ============================================================================
+   "Your rights where you are"
+   ----------------------------------------------------------------------------
+   The panel that makes one global policy legible to one reader. It sits above a document
+   that is unchanged and complete — it is emphasis, not a different policy — so it is
+   styled as a card on wash rather than as a replacement for the page.
+   ========================================================================= */
+/* Inside the document, not above it — see app/policies/[slug]/page.tsx. Set off by a
+   surface rather than by a band, because it is a part of the page and not a section of
+   its own. */
+.rights{
+  max-width:70ch; background:var(--wash-2); border:1px solid var(--rule);
+  border-radius:var(--radius); padding:clamp(1.1rem,2.5vw,1.6rem); margin:0 0 2rem;
+}
+.rights h2{margin:.35rem 0 .6rem}
+.rights-law{color:var(--ink-2); margin:0 0 1.25rem}
+.rights-list{list-style:none; margin:0 0 1.5rem; padding:0; display:grid; gap:.5rem}
+.rights-list li{
+  position:relative; padding-left:1.6rem; font-size:.95rem;
+}
+/* A tick, drawn rather than an emoji — an emoji is announced by a screen reader as its own
+   name in the middle of a sentence about a legal right. */
+.rights-list li::before{
+  content:''; position:absolute; left:.25rem; top:.45em;
+  width:.5rem; height:.28rem; border-left:2px solid var(--teal);
+  border-bottom:2px solid var(--teal); transform:rotate(-45deg);
+}
+.rights-rows{display:grid; gap:.7rem; margin:0 0 1.25rem}
+.rights-rows p{margin:0; font-size:.95rem}
+.rights-rows a{border-bottom:1px solid var(--field)}
+.rights-note{
+  border-left:3px solid var(--yellow); background:var(--paper);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  padding:.9rem 1.1rem; margin:1rem 0 0; font-size:.9rem;
+}
+.rights-note p{margin:0}
+.rights-note ul{margin:.6rem 0 0; padding-left:1.1rem}
+.rights-note li{margin-bottom:.25rem}
+/* The outstanding-appointments box. Same treatment the policy pages already give a gap,
+   because it is the same kind of statement: a disclosure that is missing, said out loud. */
+.rights-note.warn{border-left-color:#B3261E}
+
+/* A value standing in for another one. Said on the page, because a field that fell back is
+   not the same as a field somebody filled in, and a reader of a privacy policy is entitled
+   to know which of the two they are looking at. */
+.derived{display:block; font-size:.78rem; color:var(--ink-3); margin-top:.15rem}
+
+/* ============================================================================
+   Campaign banner
+   ----------------------------------------------------------------------------
+   Full bleed, 8:3, a video or a still with a call to action over it. See
+   components/HeroBanner.tsx for why the video element is written the way it is.
+   ========================================================================= */
+.herobanner{
+  position:relative; width:100%; aspect-ratio:1600 / 600; overflow:hidden;
+  background:var(--ink);
+}
+/* 8:3 on a 390px phone is a 146px letterbox slit. `object-fit:cover` means one asset can
+   serve both — the crop tightens rather than the band shrinking. */
+@media (max-width:700px){.herobanner{aspect-ratio:16 / 10}}
+.hero-media{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;
+}
+
+/* The call to action sits on its own opaque ground rather than over the film, so its
+   contrast does not depend on which frame is showing — the same reason the tile captions
+   moved out from under their scrim. */
+.hero-cta{
+  position:absolute; left:0; bottom:0; z-index:2;
+  padding:clamp(1rem,3vw,2.25rem);
+}
+.hero-cta .btn{background:var(--paper); border-color:var(--paper); color:var(--ink)}
+.hero-cta .btn:hover{background:var(--yellow); border-color:var(--yellow)}
+
+/* WCAG 2.2.2. Bottom right, out of the way of the action, and always on an opaque chip. */
+.hero-pause{
+  position:absolute; right:clamp(.75rem,2vw,1.25rem); bottom:clamp(.75rem,2vw,1.25rem);
+  z-index:2; width:40px; height:40px; display:grid; place-items:center;
+  border:0; border-radius:50%; background:rgba(10,10,10,.72); color:#fff;
+  backdrop-filter:blur(4px);
+}
+.hero-pause:hover{background:var(--ink)}
+
+/* ---- the empty slot, development only ----
+   Sized exactly like the real band so the page below it does not move when an asset
+   arrives. `app/page.tsx` renders this only outside production. */
+.herobanner.placeholder{
+  background:var(--wash); border-block:1px solid var(--rule);
+  display:grid; place-items:center; text-align:center;
+}
+.hero-slot{max-width:44ch; padding:clamp(1rem,3vw,2rem)}
+.hero-slot p{margin:.5rem 0 0; font-size:.9rem; color:var(--ink-2)}
+.hero-slot code{
+  background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-xs);
+  padding:.1rem .35rem; font-size:.85em;
+}
+.hero-slot-note{font-size:.8rem !important; color:var(--ink-3) !important; margin-top:.9rem !important}

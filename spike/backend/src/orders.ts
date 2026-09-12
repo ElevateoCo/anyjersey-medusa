@@ -106,10 +106,23 @@ const one = (v: any) => (Array.isArray(v) ? v[0] : v) ?? null
  */
 export function paymentState(order: any): PaymentState {
   const collections: any[] = order.payment_collections ?? []
-  const payments = collections.flatMap((c) => c.payments ?? [])
 
-  const captured = payments.reduce((s, p) => s + num(p.captured_amount ?? 0), 0)
-  const refunded = payments.reduce((s, p) => s + num(p.refunded_amount ?? 0), 0)
+  /**
+   * The captured and refunded totals come off the **collection**, not off its payments.
+   *
+   * This was the other way round and was dead code. `payment` has no `captured_amount` or
+   * `refunded_amount` column — checked against the running database — because on the Payment
+   * model both are computed from the `captures` and `refunds` relations, and a computed field
+   * does not come back through `query.graph` even under `.*`. So both sums were always 0,
+   * `refunded > 0` was never true, and a fully refunded order reported as `paid`: precisely
+   * the failure mode the README records at every other layer, and worse here because Step 38
+   * made refunds actually execute.
+   *
+   * `payment_collection` carries `authorized_amount`, `captured_amount` and
+   * `refunded_amount` as ordinary stored numeric columns, so these resolve.
+   */
+  const captured = collections.reduce((s, c) => s + num(c.captured_amount), 0)
+  const refunded = collections.reduce((s, c) => s + num(c.refunded_amount), 0)
   if (refunded > 0 && captured > 0 && refunded >= captured) return 'refunded'
 
   const statuses = new Set(collections.map((c) => c.status))
@@ -165,7 +178,20 @@ export async function buildOrderRows(
       // `version` is required or Medusa cannot resolve shipping-method adjustments and the
       // whole query fails with an error that says nothing about the missing field.
       'id', 'display_id', 'status', 'version', 'created_at', 'email', 'customer_id',
-      'currency_code', 'total', 'subtotal', 'shipping_total', 'tax_total', 'discount_total',
+      'currency_code', 'total', 'tax_total', 'discount_total',
+      /**
+       * `item_subtotal` and `shipping_subtotal`, **not** `subtotal` and `shipping_total`.
+       *
+       * Medusa's `subtotal` already includes the shipping — measured against a real order:
+       * `item_subtotal` 129.98, `shipping_subtotal` 4.99, `subtotal` 134.97, `total` 134.97.
+       * So a register whose Subtotal column held `subtotal` and whose Shipping column held
+       * `shipping_total` invited exactly the addition it was built to prevent: 134.97 + 4.99
+       * = 139.96 against a total of 134.97, off by the shipping on every single row.
+       *
+       * The two `_subtotal` figures are net of tax, which is why `tax_total` is a column of
+       * its own and the four add up: items + shipping + tax − discount = total.
+       */
+      'item_subtotal', 'shipping_subtotal',
       // `.*` throughout: computed and relational fields requested individually resolve as
       // undefined without erroring, which fails as zeros rather than as an error.
       'items.*', 'items.variant.*',
@@ -222,8 +248,8 @@ export async function buildOrderRows(
       has_account: !!one(o.customer)?.has_account,
 
       currency_code: o.currency_code,
-      subtotal: num(o.subtotal),
-      shipping_total: num(o.shipping_total),
+      subtotal: num(o.item_subtotal),
+      shipping_total: num(o.shipping_subtotal),
       tax_total: num(o.tax_total),
       discount_total: num(o.discount_total),
       total: num(o.total),

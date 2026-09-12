@@ -65,13 +65,18 @@ export default function SizePicker({ variants, fits, product, offer }:
         onChange={setPers}
       />
 
-      <AddToBag
-        variantId={chosen?.id ?? null}
-        label={chosen ? 'Add to bag' : 'Select a size'}
-        personalisation={pers}
-        productId={product.id}
-        included={!!offer?.included}
-      />
+      {/* The dock is what lets the button stick to the bottom of a phone screen while
+          the description, the size guide, the spec table and the reviews scroll past it.
+          On a six-inch screen the buybox scrolls off before most people have decided. */}
+      <div className="bagdock">
+        <AddToBag
+          variantId={chosen?.id ?? null}
+          label={chosen ? 'Add to bag' : 'Select a size'}
+          personalisation={pers}
+          productId={product.id}
+          included={!!offer?.included}
+        />
+      </div>
 
       <NotifyMe productId={product.id} title={product.title} team={product.team}
                 player={product.player} colourway={product.colourway} size={size} />

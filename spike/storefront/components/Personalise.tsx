@@ -73,6 +73,7 @@ export default function Personalise({
   const [checking, setChecking] = useState(false)
   const seq = useRef(0)
 
+
   // Debounced, and sequence-guarded: without the guard a slow response for "ALLE" can land
   // after the fast one for "ALLEN" and repaint the older answer.
   useEffect(() => {

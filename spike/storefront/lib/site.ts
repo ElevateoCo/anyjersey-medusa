@@ -36,7 +36,28 @@ export const abs = (path: string) =>
  */
 export const INDEXABLE = process.env.NEXT_PUBLIC_ALLOW_INDEXING === 'true'
 
-export type EntityField = { key: string; label: string; value: string; why: string }
+export type EntityField = {
+  key: string
+  label: string
+  value: string
+  why: string
+  /**
+   * Set when `value` came from somewhere other than its own variable.
+   *
+   * A field that is standing in for another is not the same as one that was filled in, and
+   * the page says which it is. Without this the fallback below would read as an
+   * appointment somebody made.
+   */
+  derived?: string
+}
+
+/**
+ * The support mailbox, resolved once so the privacy channel can fall back to it.
+ *
+ * Taken from the live store's own contact-information policy, like the trader name and the
+ * phone number beside it.
+ */
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'scholarlove77@gmail.com'
 
 /**
  * The trader identity that consumer and product law requires on a storefront.
@@ -65,7 +86,7 @@ export const ENTITY: EntityField[] = [
   {
     key: 'support_email',
     label: 'Support email',
-    value: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'scholarlove77@gmail.com',
+    value: SUPPORT_EMAIL,
     why: 'A monitored contact route is a legal requirement, not a nicety.',
   },
   {
@@ -75,10 +96,31 @@ export const ENTITY: EntityField[] = [
     why: 'Published on the live store\u2019s contact-information policy.',
   },
   {
+    /**
+     * The one gap on this list that code could close, and it closes it.
+     *
+     * GDPR Articles 15–22, the US state laws, the LGPD and Law 25 all require a
+     * **contactable channel** for a data-subject request. **None of them requires a
+     * dedicated address.** So an empty variable here was not an unmet legal requirement —
+     * it was a shop with a working mailbox declining to name it, and a reader with a right
+     * to exercise and nowhere to send it.
+     *
+     * It falls back to the support mailbox, which is monitored and published already. A
+     * dedicated address is better practice once the volume justifies it, and setting
+     * `NEXT_PUBLIC_PRIVACY_EMAIL` takes precedence the moment it exists.
+     *
+     * The two appointments beside it — an Article 27 representative and a registered
+     * address — have no equivalent. One is a contract with a firm established in the EU and
+     * the other is a fact about the company; neither is derivable from anything in this
+     * repository, and inventing either would be a false statement to a regulator.
+     */
     key: 'privacy_email',
     label: 'Privacy / data-subject requests',
-    value: process.env.NEXT_PUBLIC_PRIVACY_EMAIL ?? '',
+    value: process.env.NEXT_PUBLIC_PRIVACY_EMAIL || SUPPORT_EMAIL,
     why: 'GDPR Art. 15–22 and the US state laws all require a request channel.',
+    derived: process.env.NEXT_PUBLIC_PRIVACY_EMAIL
+      ? undefined
+      : 'Using the support mailbox until a dedicated address is set.',
   },
   {
     key: 'eu_representative',

@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation'
 import Prose from '@/components/Prose'
+import YourRights from '@/components/YourRights'
 import { POLICIES, policyBySlug } from '@/lib/policies'
+import { getVisitorGeo } from '@/lib/geo'
+import { jurisdictionFor } from '@/lib/jurisdiction'
 import { abs } from '@/lib/site'
 
 /**
@@ -40,5 +43,29 @@ export default async function PolicyPage({ params }: { params: Promise<{ slug: s
   const { slug } = await params
   const doc = policyBySlug(slug)
   if (!doc) notFound()
-  return <Prose doc={doc} />
+
+  /**
+   * The privacy policy gets a panel naming the reader's own law; the other documents do
+   * not, because their terms do not vary that way.
+   *
+   * The panel goes **inside** the document, in `Prose`'s slot between the title and the
+   * sections. The first version put it in its own band above, which read correctly and was
+   * wrong in the markup: the page then opened `h2` before `h1`. The accessibility checker
+   * passed it — it looks for skips going down, not for a heading that precedes the
+   * document's own — so this is one the gate did not catch.
+   *
+   * The document below it is unchanged and complete. Nothing is hidden from anyone and no
+   * obligation is edited out per visitor: a regulator opening this URL sees the same policy
+   * a customer does. What varies is which part is put first and labelled as theirs, which
+   * is presentation, not a different policy.
+   */
+  if (doc.slug !== 'privacy') return <Prose doc={doc} />
+
+  const geo = await getVisitorGeo()
+  const j = jurisdictionFor(geo.country, geo.region)
+  return (
+    <Prose doc={doc}>
+      <YourRights j={j} />
+    </Prose>
+  )
 }

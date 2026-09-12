@@ -2,6 +2,7 @@ import {
   getPersonalisationOffer, getProduct, getReviewAggregate, listJerseys, money, sortSizes,
   mediaUrl, mediaSrcSet, resolveOldHandle,
 } from '@/lib/medusa'
+import type { Card } from '@/lib/medusa'
 import { getZone } from '@/lib/cart'
 import ProductCard from '@/components/ProductCard'
 import RequestBlock from '@/components/RequestBlock'
@@ -10,9 +11,12 @@ import Reviews from '@/components/Reviews'
 import ShareLink from '@/components/ShareLink'
 import JsonLd from '@/components/JsonLd'
 import { breadcrumbs, productSchema } from '@/lib/seo'
+import { display } from '@/lib/labels'
 import { abs } from '@/lib/site'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { cache } from 'react'
+import RecentlyViewed from '@/components/RecentlyViewed'
+import ViewTracker from '@/components/ViewTracker'
 
 export const revalidate = 120
 
@@ -87,9 +91,35 @@ export default async function PDP({ params }: { params: Promise<{ handle: string
     return { ...v, size: parts[0], fit: parts[1] ?? fits[0] ?? 'Unisex' }
   })
 
-  const related = d.team
-    ? await listJerseys({ team: d.team, limit: 6 })
-    : { products: [] as Awaited<ReturnType<typeof listJerseys>>['products'] }
+  /**
+   * More like this, narrowest axis first.
+   *
+   * This was `team` only, with no fallback, so a product with no team showed **nothing** —
+   * and "no team" is not an edge case here, it is the entire MMA range: ten fighters who
+   * carry a player and a sport and no club at all. Their product pages were dead ends.
+   *
+   * Team, then league, then sport, and the first axis that yields more than the product
+   * itself wins. Widening by one step rather than pooling all three keeps a Cowboys page
+   * leading with Cowboys instead of with whatever the NFL happened to return.
+   */
+  const axes: { label: string; href: string; params: Record<string, string> }[] = [
+    ...(d.team ? [{ label: `More ${d.team}`,
+      href: `/jerseys?team=${encodeURIComponent(d.team)}`, params: { team: d.team } }] : []),
+    ...(d.league ? [{ label: `More ${d.league}`,
+      href: `/jerseys?league=${encodeURIComponent(d.league)}`, params: { league: d.league } }] : []),
+    ...(d.player ? [{ label: `More ${d.player}`,
+      href: `/jerseys?player=${encodeURIComponent(d.player)}`, params: { player: d.player } }] : []),
+    ...(d.sport ? [{ label: `More ${display(d.sport)}`,
+      href: `/jerseys?sport=${encodeURIComponent(d.sport)}`, params: { sport: d.sport } }] : []),
+  ]
+
+  let related: { label: string; href: string; products: Card[] } | null = null
+  for (const axis of axes) {
+    const res = await listJerseys({ ...axis.params, limit: 7 })
+    const products = res.products.filter((r) => r.handle !== p.handle).slice(0, 6)
+    // A rail of one is not a section, and it is usually the same shirt in another colour.
+    if (products.length >= 2) { related = { ...axis, products }; break }
+  }
 
   // Structured data built from the same values the page renders. A price in the markup that
   // differs from the price on screen is the classic penalty, and no field is emitted that
@@ -154,6 +184,9 @@ export default async function PDP({ params }: { params: Promise<{ handle: string
           </p>
         </div>
 
+        {/* Records the visit in this browser and nothing else — see RecentlyViewed. */}
+        <ViewTracker handle={p.handle} />
+
         <div className="buybox">
           <p className="eyebrow">{[d.league, d.team].filter(Boolean).join(' · ')}</p>
           <h1>{p.title}</h1>
@@ -189,13 +222,21 @@ export default async function PDP({ params }: { params: Promise<{ handle: string
 
           <ShareLink title={p.title} />
 
-          <div className="todo">
-            <b>Blocked on one supplier input</b>
-            Chest and length measurements, for the <a href="/size-guide">size guide</a>. The
-            guidance there is accurate; the numbers are outstanding and are shown as missing
-            rather than guessed. Personalisation is live above; its production print-file
-            format is the other input that cannot be assumed (personalisation-spec.md §6).
-          </div>
+          {/* A note to ourselves, and it was rendering to every customer on every product
+              page — directly under the buybox, telling them something is blocked at the
+              moment they are deciding to buy. Same env flag as the homepage block. What it
+              records is still true: the size guide's numbers are outstanding and shown as
+              missing rather than guessed. */}
+          {process.env.NEXT_PUBLIC_SHOW_TODO === 'true' && (
+            <div className="todo">
+              <b>Blocked on one supplier input</b>
+              Chest and length measurements, for the <a href="/size-guide">size guide</a>.
+              The guidance there is accurate; the numbers are outstanding and are shown as
+              missing rather than guessed. Personalisation is live above; its production
+              print-file format is the other input that cannot be assumed
+              (personalisation-spec.md §6).
+            </div>
+          )}
 
           <h2 style={{ marginTop: '1.5rem', fontSize: '1.05rem' }}>Details</h2>
           <table className="spec">
@@ -226,16 +267,20 @@ export default async function PDP({ params }: { params: Promise<{ handle: string
         <div className="wrap"><Reviews productId={p.id} /></div>
       </section>
 
-      {related.products.length > 1 && (
+      {/* Per-device, so it renders after hydration and returns null when there is no
+          history — which is most first visits. The product being looked at is excluded:
+          it is not "recently viewed", it is on the screen. */}
+      <RecentlyViewed exclude={p.handle} />
+
+      {related && (
         <section className="band">
           <div className="wrap">
             <div className="sechead">
-              <h2>More {d.team}</h2>
-              <a href={`/jerseys?team=${encodeURIComponent(d.team!)}`}>See all</a>
+              <h2>{related.label}</h2>
+              <a href={related.href}>See all</a>
             </div>
-            <div className="grid">
-              {related.products.filter((r) => r.handle !== p.handle).slice(0, 5)
-                .map((r) => <ProductCard key={r.id} p={r} />)}
+            <div className="grid six">
+              {related.products.map((r) => <ProductCard key={r.id} p={r} />)}
             </div>
           </div>
         </section>

@@ -1,6 +1,11 @@
 # Layout plan — NFL Shop structure, generalised across the whole catalogue
 
-**Status:** plan only. No code written. Supersedes nothing; sits alongside `DEFERRED.md`.
+**Status: Phase 1 and most of Phase 2 are built.** See §11 at the bottom for what shipped,
+what changed on contact with the data, and what is left. The body of this document is kept
+as written — it is the reasoning, and the reasoning did not change. Where a number in it is
+stale, §11 says so; the catalogue was 3,155 products when this was drafted and is 4,323 now.
+
+Sits alongside `DEFERRED.md`.
 
 **Reference:** `europe.nflshop.com/en` (Fanatics). We are copying its *structure*, not its
 content, and not its logos — see "Two things we cannot copy" below.
@@ -412,4 +417,109 @@ plus a clean build.
 7. **Does Best Sellers stay guarded?** Yes — keep `collections.some(...)`. A nav slot that
    404s if a collection is emptied for a season is worse than one that quietly disappears.
 
-Awaiting: 1–7.
+**Resolved as recommended: 1, 2, 3, 5, 6, 7.** Decision 4 is the one that moved — see §11.
+
+---
+
+## 11. What was built
+
+Built against a running store and a real catalogue, so several numbers in the body above are
+now stale: the catalogue is **4,323 products / 173 teams / 7 sports**, not the 3,155 and six
+this document was drafted against. NBA in particular went from 30 products to **477** after
+the Step 26 re-sync, which is why it is on the bar rather than in More as §10 item 2
+recommended.
+
+### Bands
+
+| Band | Built | Notes |
+|---|---|---|
+| A — utility | ✅ | Dark, two slots. Promise left, Track/Help/Returns/Ship-to right. Hidden ≤720px, contents in the drawer |
+| B — masthead | ✅ | Logo · 640px centred search · account + bag. 56px row with ☰ and a magnifier ≤900px |
+| C — category bar | ✅ | **12 slots + More**, mega-panels on 8 of them, all server-rendered |
+| D — who-rail | ✅ | **Team colours, not photo crops** — see below |
+| E — mosaic | ✅ | Now a full-bleed **horizontal rail** of 10 tiles — 7 sports + Custom, Request, Best Sellers. See below |
+
+### Decision 4 moved: colours, not cropped photos
+
+The plan proposed a tight square crop of each team's best product photo. That needs a
+per-team thumbnail endpoint (§8 item 5), which is not built — so the tile is the team's
+**colours** with its initials over them, from `storefront/lib/team-colors.ts`.
+
+This is not a worse stopgap, and it is worth saying why. A colour pair is not a mark: it is
+not registrable on its own and every broadcaster denotes a club this way, so it carries less
+trademark risk than a cropped photograph of licensed product. It also loads as CSS rather
+than as 173 images. The ink over each disc is **computed** rather than chosen, because
+several of these grounds pass 3:1 against white and fail against ink or the reverse;
+`contrast_check.py` cannot evaluate a colour generated at render time, so a test asserts the
+3:1 large-text floor across all 150+ entries instead.
+
+The photo-crop version remains the better end state once §8 item 5 exists. The data shape
+does not change.
+
+### The data pass came first, as §8 argued it should
+
+- **§8 item 2 is done.** `backend/src/scripts/classify-mma.ts` sets `sport='mma'` from
+  membership of `mma-2026` — 13 rows, not the 12 estimated — and trims a garment word off
+  three fighters' names ("Ilia Topuria Short" → "Ilia Topuria"). MMA now has its own sport,
+  its own bar entry in More, and its own column in the Athletes panel.
+- **§8 item 4 is done.** `/store/facets` exposes `players`, bucketed by sport and capped per
+  bucket. A flat top-N would have been entirely NFL and would have lost the fighters, who
+  carry one or two products each.
+- **Each team now carries its `league` and its `sport`**, paired off the catalogue. Without
+  it the storefront needed a hand-maintained copy of `TEAM_LEAGUE`, which goes stale the
+  first time a team is renamed. The two axes are not the same grouping: Barcelona is league
+  CLUB and sport soccer.
+- **§8 item 1 is not done, and it is now visible.** With the fighters classified, the
+  unsported `player` bucket contains only wreckage — "Detriot Lions", "Philidelphia 76ers",
+  "Memphis Grizzles", "Wyoming Cowboys Josh Allen". `lib/nav.ts` drops that bucket from the
+  Athletes panel deliberately and a test pins that it does. Roughly 86 products still have
+  no sport.
+- **§8 items 3, 6 and 7 are untouched.** Garment on the combos is still split between `set`
+  and `shorts`; the "Shorts & Kits" slot matches both, so nothing in the layout waits on it.
+
+### Three things the plan did not anticipate
+
+**1. The listing page had to learn `sport`, `player` and repeated keys.** Five of the twelve
+bar slots filter on `sport` and two carry two garment values. `/jerseys` read neither: the
+parameter was in the URL, nothing read it, and the page rendered the whole catalogue looking
+like it had worked. A repeated key (`?garment=shorts&garment=set`) is how a multi-value
+filter reaches MikroORM as an `IN` — a comma arrives as a literal and matches nothing.
+`buildQuery` dropped arrays on rebuild, so touching any filter silently widened the listing;
+the test that asserted that behaviour now asserts the opposite.
+
+**2. Phone rails had to scroll sideways.** Eight six-product grids stacked two-up made the
+homepage **13,595 CSS pixels** tall at 390px — about sixteen screens of grid. They scroll
+horizontally below 700px now, which took it to 8,611.
+
+**3. `position: sticky` cannot dock the add-to-bag.** A sticky element is confined to its
+parent's box, and the button's parent is the size picker — so it pinned for a few hundred
+pixels and left with it, exactly missing the stretch (description, spec table, reviews) it
+exists for. It is `fixed`, with `body:has(.bagdock) main` paying for the space only on the
+pages that have one.
+
+### Band E became a rail (README Step 43)
+
+The plan specifies a 4-across grid, after the reference. The `anyjersey_files/demo` concept
+goes further and makes it 4 × 2 — eight sport tiles. Built either way it is two screens of
+tiles before a product appears, and the second row sits below the fold on every laptop, so
+the sports at the bottom of the catalogue land at the bottom of the page as well. One
+scrolling row instead: every sport the same distance from the top, and a band whose height
+does not change as sports are added. The tile content is unchanged from what §5 band E
+specifies — a product photograph bled and darkened under a label — plus a count pill.
+
+### Gates
+
+`a11y_check.py` **0 mechanical issues across 25 pages**, `contrast_check.py` all pairs pass
+(three new ones for the dark band and the mosaic scrim), 86 storefront tests, 459 backend
+unit tests, a clean `next build`. Two regressions the gates caught and that are fixed: two
+search boxes sharing the id `q-main` on every listing page, and a homepage with no `<h1>`
+once the hero was removed.
+
+### Still to do
+
+1. §8 item 1 — classify the ~86 unsported products and fix the misspellings behind them.
+2. §8 item 5 — per-team thumbnails, then decision 4 can become photo crops.
+3. §8 items 6 and 7 — the missing shorts, and the unresolved Best Sellers handles.
+4. The favourites cookie behind "Add Favorites" (§5 band D).
+5. A keyboard traversal and a screen-reader pass over the mega-panels by hand. The mechanical
+   checks cover markup; they cannot tell you whether the panel is pleasant to operate.

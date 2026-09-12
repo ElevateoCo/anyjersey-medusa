@@ -55,6 +55,23 @@ export type DataStore = {
   erasure: ErasureAction
   /** Required when erasure is `retain` or `anonymise`. */
   reason?: string
+  /**
+   * True when the period is set by the law of the customer's own country rather than by us.
+   *
+   * Invoice retention is the case that forced this field: how long a tax record must be
+   * kept is the law of the place of supply, and it is six years in one country and ten in
+   * another. `retentionDays` below is the figure the job applies **today**, and it is the
+   * US one — so for an EU or UK customer it is this business's current practice rather than
+   * a period anybody has checked against their law.
+   *
+   * Flagging it does not fix it, and is not meant to. What it does is stop the number being
+   * read as settled: `JURISDICTION_SET` is enumerable, the storefront names the same rows to
+   * the reader whose law governs them, and a decision that has not been taken is visible in
+   * both places instead of being implied by a confident-looking seven.
+   *
+   * Resolving it is an accountant's job per market, not an engineering one.
+   */
+  jurisdictionSet?: true
 }
 
 const YEAR = 365
@@ -170,6 +187,8 @@ export const DATA_STORES: DataStore[] = [
     subjectKey: 'email',
     basis: 'Contract, and legal obligation — tax and customs record-keeping',
     retentionDays: 7 * YEAR,
+    // Seven years is the US figure. See `jurisdictionSet`.
+    jurisdictionSet: true,
     published: 'Orders and invoices — seven years, tax and customs record-keeping requires it',
     erasure: 'retain',
     reason:
@@ -199,6 +218,16 @@ export const DATA_STORES: DataStore[] = [
  * in no code — just pointing the other way.
  */
 export const UNRESOLVED = DATA_STORES.filter((s) => s.retentionDays === null)
+
+/**
+ * Stores whose period is the customer's own tax law rather than our choice.
+ *
+ * Distinct from `UNRESOLVED` on purpose. An unresolved row has **no** period and nothing
+ * prunes it; these rows have one and it runs — it is simply the wrong authority's number
+ * for a customer outside the US. Collapsing the two would either stop pruning invoices,
+ * which is worse, or hide the question.
+ */
+export const JURISDICTION_SET = DATA_STORES.filter((s) => s.jurisdictionSet)
 
 export const byTable = (table: string) => DATA_STORES.find((s) => s.table === table)
 

@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import {
-  ANONYMISED, DATA_STORES, SEARCHABLE, UNRESOLVED, byTable, maskEmail,
+  ANONYMISED, DATA_STORES, JURISDICTION_SET, SEARCHABLE, UNRESOLVED, byTable, maskEmail,
 } from '../privacy'
 
 /**
@@ -143,9 +143,23 @@ describe('the published policy and the register agree', () => {
     expect(published).toContain('export const RETENTION')
   })
 
-  it('still tells subjects we respond within 30 days', () => {
-    // The endpoint exists to make this achievable. If the sentence goes, the endpoint has
-    // lost its reason to be shaped the way it is.
-    expect(published).toContain('respond within 30 days')
+  it('still commits to a deadline, and defers to a shorter statutory one', () => {
+    // The endpoint exists to make a deadline achievable; if the commitment goes, the
+    // endpoint has lost its reason to be shaped the way it is.
+    //
+    // It used to be a flat "respond within 30 days" for every reader. That is the GDPR
+    // period and it is *slower* than Brazil's fifteen, so as a global promise it committed
+    // this shop to missing the LGPD deadline for every Brazilian customer. The sentence now
+    // leads with the reader's own statutory period and keeps 30 days as the floor where
+    // their law sets none.
+    expect(published).toContain('within the period your own law sets')
+    expect(published).toContain('we answer within 30 days')
+  })
+
+  it('does not publish a jurisdiction-set period as though it were settled', () => {
+    // The invoice row runs on the US figure. Saying so on the page is the difference
+    // between a practice and a claim about somebody else's tax law.
+    expect(JURISDICTION_SET.map((s) => s.table)).toContain('order')
+    expect(published).toContain('not ours to set')
   })
 })

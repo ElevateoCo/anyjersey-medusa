@@ -56,6 +56,17 @@ class Audit(HTMLParser):
         self.open_a: dict | None = None
         self.a_text = ''
         self.has_main = False
+        self.in_main = False
+        # The page's own outline: headings inside <main> and *outside* any <nav>.
+        #
+        # Both exclusions are deliberate. The site header carries h3 column labels inside
+        # the mega panels, and the listing page carries h3 group labels inside the facet
+        # rail — both are legitimate structure inside a labelled navigation landmark, and
+        # both would otherwise be read as the document opening at h3. What a screen-reader
+        # user gets from a heading list is the document, and a filter group is not part of
+        # the document.
+        self.main_headings: list[int] = []
+        self.nav_depth = 0
         self.has_h1 = 0
         self.navs: list[dict] = []
         self.radio_groups: dict[str, int] = {}
@@ -80,12 +91,16 @@ class Audit(HTMLParser):
             self.labels_for.add(a['for'])
         if tag in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
             self.headings.append(int(tag[1]))
+            if self.in_main and self.nav_depth == 0:
+                self.main_headings.append(int(tag[1]))
             if tag == 'h1':
                 self.has_h1 += 1
         if tag == 'main':
             self.has_main = True
+            self.in_main = True
         if tag == 'nav':
             self.navs.append(a)
+            self.nav_depth += 1
         if tag == 'fieldset':
             self.open_fieldsets += 1
             self.fieldset_has_legend.append(False)
@@ -117,6 +132,11 @@ class Audit(HTMLParser):
             self.a_text += d
 
     def handle_endtag(self, tag):
+        if tag == 'main':
+            # The footer's headings come after it and are not part of the page's outline.
+            self.in_main = False
+        if tag == 'nav':
+            self.nav_depth = max(0, self.nav_depth - 1)
         if tag == 'button' and self.open_button is not None:
             a = self.open_button
             if not self.button_text.strip() and not a.get('aria-label') and not a.get('aria-labelledby'):
@@ -150,6 +170,21 @@ class Audit(HTMLParser):
             self.problems.append('no <main> landmark')
         if self.has_h1 != 1:
             self.problems.append(f'{self.has_h1} <h1> elements (want exactly 1)')
+
+        # The page's own outline has to *start* at h1.
+        #
+        # The jump check above cannot see this: it starts at prev=0, so the first heading
+        # never trips it, and an h2 sitting before the h1 is not a jump *down* — it is the
+        # h1 arriving late. A real one got through. The jurisdiction panel on the privacy
+        # policy was rendered in its own band above the document, which read correctly and
+        # opened the page h2-then-h1; a screen-reader user pulling up the heading list got
+        # a section before the thing it is a section of.
+        #
+        # Scoped to <main> on purpose — see `main_headings`.
+        if self.main_headings and self.main_headings[0] != 1:
+            self.problems.append(
+                f'first heading in <main> is h{self.main_headings[0]}, not h1'
+            )
 
         # More than one <nav> and they must be distinguishable by name, or a screen reader
         # announces "navigation" twice and the listener cannot tell them apart.

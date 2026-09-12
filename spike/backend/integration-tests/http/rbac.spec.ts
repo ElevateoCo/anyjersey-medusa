@@ -129,6 +129,12 @@ medusaIntegrationTestRunner({
         // would make Staff a role that cannot do the thing Staff exists for.
         expect((await api.get('/admin/customer-list', staff)).status).toBe(200)
       })
+
+      it('reads the order register, because working the queue is the job', async () => {
+        // Gated on `order:read`, which Staff already has for the revenue report. A picker
+        // who cannot see which orders are unfulfilled cannot pick.
+        expect((await api.get('/admin/order-list', staff)).status).toBe(200)
+      })
     })
 
     describe('staff cannot do the dangerous things', () => {
@@ -165,6 +171,16 @@ medusaIntegrationTestRunner({
 
         // And the owner can, or the split would just be a broken feature.
         expect((await api.get('/admin/customer-list/export', owner)).status).toBe(200)
+      })
+
+      it('cannot export the order register either, for the same reason', async () => {
+        // A register carries every customer's name, address and phone arranged differently
+        // — the same personal data, so the same lock. Gating it on `order:read`, which
+        // Staff has, would give the bulk extract a second door with a weaker one.
+        const res = await api.get('/admin/order-list/export', staff).catch(fail)
+        expect(res.status).toBe(403)
+
+        expect((await api.get('/admin/order-list/export', owner)).status).toBe(200)
       })
 
       it('cannot see which keys are configured', async () => {

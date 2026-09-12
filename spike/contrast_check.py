@@ -61,12 +61,19 @@ PAIRS = [
 LITERAL = [
     # Non-token colours used inline in components and templates.
     ('yellow button label',   '#121212', TOKENS.get('yellow', '#F9E806'), 4.5),
-    ('hero body on ink',      '#D6D6D2', TOKENS.get('ink', '#121212'),    4.5),
-    ('announce text on ink',  '#FFFFFF', TOKENS.get('ink', '#121212'),    4.5),
+    ('lede on ink band',      '#D6D6D2', TOKENS.get('ink', '#121212'),    4.5),
+    ('white on ink band',     '#FFFFFF', TOKENS.get('ink', '#121212'),    4.5),
     ('yellow on ink',         TOKENS.get('yellow', '#F9E806'), TOKENS.get('ink', '#121212'), 3.0),
     ('error text on paper',   '#B3261E', TOKENS.get('paper', '#FFFFFF'),  4.5),
     ('email footer grey',     '#6a6a6a', '#ffffff', 4.5),
     ('email body grey',       '#4a4a4a', '#ffffff', 4.5),
+    # Cards inside the custom-jerseys band sit on their own raised surface (#1C1C1A)
+    # rather than straight on --ink, so the muted subtitle on them is its own pair.
+    ('card subtitle on band',  '#A6A6A1', '#1C1C1A', 4.5),
+    ('card surface on band',   '#2E2E2B', '#1C1C1A', 1.0),
+    # Band A is dark now, so its two text colours are new pairs: the promise line and the
+    # secondary links sit on --ink, and the link inside the promise is white.
+    ('utility text on ink',    '#C9C9C4', TOKENS.get('ink', '#121212'), 4.5),
 ]
 
 fails = []

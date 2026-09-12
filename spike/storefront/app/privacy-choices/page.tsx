@@ -1,4 +1,7 @@
 import PrivacyChoices from '@/components/PrivacyChoices'
+import YourRights from '@/components/YourRights'
+import { getVisitorGeo } from '@/lib/geo'
+import { jurisdictionFor } from '@/lib/jurisdiction'
 import { abs } from '@/lib/site'
 
 export const metadata = {
@@ -23,12 +26,37 @@ export const metadata = {
  * personal data for targeted advertising at all, and nothing non-essential loads before
  * consent. Saying so is not marketing, it is the material fact a reader of this page needs.
  */
-export default function PrivacyChoicesPage() {
+export default async function PrivacyChoicesPage() {
+  const geo = await getVisitorGeo()
+  const j = jurisdictionFor(geo.country, geo.region)
+  // The sale/sharing opt-out is a US-state right. Everyone else lands here from the footer
+  // or the consent notice and needs their own route, not somebody else's boilerplate.
+  const hasOptOut = j.rights.includes('optout')
+
   return (
     <section className="band">
       <div className="wrap prose">
         <p className="eyebrow">Legal</p>
         <h1>Your Privacy Choices</h1>
+
+        <YourRights j={j} />
+
+        {!hasOptOut && (
+          <div className="psec">
+            <h2>Why the rest of this page may not be about you</h2>
+            <p>
+              The opt-out below is a right created by US state privacy law. Under {j.law} you
+              are not asked to opt out of sale or sharing, because the same activity would
+              need your consent before it happened at all &mdash; and nothing non-essential
+              on this site runs before you give it. The control still works, and turning
+              measurement off here turns it off everywhere.
+            </p>
+            <p>
+              The US disclosure is kept in full below rather than hidden from you. It is the
+              same page for every reader; only the part named as yours changes.
+            </p>
+          </div>
+        )}
 
         <div className="psec">
           <p>

@@ -55,7 +55,10 @@ function Blocks({ blocks }: { blocks: Block[] }) {
                     <th scope="row">{f.label}</th>
                     <td>
                       {f.value
-                        ? f.value
+                        ? <>
+                            {f.value}
+                            {f.derived && <span className="derived">{f.derived}</span>}
+                          </>
                         : <span className="gap">Not yet appointed &mdash; {f.why}</span>}
                     </td>
                   </tr>

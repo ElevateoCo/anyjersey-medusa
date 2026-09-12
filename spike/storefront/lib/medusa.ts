@@ -4,12 +4,29 @@ const PK = process.env.NEXT_PUBLIC_MEDUSA_PK ?? ''
 export const REGION_ID = process.env.NEXT_PUBLIC_REGION_ID ?? ''
 
 export type Facet = { value: string; count: number }
+/**
+ * A team carries the league and the sport it sells in, paired off the catalogue rather
+ * than mapped by hand. The navigation needs both and they are not the same grouping:
+ * Barcelona is league CLUB and sport soccer, England is league SOCCER and sport soccer.
+ */
+export type TeamFacet = Facet & { league: string | null; sport: string | null }
+/**
+ * Athletes, bucketed by sport and capped per bucket by the endpoint.
+ *
+ * A flat top-N would be entirely NFL and would lose the athletes this facet exists for —
+ * the MMA fighters carry one or two products each and no team at all.
+ */
+export type PlayerBucket = {
+  sport: string | null
+  players: (Facet & { team: string | null })[]
+}
 export type Facets = {
   total: number
   /** How many custom (blank, print-to-order) jerseys exist. A count, not a facet list. */
   custom: number
-  leagues: Facet[]; teams: Facet[]; sports: Facet[]
+  leagues: Facet[]; teams: TeamFacet[]; sports: Facet[]
   colourways: Facet[]; garments: Facet[]; seasons: Facet[]
+  players: PlayerBucket[]
 }
 export type Detail = {
   team?: string | null; player?: string | null; colourway?: string | null
@@ -73,10 +90,22 @@ export type PersonalisationOffer = {
   notice: { non_returnable: string; lead_time: string }
 }
 
-export function listJerseys(params: Record<string, string | number | undefined>) {
+/**
+ * An array value is appended as a repeated key, not comma-joined.
+ *
+ * `?garment=shorts&garment=set` reaches Express as an array, and the route hands the array
+ * to MikroORM, which reads it as an IN. A comma would arrive as the single literal string
+ * "shorts,set" and match nothing — an empty listing that looks exactly like an empty
+ * catalogue, with no error anywhere. The "Shorts & Kits" nav slot is built on this.
+ */
+export function listJerseys(
+  params: Record<string, string | string[] | number | undefined>
+) {
   const qs = new URLSearchParams({ region_id: REGION_ID })
   for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== '') qs.set(k, String(v))
+    if (v === undefined || v === '') continue
+    if (Array.isArray(v)) v.forEach((one) => one !== '' && qs.append(k, String(one)))
+    else qs.set(k, String(v))
   }
   return get<{
     count: number; limit: number; offset: number; products: Card[]

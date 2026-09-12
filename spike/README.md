@@ -31,9 +31,14 @@ Four things, built in order:
 | **24** | Custom jerseys, from the live store | ✅ 66 products, printing included, $89.99 |
 | **25** | The missing pages, in the live store's own words | ✅ contact · privacy choices · newsletter — **and a returns policy reversal** |
 | **26** | Catalog re-sync + curated collections | ✅ 3,222 → **4,324 products**, 11 collections, 1,782 images |
+| **42** | The NFL Shop layout, built | ✅ 5 bands · 12 nav slots · mega-panels · phone drawer · team colours |
+| **43** | The demo concept's functionality, integrated | ✅ sport rail · recently viewed · multi-select filters |
+| **44** | Consent by jurisdiction | ✅ opt-in where the law asks, notice where it tells — California included |
+| **45** | The rest of the policy follows the visitor | ✅ rights · deadlines · DSAR routes · the retention row that is not ours to set |
+| **46** | Campaign banner | ✅ full-bleed 8:3 video or still, pause control, reduced-motion, dev-only placeholder |
 
-**940 tests** now: 413 backend unit, 382 backend integration against a real database, 63
-storefront, 82 python — plus a contrast audit, an 18-page accessibility audit, and a
+**Tests now: 459 backend unit, 385 backend integration against a real database, 107
+storefront, 82 python** — plus a contrast audit, a 25-page accessibility audit, and a
 self-test proving the accessibility checks can actually fail.
 
 ## What is running
@@ -927,6 +932,111 @@ or they fail with *"Shipping method version is required to load adjustments"*, w
 nothing useful; and a test I wrote caught my own later change, when adding the
 `cart-recovery` template broke the registry assertion. That is the test suite doing its job.
 
+
+---
+
+## Step 41 — an order register, and two bugs it found
+
+Medusa has an orders screen. What it has no answer for is the question a register exists to
+answer — *show me every order in a period, with the money broken out and the things that stop
+it shipping visible* — and it has no export at all, which is the half a bookkeeper and a
+picker both need.
+
+Same routing call as Step 40, for the same reason: this is **`/admin/order-list`**, not
+`/admin/orders`. A route file of ours on Medusa's path registers a second handler, one of the
+two wins on load order, and whichever loses is the admin's own orders screen rendering blank
+columns. The screen is labelled *Order register* rather than *Orders*, because Medusa's screen
+is still there and is still where an order is actually worked.
+
+### Status is derived, and that is the whole risk
+
+`payment_status` and `fulfillment_status` are computed properties on Medusa's order DTO, and a
+computed field that does not resolve through `query.graph` comes back `undefined` rather than
+erroring — the trap this README records at every layer, and the one that once produced a cart
+page showing $0.00 above a $4.99 total. So both are derived from `payment_collections` and
+`fulfillments`, which are ordinary relations.
+
+A derivation is only better than the trap if it is checked, and this one was written against a
+database that had already gone unreachable. Checking it is what found the two bugs below.
+
+### Bug one: the refund branch could never fire
+
+`paymentState()` summed `captured_amount` and `refunded_amount` off each **payment**:
+
+```
+const captured = payments.reduce((s, p) => s + num(p.captured_amount ?? 0), 0)
+const refunded = payments.reduce((s, p) => s + num(p.refunded_amount ?? 0), 0)
+if (refunded > 0 && captured > 0 && refunded >= captured) return 'refunded'
+```
+
+`payment` has no such columns. Checked against the running database:
+
+```
+              Table "public.payment"
+ id | amount | currency_code | provider_id | data | captured_at | canceled_at | ...
+```
+
+On the Payment model both figures are *computed* from the `captures` and `refunds` relations,
+so neither arrives through `query.graph` even under `.*`. Both sums were therefore always 0,
+the branch was unreachable, and **a fully refunded order reported as `paid`** — on the screen
+a bookkeeper reconciles from, and worse because Step 38 made refunds actually execute.
+
+`payment_collection` carries `authorized_amount`, `captured_amount` and `refunded_amount` as
+ordinary stored numeric columns. The totals now come off the collection, and the branch has
+six unit tests including a partial refund, a refund with nothing captured behind it, and the
+`numeric`-as-string case.
+
+### Bug two: the Subtotal column double-counted shipping
+
+The money is broken out because a total is not what anybody reconciles against — tax,
+shipping and discount each land in a different place in a bookkeeper's month. The register
+asked Medusa for `subtotal` and `shipping_total`. Measured against a real two-item order:
+
+| Field | Value |
+|---|---|
+| `item_subtotal` | 129.98 |
+| `shipping_subtotal` | 4.99 |
+| `subtotal` | **134.97** |
+| `total` | 134.97 |
+
+**Medusa's `subtotal` already includes the shipping.** So the export invited exactly the
+addition it was built to prevent: 134.97 + 4.99 = 139.96 against a total of 134.97, wrong by
+the shipping on every row of every month. It now reads `item_subtotal` and
+`shipping_subtotal` — both net of tax, which is why `tax_total` is a column of its own and the
+four add up. An integration test asserts the identity rather than the columns:
+items + shipping + tax − discount = total.
+
+### What the verification established
+
+| | |
+|---|---|
+| **`authorized`, not `paid`** | `@medusajs/payment`'s system provider authorises and does not capture, so a completed test order lands on `authorized`. Stripe's provider captures on confirm and reads `paid`. The assertion that carries the weight is that it is **not** `not_paid` — the column default, and exactly what a failed resolution produces, silently |
+| **The parcel lifecycle** | unfulfilled → fulfilled → shipped → delivered, driven through Medusa's own admin endpoints against real fulfilments. `delivered` outranks `shipped` deliberately: a partly delivered order is still in motion |
+| **Personalisation is upper-cased at capture** | the line export carries `name: ALLEN`, not `name: Allen`. A print file is not the place to preserve the casing somebody happened to type, and the export is what a printer works from |
+| **The two shapes stay different** | one row per order reconciles a month; one row per line picks and packs. The order-level money is absent from the line file, asserted on the header, because summing it would double-count shipping on every row |
+
+### Two exports, deliberately
+
+`?rows=orders` is one row per order. `?rows=items` is one row per line — what a shop picks
+and packs from, and what Shopify's own order export produces. Neither substitutes for the
+other, and the line file carries the personalisation on the line it gets printed on; a picker
+holding only the register has to open every order to find it.
+
+Both are **`privacy:read`**, owner-only, and the list is `order:read`, which Staff already
+has for the revenue report. A register carries every customer's name, address and phone
+arranged differently — the same personal data the customer export does — so gating it on
+`order:read` would give the bulk extract a second door with a weaker lock. `rbac.spec.ts`
+asserts both halves of that split, next to the customer-list pair.
+
+### A note for whoever writes the next suite
+
+**The integration runner truncates the database between tests.** Measured, not assumed: an
+order created in one test is gone by the next, and `/admin/orders` agrees with the register on
+that at every step. Three tests in the first draft of `orders.spec.ts` asserted on "the orders
+that exist" and read 0 or 1 — which looks exactly like a broken endpoint and cost an hour of
+chasing one. Every test builds the orders it counts. The comment in `customers.spec.ts` saying
+data is kept across a file is misleading; its own tests are all self-sufficient, which is why
+they pass.
 
 ---
 
@@ -2908,3 +3018,561 @@ broke a direct call — a test that omitted it is what surfaced it.
 **1,076 products are in this catalog and not on the live store.** They are not deleted here.
 The shop sources to order, so a delisted product is not necessarily an unsellable one — that
 is a merchandising decision, and the sync reports the number rather than acting on it.
+
+
+## Step 42 — the NFL Shop layout, built
+
+`layout-plan.md` had sat as a plan since 2026-09-07 with seven decisions awaiting an answer.
+This builds it. The plan's own reasoning is unchanged and is still the place to read *why*;
+what follows is what happened on contact with a real catalogue, and §11 of that document is
+the short version.
+
+### The shape
+
+Five bands, in the reference's order. Two dark bands around a white masthead is the whole
+visual idea — it is what makes the search field read as the centre of the page.
+
+```
+A  utility    dark · the sourcing promise left · Track · Help · Returns · Ship to
+B  masthead   logo · 640px centred search · account · bag        ┐ sticky
+C  catnav     12 slots + More, 8 of them with mega-panels        ┘
+D  who-rail   circular team tiles, in team colours
+E  mosaic     4 full-bleed destination tiles
+```
+
+Below 900px that collapses to one 56px row — ☰ · logo · magnifier · bag — with the bar
+becoming a `<details>` accordion in a drawer and search taking the whole screen as a sheet.
+Before this there was **no mobile menu at all**: the utility bar was hidden outright below
+720px, so Track Order, Help, Returns and the account were unreachable on most of the traffic.
+
+### The bar is a model, not a list in JSX
+
+`storefront/lib/nav.ts`. Twelve slots and an overflow, the reference's own budget, built from
+`/store/facets` and the curated collections:
+
+```
+Shop All · Shop by Team · Shop by Athlete · Best Sellers
+Football · Soccer · Basketball · Baseball · College
+Jerseys · Shorts & Kits · Custom          + More
+```
+
+Three rules hold it up, and the plan argued each of them before any of this was written:
+
+| | |
+|---|---|
+| **Ordered data with a position** | `world-cup-2026` resolves to more products than Best Sellers. In a World Cup summer it takes a bar slot and Custom moves into More — that has to be a number, not an edit |
+| **Derived, never typed** | Every team, athlete and count comes off the catalogue. Best Sellers is the single exception, because nothing about a product implies "best seller", and it is guarded on the collection existing |
+| **A threshold, not a full bar** | Hockey (16) and MMA (13) are in More. A top-level nav item leading to sixteen products is a dead end that looks like a section |
+
+Counts go in the panels and never on the bar. "Hockey 16" on a dark nav bar reads as an
+apology. NBA is *on* the bar rather than in More as the plan recommended, because the Step 26
+re-sync took it from 30 products to **477** — the recommendation was right for its data.
+
+The panels are server components. `NavItem` is the only client code in the header and all it
+owns is a boolean, so 173 team links and 120 athlete links are in the first response rather
+than behind hydration. `layout.tsx:76` records that this codebase has put server data on the
+wrong side of that boundary twice.
+
+### Band D: colours, because logos are out and photographs are not built
+
+The plan wanted a tight square crop of each team's best product photo. That needs a per-team
+thumbnail endpoint that does not exist (§8 item 5), so the tile is the team's **colours** with
+its initials over them — `storefront/lib/team-colors.ts`, 173 teams.
+
+This is a better stopgap than it sounds. Fanatics is an NFL licensee and we are a reseller, so
+their crests are out of the question either way; a colour pair is not a mark, is not
+registrable on its own, and is how every broadcaster and newspaper denotes a club. It also
+loads as CSS rather than as 173 images.
+
+**The ink on each disc is computed, not chosen.** Packers gold and Cape Verde blue need
+different text colours, and several pairs pass 3:1 against one and fail against the other.
+`contrast_check.py` reads tokens out of a stylesheet and has no way to evaluate a colour
+generated at render time, so a test asserts the 3:1 large-text floor across all 150+ entries
+instead. A retro shirt keeps its own era's colours: Houston Oilers are not Titans navy.
+
+### The data pass came first, as the plan argued it should
+
+**MMA has a sport now.** `backend/src/scripts/classify-mma.ts` — `sport='mma'` derived from
+membership of the `mma-2026` collection, which is a human's editorial list and a better signal
+than anything in the titles. **13 rows, not the 12 estimated**, plus three fighter names that
+had a garment word stuck on the end ("Ilia Topuria Short" → "Ilia Topuria"). Ten fighters who
+were unreachable from every rail and every nav item now have a bar entry, a facet and a column
+in the Athletes panel.
+
+**`/store/facets` gained two things.** `players`, bucketed by sport and capped *per bucket* —
+a flat top-N would have been entirely NFL and would have lost the fighters, who carry one or
+two products each and are the whole reason the facet exists. And `league` **and** `sport` on
+every team, paired off the catalogue rather than mapped by hand, because the storefront
+otherwise needs a copy of `TEAM_LEAGUE` that goes stale the first time a team is renamed. The
+two are not the same grouping: Barcelona is league CLUB and sport soccer.
+
+**The cache key carries the payload shape.** `cacheKey('facets', 'v3')`. Without it the new
+fields would have gone out behind a warm cache — every instance serving the old shape for five
+minutes after a deploy while the storefront reading the new fields rendered an empty
+navigation, with no error anywhere.
+
+**What the pass exposed rather than fixed.** With the fighters classified, the unsported
+`player` bucket holds only wreckage: "Detriot Lions", "Philidelphia 76ers", "Memphis Grizzles",
+"Wyoming Cowboys Josh Allen" — team names and title fragments sitting in the `player` column.
+`lib/nav.ts` drops that bucket from the Athletes panel and a test pins that it does, because
+the alternative is a misspelled team in the navigation under the heading "Athletes". That is
+§8 item 1 and it is still open: about 86 products have no sport.
+
+### Four things the plan did not anticipate
+
+**1. The listing page could not honour its own nav.** Five of the twelve slots filter on
+`sport` and two carry two garment values. `/jerseys` read neither — the parameter was in the
+URL, nothing read it, and the page returned the entire catalogue looking exactly like it had
+worked. A multi-value filter reaches MikroORM as an `IN` only if the key is **repeated**
+(`?garment=shorts&garment=set`); a comma arrives as the literal string `"shorts,set"` and
+matches nothing. Worse, `buildQuery` dropped arrays when rebuilding a URL, so a shopper on
+Shorts & Kits who touched a filter or the sort control was silently given all 4,323 products
+with the chips still claiming a filter was applied. The test that asserted arrays were dropped
+now asserts the opposite, and says why.
+
+**2. Phone rails had to scroll sideways.** Eight six-product grids stacked two-up made the
+homepage **13,595 CSS pixels** tall at 390px — roughly sixteen screens of product grid between
+the mosaic and the reviews. They scroll horizontally below 700px now: **8,611**.
+
+**3. `position: sticky` cannot dock an add-to-bag.** A sticky element is confined to its
+parent's box and this button's parent is the size picker, so it pinned for a few hundred
+pixels and then left with it — gone by the description, which is precisely the stretch it
+exists for. It is `fixed`, and `body:has(.bagdock) main` pays for the space only on pages that
+have one rather than putting 88px of dead air at the bottom of every page on the site.
+
+**4. The bar wrapped, which is the exact defect §4 records against the old header.** Thirteen
+items at the original spacing took two rows at 1440px. The fix is the gap and the tracking,
+not the item count — our labels name an axis ("Shop by Athlete") where the reference's name a
+sport.
+
+### Two regressions the gates caught
+
+Both were mine, both were invisible by eye, and both are the argument for having the gates:
+
+- **Two comboboxes sharing the id `q-main`** on every listing page, once the masthead search
+  stopped being the `compact` variant. `SearchBox` takes an explicit `id` now.
+- **A homepage with no `<h1>`**, because the dark hero carried it. It is back as a one-line
+  lede on paper above the mosaic — the store's own sentence at a weight that does not need
+  60vh of ink and a second search box to say it.
+
+### Also removed
+
+The `.todo` block on the homepage **and the one on every product page**, directly under the
+buybox, telling a customer that something is blocked at the moment they are deciding to buy.
+Both are behind `NEXT_PUBLIC_SHOW_TODO` now. What they record is still true.
+
+### Gates
+
+```
+a11y_check.py      0 mechanical issues across 25 pages
+contrast_check.py  all pairs pass — 3 new ones for the dark band and the mosaic scrim
+storefront         86 tests   (21 new: 12 nav model, 9 team colours)
+backend unit       459 tests
+backend http       catalog / jerseys / custom-jersey specs green against a real database
+next build         clean
+```
+
+Verified in a browser at 1440px and at 390px: the bar on one row, the team panel with seven
+league columns, the drawer accordion, the Shorts & Kits listing at 186 of 4,323 with two
+independently removable chips, and the docked add-to-bag.
+
+## Step 43 — the demo concept, integrated
+
+`anyjersey_files/demo` is a single-file storefront concept built on the same catalogue —
+"pick your sport" over a grid of sport tiles, a personaliser on the landing page, recently
+viewed, multi-select filters. This takes the parts the spike did not have.
+
+**The rule was: do not rebuild what already works.** Six of the demo's features were already
+here and were left alone — the bag drawer, the free-shipping threshold, search suggestions,
+the mega-panel navigation, the sticky add-to-bag, and the product-page personaliser, which is
+considerably more capable than the demo's because it prices the selection and validates it
+server-side. What follows is only the gaps.
+
+### The tile band: a rail, and the caption under the photograph
+
+The explicit ask, and the one place this deliberately diverges from the concept. The demo
+lays the sport tiles out 4 × 2. As a grid that is two screens of tiles before a product
+appears and the second row is below the fold on every laptop — so the sports at the bottom
+of the catalogue end up at the bottom of the page too, which is the opposite of what a band
+called "pick your sport" is for. One scrolling row keeps every sport the same distance from
+the top and gives the band a fixed height whatever the catalogue grows to.
+
+It now carries **ten tiles**: all seven sports, then Custom, Request and Best Sellers. Every
+count and every photograph is the catalogue's. Arrows appear only where they are needed —
+hidden when nothing overflows, and on touch, where the gesture is the affordance.
+
+**The label sits under the image, not on it** — the second revision, and the more important
+one. The first version bled the photographs edge to edge and set the label over them under a
+dark scrim, which is what nflshop.com does in its *hero*. It costs something this catalogue
+cannot easily pay: type over a photograph nobody art-directed has no guaranteed contrast, so
+the scrim has to be heavy enough for the worst case — a white shirt on a white wall — which
+darkens every image that did not need it. Their **editorial rail** puts the caption
+underneath on the page ground, and that is the pattern here now.
+
+Three things fall out of it:
+
+- The label is ink on paper, which is a pair `contrast_check.py` can actually evaluate.
+  Text over an image is not, and the previous version had to be argued about in a comment
+  instead of measured. Three special-case pairs came out of that file.
+- The photographs are shown rather than dimmed. `DEFERRED.md` §6 — two products in three
+  have exactly one photograph and none of it is lifestyle work, so the little there is should
+  be legible.
+- The count stops being a pill floating over a corner and joins the caption line, where it
+  reads as information rather than as a badge. It also stops being the accessibility problem
+  the demo's own audit found: a white count on a translucent white pill, every sampled pixel
+  under 4.5:1.
+
+**The rail sits inside `.wrap`.** An earlier version bled it to the viewport and computed the
+page gutter back with `100vw` arithmetic — which is off by the scrollbar width, and was
+visibly off: the row started at 0 while every heading above and below it started at 96. It
+overflows its container rather than the window, so the peek that tells a thumb there is more
+survives while the first tile lines up with the page. Measured at 1440 and at 390: first
+tile, lede and section heading all share a left edge, and neither width scrolls sideways.
+
+### "Put your name on it" — built, then removed
+
+The demo leads with a personaliser on the landing page and it was ported: a team picker, a
+name and a number, a live proof in the team's real colours, and a draft that followed the
+visitor to a product page and opened the real control already filled in. It worked, end to
+end, across a real navigation.
+
+**It came out after looking at it in place.** It sat directly under the Custom Jerseys band
+— two adjacent ink bands, both headed some version of "put your name on it". The
+propositions underneath are genuinely different (a $89.99 blank you buy, against a $9.99
+add-on that works on any shirt), but stacked like that they read as the same thing said
+twice, and the custom grid says it with product photography.
+
+So the homepage carries the message once, in the Custom Jerseys band, and the live control
+stays where somebody has actually chosen a shirt to put a name on — `Personalise`, on every
+product page, priced and validated server-side. `Maker.tsx`, `lib/maker-draft.ts` and the
+draft-seeding hook in `Personalise` went with it rather than being left unreferenced.
+
+### Recently viewed, and the version of it that was wrong
+
+The first build took a pool of products the page already held and showed the intersection —
+no request, and **almost never a rail**: a homepage holds perhaps sixty of 4,323 products,
+so two genuinely-viewed shirts turned into nothing. Caught by testing it end to end rather
+than by reading it.
+
+Caching the cards in `localStorage` would have worked and put a **stale price** on the one
+rail whose whole job is to take somebody back to a shirt they are still deciding on. So the
+browser holds only the handles, which never go stale, and `/store/jerseys` gained a `handle`
+filter to turn them into current cards. `handle` is a product column where the facets are
+`jersey_detail` ones, so the two are assembled separately — and a test asserts they compose
+rather than one replacing the other.
+
+**Why it is `localStorage` at all**, when this codebase is careful about personal data: the
+alternative is a per-visitor record keyed to a cookie, which is a behavioural profile, needs
+a lawful basis, and lands inside the §31 privacy work as a new category to export and erase.
+A list of handles in the visitor's own browser never reaches us, so there is nothing to
+disclose, export or delete.
+
+### Three smaller gaps
+
+**Multi-select filters.** The sidebar replaced the key outright, so choosing a second team
+swapped it for the first. `toggleQuery` toggles within the key instead, and a chip now
+removes its own value rather than the whole filter. The repeated-key plumbing from Step 42
+is what made this three lines rather than a project.
+
+**`/` focuses search.** The guard is the whole subtlety: it stands down inside any field,
+anything `contenteditable`, and whenever a modifier is held — a shortcut that steals `/`
+while somebody is typing a surname is worse than no shortcut.
+
+**"More like this" reaches past the team.** It was team-only with no fallback, so a product
+with no team showed **nothing** — and that is not an edge case, it is the entire MMA range:
+ten fighters with a player, a sport and no club at all. Their pages were dead ends. It now
+tries team, then league, then player, then sport, and takes the first axis that yields more
+than the shirt itself. Widening one step at a time rather than pooling keeps a Cowboys page
+leading with Cowboys.
+
+### The bug the rails were hiding
+
+Every sport rail on the homepage opened with six **Arizona Cardinals** shirts, three of them
+the same shirt in three colours — the listing sorts alphabetically by handle, and `newest`
+was no better because the catalogue was imported a team at a time. A homepage rail is a
+sample of a sport, and a sample that is one club six times says the opposite of what the
+band is for.
+
+`lib/rails.ts` thins by team rather than re-sorting, so "newest" still means newest — it
+just does not show the same club twice. Products with no team fall back to the player, which
+is what keeps the MMA rail from collapsing to a single tile, and a sport with fewer clubs
+than the rail holds keeps its duplicates rather than rendering a gap.
+
+### What was deliberately not taken
+
+**Star ratings on product cards.** The demo generates them and says so; this catalogue has
+per-product review data for almost nothing, and a fabricated rating on a card is the §12.7
+defect with worse consequences.
+
+**Folding college football into football.** The demo does it to get to four tiles. A rail has
+no tile budget to make room in, and `college football` is a real sport value on 320 products
+here — collapsing it would need the league filter the demo's own README flags as a condition.
+
+### Gates
+
+```
+a11y_check.py      0 mechanical issues across 25 pages
+contrast_check.py  all pairs pass — 6 new ones for the personaliser band and the count pill
+storefront         98 tests   (12 new: rail thinning, filter toggling)
+backend unit       459 tests
+backend http       catalog.spec.ts 20 green, including 3 for the handle filter
+next build         clean
+```
+
+One real contrast failure found and fixed on the way: the personaliser's field border was
+1.49:1 against its own ground where 1.4.11 wants 3:1. It looked fine, which is exactly why
+`--field` exists on the light side of the site and why this one is checked rather than
+eyeballed.
+
+## Step 44 — the cookie banner depends on where the visitor is
+
+The consent machinery was already right in the ways that are hard: nothing non-essential
+loads before a decision, GPC wins outright before any banner logic, and Reject is as
+prominent as Accept. What it did not do was vary by jurisdiction — every visitor got the
+same EU-style question, including the ones whose law never asked for one.
+
+### The rule
+
+| Regime | Where | What renders |
+|---|---|---|
+| **opt-in** | EU/EEA · UK · Switzerland · Brazil · **California** · Québec | A question. Nothing runs until it is answered |
+| **opt-out** | The rest of the US · Canada outside Québec · Asia-Pacific | A notice strip. Measurement on, one click turns it off |
+
+Serving the opt-out notice into Europe would be an ePrivacy violation on **every page
+view**. Serving the opt-in question everywhere is only an annoyance. So the failure
+direction is chosen deliberately: with no edge header — local development, a direct origin
+hit, a CDN not yet configured — the answer is `opt-in`.
+
+### California is opt-in, and not because of the CCPA
+
+California's own privacy law is an ordinary opt-out law. **CIPA is not**: it is a 1967
+wiretapping statute whose pen-register provision plaintiffs have aimed at web trackers since
+2024. Close to four thousand filings in California by July 2026, $5,000 of statutory damages
+per violation, and the pattern in the outcomes is consistent — defendants who blocked
+everything until an affirmative opt-in win, and defendants whose banner appeared after the
+pixel had already sent data lose. A banner is not the defence; the ordering is. So
+California is asked rather than told, and Québec joins it from Law 25.
+
+### Where the country comes from, and where it does not
+
+A CDN edge header — Vercel, Cloudflare, Fastly, CloudFront and Akamai are all read, in that
+order. The edge overwrites whatever a client sent, so it cannot be forged into existence.
+
+**It is not the shipping region.** `lib/region.ts` knows where the parcel goes, which the
+customer chose; this is about where the person is when the page loads, which is what decides
+whether a script may run. A German on holiday in Texas is still under GDPR. Conflating the
+two would be the kind of bug that looks correct in every test written by the person who
+wrote it.
+
+**And we do not geolocate the IP ourselves.** That would mean sending a visitor's address to
+a third-party lookup on the first page view — the exact processing the banner exists to
+gate.
+
+### The boundary
+
+`lib/geo.ts` reads request headers, so it is server-only, and the component gets a plain
+string: `regime="opt-out"`. The country never crosses into the browser bundle. `ConsentRegime`
+is declared in `lib/consent.ts` rather than `lib/geo.ts` for the same reason — a client
+component may import the type without dragging `next/headers` behind it. This codebase has
+crossed that boundary twice before.
+
+`Analytics` takes the same prop. Without it the two would disagree about what the default
+is, one saying "measurement is on" while the other declined to load it.
+
+### Verified against nine simulated locations
+
+Driven through a real browser with the edge headers set, cookies cleared between each:
+
+```
+no header (local dev)    QUESTION    Germany      QUESTION    Texas       notice
+United Kingdom           QUESTION    California   QUESTION    Ontario     notice
+Brazil                   QUESTION    Québec       QUESTION    Australia   notice
+```
+
+Canada and California both abbreviate to `CA`, so the subdivision key carries the country —
+`US-CA` and `CA-QC`. A test asserts Canada does not become opt-in because somebody read the
+country code as the state.
+
+### What it does not decide — closed in Step 45
+
+## Step 45 — the policy follows the visitor, not just the banner
+
+Step 44 made the *ask* depend on where somebody is and left the rest of the document global.
+This closes that: the rights a reader has, the deadline we owe them, the body they complain
+to, and the one retention period that is not ours to set.
+
+### What was wrong with one global document
+
+The privacy policy said, in a single paragraph:
+
+> Wherever you live… In the EU and UK you also have… In California and the other US states…
+
+Every word true, and it makes the reader do the triage. A Texan cannot tell from it whether
+they may demand portability; a German cannot tell that we owe them an answer in one month
+rather than forty-five days. **A right a reader cannot identify as theirs is one they will
+not exercise.**
+
+Worse, one sentence was actively wrong as a global promise. "We respond within 30 days" is
+the GDPR period, and it is *slower* than Brazil's fifteen — so published to everyone it
+committed this shop to missing the LGPD deadline for every Brazilian customer. It now leads
+with the reader's own statutory period and keeps 30 days as the floor where their law sets
+none.
+
+### `lib/jurisdiction.ts`
+
+Nine profiles, resolved from the same edge header Step 44 reads. Each carries the law's name,
+the rights it actually grants, the statutory deadline, the complaint route, and the entity
+appointments that jurisdiction's disclosure needs.
+
+| | Law | Answer within | Notable |
+|---|---|---|---|
+| EU/EEA | GDPR | 30 days, +60 | Article 27 representative named as missing |
+| UK | UK GDPR + DPA 2018 | 30 days, +60 | Complaint route is the ICO |
+| California | CCPA/CPRA | 45 days, +45 | Opt-in regime for CIPA reasons, not CCPA ones |
+| Rest of US | State law where there is one | 45 days, +45 | Sale/sharing opt-out, and the written appeal right |
+| Brazil | LGPD | **15 days** | The period the old global sentence would have missed |
+| Québec | Law 25 | 30 days | |
+| Rest of Canada | PIPEDA | 30 days | |
+| Switzerland | revFADP | **not published** | See below |
+| Unknown | — | 30 days | Strictest profile, not the weakest |
+
+**Two rules govern what may go in that file.**
+
+**Only verified statutory facts.** Every number above was checked, not recalled. Switzerland
+is the proof the rule bites: its period was not confirmed, so `responseDays` is `null` and
+the page says we are confirming it rather than printing something authoritative-looking.
+A published deadline is a promise a regulator can hold us to; a plausible guess is worse
+than an honest gap. Same call `lib/policies.ts` already makes about a controller address.
+
+**Nothing is hidden from anyone.** The document is unchanged and complete for every reader —
+a regulator opening the URL sees the policy a customer does. What varies is which part is
+put *first* and labelled as theirs. Tailoring a legal document by showing different people
+different obligations is a different thing entirely, and not this.
+
+### The retention row that is not ours to set
+
+How long an invoice must be kept is the tax law of the place of supply — six years in one
+country, ten in another. The register held seven years and published it as universal; it is
+the US figure.
+
+`backend/src/privacy.ts` gains `jurisdictionSet`, and `JURISDICTION_SET` alongside the
+existing `UNRESOLVED`. The two are deliberately distinct: an unresolved row has **no** period
+and nothing prunes it, while these rows have one that runs — it is simply the wrong
+authority's number for a customer outside the US. Collapsing them would either stop pruning
+invoices, which is worse, or hide the question.
+
+Flagging it does not fix it and is not meant to. What it does is stop the seven being read
+as settled: it is enumerable in the register, named to the reader whose law governs it, and a
+test asserts the page does not restate it as everybody's. Resolving it is an accountant's job
+per market.
+
+### A markup bug, and the check that should have caught it
+
+The first version put the panel in its own band **above** the document. It read correctly and
+opened the page `h2` then `h1` — a screen-reader user pulling up the heading list got a
+section before the thing it is a section of. `Prose` already had a `children` slot in exactly
+the right place, between the title and the sections.
+
+**The accessibility checker passed it**, because it looks for jumps going *down* and starts
+at `prev = 0`, so the first heading never trips it and a late `h1` is not a jump. It now
+asserts the outline starts at `h1`.
+
+Scoping that rule took two passes and both exclusions are load-bearing. Headings inside
+`<main>` only — the footer's come after it. And **outside any `<nav>`** — the mega panels
+carry `h3` column labels and the facet rail carries `h3` group labels, both legitimate
+structure inside a labelled landmark. Without the second exclusion the new rule fired on
+every listing page. `a11y_selftest.py` now pins the defect and both exclusions: **27 of 27**.
+
+### Gates
+
+```
+a11y_check.py      0 mechanical issues across 25 pages
+a11y_selftest.py   27 of 27 — the new outline rule fires on the defect, not on the nav
+contrast_check.py  all pairs pass
+storefront         129 tests (22 new: jurisdiction mapping, deadlines, right-sets,
+                   which disclosures code may fill in and which it must not)
+backend unit       460 tests
+next build         clean
+```
+
+Verified through a browser against eight simulated locations: each gets its own law, its own
+deadline, its own right-set and its own complaint route.
+
+### Two alignment and disclosure fixes on the way out
+
+**The consent dialog's actions were not on one line.** "Essential only" sat 8px below
+"Accept all" and the row was 60px tall for a 44px button. The cause was a `margin-top:1rem`
+on `.btn.ghost.dark` — spacing the reviews block wanted below its list, riding on the class
+into every other use of it. `align-items:center` centres the *margin* box, so a top margin on
+one flex item offsets it by half. The margin is now `.reviews .btn.ghost.dark`: spacing
+belongs to the thing being spaced, not to the button.
+
+**The request channel now always resolves.** Of the three gaps the EU panel named, exactly
+one could be closed in code, and it was the one that mattered most to a reader: GDPR
+Art. 15–22, the US state laws, the LGPD and Law 25 all require a **contactable channel**, and
+none of them requires a *dedicated* address. An empty `NEXT_PUBLIC_PRIVACY_EMAIL` was
+therefore not an unmet legal requirement — it was a shop with a working, published mailbox
+declining to name it, and a reader with a right to exercise and nowhere to send it. It falls
+back to the support address, marked on the page as standing in rather than appointed, and a
+dedicated address takes precedence the moment one is set.
+
+### Still outstanding, and not fixable in code
+
+Two, down from three:
+
+| | Why code cannot do it |
+|---|---|
+| **Registered address** | A fact about the company. Not derivable from anything in this repository, and inventing it is a false statement to a regulator. One environment variable away |
+| **GDPR Article 27 representative** | A contract with a firm established in an EU member state |
+
+Both are named on the privacy page itself for a reader in the EU, and the consequence is
+already enforced rather than merely disclosed: `EU_GATES` keeps EU and UK orders blocked
+while they are unset, and a test asserts the request-channel fallback does **not** quietly
+unblock them.
+
+## Step 46 — the campaign banner
+
+A full-bleed 8:3 band at the top of the homepage for a campaign video or still, modelled on
+nflshop.com's kickoff banner. `NEXT_PUBLIC_HERO_VIDEO` or `NEXT_PUBLIC_HERO_IMAGE`; with
+neither set it **does not render in production at all** and shows a correctly-sized
+placeholder in development, so an unfinished campaign slot cannot reach a customer.
+
+### Three corrections to the markup it is modelled on
+
+The reference element is `<video playsinline loop preload="none" autoplay>`.
+
+**`muted` is missing, and without it autoplay does not happen.** Every current browser
+refuses to autoplay a video with an audio track unless it is muted. The result is a banner
+that plays for whoever wrote it and shows a frozen first frame for everybody else, with no
+error anywhere.
+
+**`preload="none"` contradicts `autoplay`.** One says do not fetch until asked, the other
+says start now. `metadata` plus a `poster` is the pair that behaves.
+
+**Autoplaying motion needs a way to stop it** — WCAG 2.2.2, anything moving for more than
+five seconds that starts on its own. The reference does have a pause control; it is the part
+of the pattern that is easiest to drop.
+
+On top of those, `prefers-reduced-motion` is checked **before autoplay is attempted** rather
+than acknowledged by a CSS transition somewhere: that visitor gets the poster frame and a
+play button.
+
+### The CSP had no `media-src`
+
+Media fell through to `default-src 'self'`, which happens to allow a file in `public/` and
+**silently blocks** one served from the API or a CDN — the same class of failure
+`DEFERRED.md` §1 records for the wallet buttons. Now stated explicitly, including the API
+origin, since product media already lives behind it.
+
+### Verified, not assumed
+
+Driven through a real browser against a generated 1600×600 clip, then reverted to the
+placeholder:
+
+```
+autoplay        paused:false  muted:true  loop:true  playsInline:true  readyState:4
+pause button    paused:true   label → "Play the banner video"
+resume          paused:false  label → "Pause the banner video"
+reduced motion  paused:true   currentTime:0   play button still offered
+band            1440 × 540 — exactly 8:3       CSP/media errors: none
+```

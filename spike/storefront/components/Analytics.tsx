@@ -1,6 +1,6 @@
 'use client'
 import { useEffect } from 'react'
-import { readConsent } from '@/lib/consent'
+import { readConsent, type ConsentRegime } from '@/lib/consent'
 
 /**
  * Analytics loader.
@@ -13,9 +13,11 @@ import { readConsent } from '@/lib/consent'
  * POSTHOG_API_KEY is a placeholder. Without it this logs the events it would have sent, so
  * the wiring is testable before an account exists.
  */
-export default function Analytics() {
+export default function Analytics({ regime = 'opt-in' }: { regime?: ConsentRegime }) {
   useEffect(() => {
-    const consent = readConsent()
+    // The same regime the banner was given, so the two cannot disagree about what the
+    // default is — one saying "measurement is on" while the other declines to load it.
+    const consent = readConsent(regime)
     if (!consent.analytics) return
 
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
@@ -38,7 +40,7 @@ export default function Analytics() {
     s.crossOrigin = 'anonymous'
     document.head.appendChild(s)
     return () => { s.remove() }
-  }, [])
+  }, [regime])
 
   return null
 }

@@ -94,12 +94,84 @@ medusaIntegrationTestRunner({
       })
     })
 
+    describe('GET /store/jerseys?handle=', () => {
+      /**
+       * The recently-viewed rail holds handles in the visitor's own browser and turns them
+       * into cards here. Looking them up rather than caching the cards is what keeps a
+       * stale price off the one rail whose job is to take somebody back to a shirt they
+       * are still deciding on.
+       */
+      it('returns the named products, priced', async () => {
+        const all = await api.get(
+          `/store/jerseys?region_id=${w.regionId}&limit=100`, storeHeaders(w))
+        const handles = all.data.products.slice(0, 2).map((p: any) => p.handle)
+        expect(handles.length).toBeGreaterThan(0)
+
+        const qs = handles.map((h: string) => `handle=${encodeURIComponent(h)}`).join('&')
+        const res = await api.get(
+          `/store/jerseys?${qs}&region_id=${w.regionId}`, storeHeaders(w))
+        expect(res.status).toBe(200)
+        expect(res.data.products.map((p: any) => p.handle).sort()).toEqual([...handles].sort())
+        expect(res.data.products[0].price).not.toBeNull()
+      })
+
+      /**
+       * `handle` is a product column and the facet filters are `jersey_detail` ones, so
+       * they are assembled separately. They still have to compose — this is the assertion
+       * that would fail if one of them ever replaced the other.
+       */
+      it('composes with a facet filter rather than replacing it', async () => {
+        const all = await api.get(
+          `/store/jerseys?region_id=${w.regionId}&limit=100`, storeHeaders(w))
+        const first = all.data.products[0]
+        const res = await api.get(
+          `/store/jerseys?handle=${encodeURIComponent(first.handle)}` +
+          `&team=${encodeURIComponent('No Such Team')}&region_id=${w.regionId}`,
+          storeHeaders(w))
+        expect(res.data.products).toHaveLength(0)
+      })
+
+      it('returns nothing, not everything, for a handle that does not exist', async () => {
+        const res = await api.get(
+          `/store/jerseys?handle=no-such-shirt&region_id=${w.regionId}`, storeHeaders(w))
+        expect(res.data.products).toHaveLength(0)
+        expect(res.data.count).toBe(0)
+      })
+    })
+
     describe('GET /store/facets', () => {
       it('counts what exists', async () => {
         const res = await api.get('/store/facets', storeHeaders(w))
         expect(res.data.total).toBe(1)
         expect(res.data.leagues).toEqual([{ value: 'NFL', count: 1 }])
-        expect(res.data.teams).toEqual([{ value: 'Buffalo Bills', count: 1 }])
+      })
+
+      /**
+       * The category bar groups 173 teams into the leagues they belong to and into the
+       * sports they sell in, and those are not the same grouping — Barcelona is league
+       * CLUB and sport soccer. Pairing them off the catalogue here is what keeps a
+       * hand-maintained map out of the storefront, so the fields are part of the contract
+       * rather than incidental extras.
+       */
+      it('pairs each team with its league and its sport', async () => {
+        const res = await api.get('/store/facets', storeHeaders(w))
+        expect(res.data.teams).toEqual([
+          { value: 'Buffalo Bills', count: 1, league: 'NFL', sport: 'football' },
+        ])
+      })
+
+      /**
+       * Players are bucketed by sport and capped per bucket. A flat top-N would be
+       * entirely NFL, and the athletes the facet exists for — MMA fighters with no sport,
+       * no league and no team — carry one or two products each and would never make it.
+       */
+      it('buckets players by sport rather than returning a flat top-N', async () => {
+        const res = await api.get('/store/facets', storeHeaders(w))
+        expect(Array.isArray(res.data.players)).toBe(true)
+        const football = res.data.players.find((b: any) => b.sport === 'football')
+        expect(football.players).toEqual([
+          { value: 'Josh Allen', count: 1, team: 'Buffalo Bills' },
+        ])
       })
     })
 

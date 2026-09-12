@@ -2,14 +2,20 @@ import type { Metadata } from 'next'
 import { Inter, Oswald } from 'next/font/google'
 import './globals.css'
 import { getCart, getZone } from '@/lib/cart'
-import { getCollections, getRegions, getStoreReviews } from '@/lib/medusa'
+import { getCollections, getFacets, getRegions, getStoreReviews } from '@/lib/medusa'
 import { getRegionId, regionBlocked } from '@/lib/region'
+import { getVisitorGeo } from '@/lib/geo'
 import { getCustomer } from '@/lib/account'
 import { CONTENT_PAGES, LEGAL_PAGES } from '@/lib/content'
 import { POLICIES } from '@/lib/policies'
 import { INDEXABLE, SITE_NAME, SITE_TAGLINE, SITE_URL, euBlocked } from '@/lib/site'
 import { organisation, website } from '@/lib/seo'
 import CartButton from '@/components/CartButton'
+import SiteNav, { NavAccordion } from '@/components/SiteNav'
+import MobileNav from '@/components/MobileNav'
+import SearchSheet from '@/components/SearchSheet'
+import SearchHotkey from '@/components/SearchHotkey'
+import { buildNav } from '@/lib/nav'
 import ConsentBanner from '@/components/ConsentBanner'
 import Analytics from '@/components/Analytics'
 import SearchBox from '@/components/SearchBox'
@@ -49,7 +55,8 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [cart, zone, regions, regionId, customer, collections, reviews] = await Promise.all([
+  const [cart, zone, regions, regionId, customer, collections, reviews, facets, geo] =
+    await Promise.all([
     getCart(),
     getZone(),
     getRegions(),
@@ -61,7 +68,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     // §12.7 defect, and putting the number in a shared layout is exactly how it happens by
     // accident. `limit: 1` because the footer wants the counts, not the cards.
     getStoreReviews(1),
+    // The category bar is built from the catalogue, not typed out — see `lib/nav.ts`.
+    // Same 5-minute cache the listing pages already share, so the bar costs one request
+    // per window rather than one per page view.
+    getFacets(),
+    /**
+     * Where the visitor is, which decides whether the law requires us to *ask* before
+     * measuring or only to *tell*. Read from a CDN edge header, never from the shipping
+     * region — that is where the parcel goes, not where the person is.
+     */
+    getVisitorGeo(),
   ])
+
+  const nav = buildNav(facets, collections)
 
   const count = (cart?.items ?? []).reduce((n, l) => n + l.quantity, 0)
   const cartData = {
@@ -96,48 +115,101 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <JsonLd data={[organisation(), website()]} />
         <a className="skip" href="#main">Skip to content</a>
 
-        {/* AnyJersey's proposition, unchanged — research.md §12.1 */}
-        <div className="announce">
-          Can&rsquo;t find your jersey? <a href="/request"><strong>Request it</strong></a> &mdash;
-          we&rsquo;ll source it for you fast
+        {/* ---- Band A — utility bar ----------------------------------------------
+            Two slots, not centred text. The left one keeps AnyJersey's proposition: the
+            reference spends this slot on "SIGN UP & SAVE 15%", which is their offer, and
+            sourcing a shirt nobody else stocks is ours — it is the one thing no
+            competitor's layout has a slot for.
+
+            The right one holds what used to be four of the nine links in the old nav row.
+            Moving them here is what frees the width for band C.
+
+            **Not a currency picker.** All five regions are USD (`DEFERRED.md` §3), so a
+            currency chooser would advertise a choice that changes no price. "Ship to" is
+            real: it drives `getZone()` and the free-shipping threshold. */}
+        <div className="utility">
+          <div className="wrap">
+            {/* `.upromise`, not `.promise`: the PDP already owns `.promise` for the
+                bordered sourcing box in its buybox, and a bare class name would have
+                painted a border and a wash background around this line. */}
+            <p className="upromise">
+              Can&rsquo;t find your jersey? <a href="/request">Request it</a> &mdash;
+              we&rsquo;ll source it for you fast
+            </p>
+            <div className="ulinks">
+              <a href="/track">Track order</a>
+              <a href="/contact">Help</a>
+              <a href="/returns">Returns</a>
+              <RegionPicker regions={regionOptions} current={regionId} compact />
+            </div>
+          </div>
         </div>
 
         <header className="site">
+          {/* ---- Band B — brand row ------------------------------------------------
+              Logo, then search with the middle of the bar, then the bag.
+
+              **Search is promoted deliberately.** For a 4,300-product catalogue spanning
+              six sports, search *is* the primary navigation — and a 280px box in the
+              right-hand corner said otherwise. It is also the only control in the header
+              that finds "Makhachev", who belongs to no team and no league.
+
+              The menu button and the magnifier are the phone header; CSS shows them below
+              900px and hides the inline field and the category bar. */}
           <div className="wrap hrow">
+            <MobileNav>
+              <NavAccordion nav={nav} />
+              {/* Band A is hidden on a phone, so its links live here or nowhere. */}
+              <ul className="drawerlinks">
+                <li><a href={customer ? '/account' : '/account/login'}>
+                  {customer ? 'Your account' : 'Sign in'}</a></li>
+                <li><a href="/request">Request a jersey</a></li>
+                <li><a href="/track">Track order</a></li>
+                <li><a href="/contact">Help</a></li>
+                <li><a href="/returns">Returns</a></li>
+              </ul>
+            </MobileNav>
+
             <a href="/" className="logo">Find <em>Any</em> Jersey</a>
-            <Suspense fallback={<div className="search compact" />}>
-              <SearchBox compact />
-            </Suspense>
-            <nav className="main" aria-label="Main">
-              <a href="/jerseys">All Jerseys</a>
-              {/* Editorial, not a facet: no property of a product says "best seller", so
-                  it cannot be derived and has to be curated. */}
-              {collections.some((c) => c.handle === 'best-sellers') && (
-                <a href="/collections/best-sellers">Best Sellers</a>
-              )}
-              <a href="/jerseys?league=NFL">NFL</a>
-              <a href="/jerseys?league=SOCCER">Soccer</a>
-              {/* Its own entry, not a filter buried in the sidebar: it is a different
-                  product — a blank you put your own name on — at a different price. */}
-              <a href="/jerseys?custom=true" className="navcustom">Custom</a>
-              {/* MLB and NBA were here too. Eleven items wrapped the bar onto two rows at
-                  1360px, and every league is one click away in the listing sidebar and in
-                  the "Shop by league" chips on the homepage — whereas Best Sellers and
-                  Custom are reachable from nowhere else. */}
-              <a href="/request">Request a Jersey</a>
-              <a href="/track">Track Order</a>
-              <a href={customer ? '/account' : '/account/login'}>
-                {customer ? 'Account' : 'Sign in'}
+
+            <div className="hsearch">
+              <Suspense fallback={<div className="searchwrap" />}>
+                <SearchBox id="q-header" />
+              </Suspense>
+            </div>
+
+            <div className="hactions">
+              <SearchSheet />
+              {/* The account stays in the masthead rather than moving up into band A with
+                  the other secondary links: band A is hidden below 720px, and an account
+                  control that disappears on most of the traffic is not a secondary link,
+                  it is a missing one. It is in the drawer too. */}
+              <a className="haction" href={customer ? '/account' : '/account/login'}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                  <circle cx="12" cy="8" r="3.6" />
+                  <path d="M4.5 20a7.5 7.5 0 0 1 15 0" strokeLinecap="round" />
+                </svg>
+                <span className="lbl">{customer ? 'Account' : 'Sign in'}</span>
               </a>
               <CartButton count={count} data={cartData} />
-            </nav>
+            </div>
           </div>
+
+          {/* ---- Band C — category bar --------------------------------------------
+              Full-bleed dark strip with mega-panels, built from `lib/nav.ts`. Every link
+              and count in those panels is server-rendered and in the first response. */}
+          <SiteNav nav={nav} />
         </header>
 
         <main id="main">{children}</main>
 
-        <ConsentBanner />
-        <Analytics />
+        {/* `/` focuses the header search. Renders nothing; stands down inside a field. */}
+        <SearchHotkey />
+
+        {/* A plain string crosses the boundary, never the country — see `lib/geo.ts`. */}
+        <ConsentBanner regime={geo.regime} />
+        <Analytics regime={geo.regime} />
 
         <footer className="site">
           <div className="wrap">
@@ -205,7 +277,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <PaymentMethods />
 
             <div className="base">
-              <RegionPicker regions={regionOptions} current={regionId} />
+              {/* The picker itself is in band A now — "Ship to" belongs above the fold,
+                  where it changes what the shopper is about to pay, not at the bottom of
+                  the page they have finished reading. The currency note stays. */}
               <span>
                 Prices in {(regions.find((r) => r.id === regionId)?.currency_code ?? 'usd')
                   .toUpperCase()}

@@ -53,6 +53,12 @@ SHOULD_FIRE = {
     'skip link not first':
         '<a href="/shop">Shop</a><a href="#main">Skip</a><main id="main"><h1>T</h1></main>',
     'skip link to a missing id': '<a href="#nope">Skip</a><main id="main"><h1>T</h1></main>',
+    # The defect this rule was added for: a section rendered above the document's own
+    # title, so the page opens h2-then-h1 and a heading list offers a section before the
+    # thing it is a section of. The jump check cannot see it — it starts at prev=0, so the
+    # first heading never trips it, and a late h1 is not a jump downwards.
+    'section heading before the h1':
+        '<a href="#main">Skip</a><main id="main"><h2>Your rights</h2><h1>T</h1></main>',
 }
 
 SHOULD_NOT_FIRE = {
@@ -73,6 +79,13 @@ SHOULD_NOT_FIRE = {
     'select with a live region':
         OK % ('<label for="region">Ship to</label><select id="region"><option>US</option>'
               '</select><span role="status"></span>'),
+    # Both exclusions the outline rule makes, pinned so neither is quietly widened.
+    'nav headings before the h1 are landmark structure, not the outline':
+        ('<a href="#main">Skip</a><main id="main">'
+         '<nav aria-label="Filter jerseys"><h3>League</h3><a href="/a">NFL</a></nav>'
+         '<h1>T</h1></main>'),
+    'footer headings after </main> are not the outline':
+        OK % '' + '<footer><h2>Shop</h2></footer>',
 }
 
 

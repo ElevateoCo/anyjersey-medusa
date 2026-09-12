@@ -171,6 +171,9 @@ export const POLICIES: Doc[] = [
           {
             p: 'These are enforced by a job that runs every night, not by hand. Where a record has to be kept for tax or for a dispute, we remove the parts that identify you rather than keeping the whole thing.',
           },
+          {
+            note: 'One line is not ours to set. How long an invoice must be kept is the tax law of the country you bought from, and it differs — six years in one, ten in another. The seven years above is the period we apply today, which is the US figure. We are confirming the number for each market we sell into rather than restating one country’s answer as though it were everybody’s.',
+          },
         ],
       },
       {
@@ -180,7 +183,14 @@ export const POLICIES: Doc[] = [
             p: 'Wherever you live, you can ask us for a copy of your data, ask us to correct it, ask us to delete it, or object to how we use it. In the EU and UK you also have the right to data portability and to lodge a complaint with your supervisory authority. In California and the other US states with comparable laws, you have the right to know, delete, correct, and opt out of sale or sharing — and we will not treat you differently for exercising any of them.',
           },
           {
-            p: 'We respond within 30 days. We will ask you to confirm the email address on the order rather than requiring an account.',
+            note: 'The panel at the top of this page names the law that covers you, the rights it gives you, how long we have to answer and who to complain to if we get it wrong. The list above is complete and applies to everybody; the panel is the part of it that is yours.',
+          },
+          {
+            // Was a flat "within 30 days" for everyone. That is the GDPR period and it is
+            // *slower* than Brazil's fifteen, so as a global promise it committed us to
+            // missing the LGPD deadline for every Brazilian reader. The statutory period
+            // now leads and 30 days is the floor we hold ourselves to where none is set.
+            p: 'We answer within the period your own law sets — the panel above says what that is for you. Where your law sets no period, we answer within 30 days. We will ask you to confirm the email address on the order rather than requiring an account.',
           },
           { pending: ['privacy_email'] },
         ],

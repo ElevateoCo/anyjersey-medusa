@@ -77,6 +77,19 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     if (v) filters[key] = v
   }
 
+  /**
+   * `handle` is a **product** column, not a `jersey_detail` one, so it cannot join the
+   * list above — that one becomes `jersey_detail: { ... }`. Kept separate for that reason.
+   *
+   * Repeated (`?handle=a&handle=b`) it arrives as an array and reads as an IN, which is
+   * what the recently-viewed rail needs: it holds a handful of handles in the visitor's own
+   * browser and has to turn them into current cards. Looking them up rather than caching
+   * the cards is what keeps a stale price off that rail — the price a customer sees is the
+   * price the catalogue holds now, not the one it held the day they looked.
+   */
+  const handle = req.query.handle
+  const handles = Array.isArray(handle) ? handle.slice(0, 24) : handle ? [handle] : []
+
   const detailFilter: Record<string, unknown> = { ...filters }
   const custom = parseCustom(req.query.custom)
   if (custom !== undefined) detailFilter.is_custom = custom
@@ -105,6 +118,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     ],
     filters: {
       status: 'published',
+      ...(handles.length ? { handle: handles } : {}),
       ...(Object.keys(detailFilter).length ? { jersey_detail: detailFilter } : {}),
     } as any,
     context: currency

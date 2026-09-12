@@ -21,7 +21,16 @@ type Row =
   | { kind: 'product'; label: string; href: string }
   | { kind: 'all'; label: string; href: string }
 
-export default function SearchBox({ compact = false }: { compact?: boolean }) {
+export default function SearchBox({ compact = false, id: idProp }: {
+  compact?: boolean
+  /**
+   * The id the field and its listbox are built from. It has to be unique *per page*, not
+   * per variant: the masthead box and the listing page's own box are both the full-size
+   * variant, so deriving the id from `compact` alone put two `q-main` comboboxes on every
+   * listing page — a duplicate id, and an `aria-controls` that could resolve to either.
+   */
+  id?: string
+}) {
   const params = useSearchParams()
   const router = useRouter()
   const [value, setValue] = useState(params.get('q') ?? '')
@@ -29,7 +38,7 @@ export default function SearchBox({ compact = false }: { compact?: boolean }) {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(-1)
   const box = useRef<HTMLDivElement>(null)
-  const id = compact ? 'q-nav' : 'q-main'
+  const id = idProp ?? (compact ? 'q-nav' : 'q-main')
 
   // debounce: one request per pause, not per keystroke
   useEffect(() => {
